@@ -1,27 +1,53 @@
 #!/usr/bin/env bash
-# TODO clean this up and add to path or functions
+# ==============================================================================
+# Create a new git branch with the following name format:
+#
+#   [<client>-]<brief-description>-<yyyymmdd>-<initials>
+#
+# Where:
+#   <client> - (Optional) Client's name
+#   <brief-description> - Description of the work
+#   <yyyymmdd> - Today's date
+#   <initials> - Engineer's initials
+#
+# Script will prompt for details and format appropriately (i.e. no
+# spaces/underscores, all lowercase)
+#
+# TODO explain name format and args when implemented
+#
+# Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
+# ==============================================================================
 
-__new-branch() {
-    # Constants ----------------------------------------------------------------
-    readonly DATE_FMT="+%Y%m%d"
+# Constants --------------------------------------------------------------------
 
-    # Helpers ------------------------------------------------------------------
-    fmt_text() {
-        # to lower case
-        local formatted="${1,,}"
-        # Trim leading and trailing spaces
-        formatted="${formatted##*( )}"
-        formatted="${formatted%%*( )}"
-        # replace spaces and underscores with hyphens
-        formatted="${formatted//[ _]/-}"
-        echo $formatted
-    }
+# Format for the date string (yyyymmdd)
+readonly DATE_FMT="+%Y%m%d"
 
-    # Prompt -------------------------------------------------------------------
+# Functions --------------------------------------------------------------------
+
+# Sanitize and format input for use in branch name.
+# Converts to lowercase, trims leading/trailing spaces, and replaces spaces and
+# undderscores with hyphens.
+#
+# Arguments:
+#   Text to sanitize and format
+# Outputs:
+#   Formatted text
+fmt_text() {
+    # to lower case
+    local formatted="${1,,}"
+    # Trim leading and trailing spaces
+    formatted="${formatted##*( )}"
+    formatted="${formatted%%*( )}"
+    # replace spaces and underscores with hyphens
+    formatted="${formatted//[ _]/-}"
+    echo $formatted
+}
+
+# Prompt -----------------------------------------------------------------------
+main() {
     local client desc ts branch_name
-
     # TODO: move each input prompt to its own helper?
-    # TODO: local client desc initials?
     # 1. Client
     read -p "(Optional) Client name: " client
     client="$(fmt_text "$client")"
@@ -41,7 +67,7 @@ __new-branch() {
     done
 
     # 3. Date
-    local ts="$(date "$DATE_FMT")"
+    ts="$(date "$DATE_FMT")"
 
     # 4. Initials
     # TODO: configure via environment var or something, skip if set
@@ -62,7 +88,7 @@ __new-branch() {
 
     # TODO: git checkout master && git pull
     # TODO: git checkout -b [<client>-]<brief-description>-<yyyymmdd>-<initials>
-
 }
-__new-branch
+
+main
 
