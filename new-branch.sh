@@ -92,6 +92,41 @@ main() {
     # Check that this is a git repo
     verify_git_repo
 
+    local arg_client arg_no_client arg_desc arg_init arg_base_branch arg_no_pull
+    # TODO: Take args:
+    # -c <client> OR -C (no client [overrides -c])
+    # -d <description>
+    # -i <initials> (OVERRIDE GLOBAL)
+    # -b <base-branch> (OVERRIDE GLOBAL)
+    # -P (don't pull base branch)
+    while getopts 'c:d:i:b:PC' opt; do
+        case ${opt} in
+            c)
+                arg_client="$OPTARG"
+                ;;
+            C)
+                arg_no_client=1
+                ;;
+            d)
+                arg_desc=${OPTARG}
+                ;;
+            i)
+                arg_init="$OPTARG"
+                ;;
+            b)
+                arg_base_branch="$OPTARG"
+                ;;
+            P)
+                arg_no_pull=1
+                ;;
+            ?)
+                echo "TODO HELP MSG"
+                exit 1
+                ;;
+        esac
+    done
+    shift $((OPTIND -1))
+
     # Client
     read -p "(Optional) Client name: " client
     local client="$(fmt_text "$client")"
@@ -129,6 +164,6 @@ main() {
     create_branch "$branch_name"
 }
 
-# Run main
-main
+# Run main, pass any command line options to it for parsing
+main "$@"
 
