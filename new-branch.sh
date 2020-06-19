@@ -62,22 +62,24 @@ main() {
         echo "Error: description must not be blank."
     done
 
-    # Date
-    # ts="$(date "$DATE_FMT")"
-
     # Initials
-    # TODO: configure via environment var or something, skip if set
-    while true; do
-        read -p "Initials: " initials
-        # Sanitize and verify not empty
-        local initials="$(fmt_text "$initials")"
-        [[ $initials != '' ]] && break
-        # Loop if improperly formatted
-        echo "Error: must enter initials."
-    done
+    local initials
+    if [[ -z "$INITIALS" ]]; then
+        while true; do
+            read -p "Initials: " initials
+            # Sanitize and verify not empty
+            initials="$(fmt_text "$initials")"
+            [[ $initials != '' ]] && break
+            # Loop if improperly formatted
+            echo "Error: must enter initials."
+        done
+    else
+        initials="$(fmt_text "$INITIALS")"
+        echo "Initials configured in \$INITIALS: $initials"
+    fi
 
+    # Format branch name
     local branch_name="$client$desc-$(date "$DATE_FMT")-$initials"
-
     # TODO DEBUGGING
     echo "BRANCH: $branch_name"
 
