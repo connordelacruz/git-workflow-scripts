@@ -45,7 +45,35 @@ fmt_text() {
     formatted="${formatted%%*( )}"
     # replace spaces and underscores with hyphens
     formatted="${formatted//[ _]/-}"
-    echo $formatted
+    echo "$formatted"
+}
+
+# Verify that this is a git repo.
+#
+# Calls git status silently. Any error will be printed to STDERR and the script
+# will exit.
+verify_git_repo() {
+    git status 1> /dev/null
+}
+
+# Create a new branch based off the configured base branch.
+#
+# Switches to specified base branch (master if unspecified) and pulls changes.
+# Then creates a new branch with the specified name.
+#
+# Arguments:
+#   New branch name
+#   (Default: master) Base branch name
+create_branch() {
+    local branch_name="$1"
+    # TODO: configure default base branch in env
+    local base_branch="${2:-master}"
+    # Checkout and update master
+    echo "Pulling updates to $base_branch..."
+    git checkout "$base_branch" > /dev/null 2>&1 && git pull
+    echo "Creating new branch $branch_name..."
+    git checkout -b "$branch_name"
+    # TODO: check exit codes? Verify current branch?
 }
 
 # Prompt -----------------------------------------------------------------------
