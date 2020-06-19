@@ -23,6 +23,8 @@ set -o errexit
 # Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
 # ==============================================================================
 
+# TODO: consistent use of quotes, -z/-n vs = ''
+
 # Constants --------------------------------------------------------------------
 
 # Format for the date string (yyyymmdd)
@@ -86,6 +88,7 @@ create_branch() {
 #
 # Globals:
 #   INITIALS
+# TODO update args doc
 # Arguments:
 #   None
 main() {
@@ -102,16 +105,16 @@ main() {
     while getopts 'c:d:i:b:PC' opt; do
         case ${opt} in
             c)
-                arg_client="$OPTARG"
+                arg_client="$(fmt_text "$OPTARG")"
                 ;;
             C)
                 arg_no_client=1
                 ;;
             d)
-                arg_desc=${OPTARG}
+                arg_desc="$(fmt_text "$OPTARG")"
                 ;;
             i)
-                arg_init="$OPTARG"
+                arg_init="$(fmt_text "$OPTARG")"
                 ;;
             b)
                 arg_base_branch="$OPTARG"
@@ -128,16 +131,31 @@ main() {
     shift $((OPTIND -1))
 
     # Client
-    read -p "(Optional) Client name: " client
-    local client="$(fmt_text "$client")"
+    local client
+    # Skip section if -C is passed
+    if [[ $arg_no_client < 1 ]]; then
+        # Use -c arg if specified and not blank after formatting
+        if [[ -n "$arg_client" ]]; then
+            client="$arg_client"
+        # Otherwise prompt user
+        else
+            read -p "(Optional) Client name: " client
+            client="$(fmt_text "$client")"
+        fi
+    fi
     # Append hyphen if not blank
     [[ $client != '' ]] && client="$client-"
 
     # Description
-    while true; do
+    local desc
+    # Use -d if specified and not blank after formatting
+    if [[ -n "$arg_desc" ]]; then
+        desc="$arg_desc"
+    fi
+    while [[ $desc = '' ]]; do
         read -p "Brief description of ticket: " desc
         # Sanitize and verify not empty
-        local desc="$(fmt_text "$desc")"
+        desc="$(fmt_text "$desc")"
         [[ $desc != '' ]] && break
         # Loop if improperly formatted
         echo "Error: description must not be blank."
@@ -145,22 +163,27 @@ main() {
 
     # Initials
     local initials
-    if [[ -z "$INITIALS" ]]; then
-        while true; do
-            read -p "Initials: " initials
-            # Sanitize and verify not empty
-            initials="$(fmt_text "$initials")"
-            [[ $initials != '' ]] && break
-            # Loop if improperly formatted
-            echo "Error: must enter initials."
-        done
-    else
+    # Use -i arg if specified and not blank after formatting
+    if [[ -n "$arg_init" ]]; then
+        initials="$arg_init"
+    # Else use environment variable INITIALS if set
+    elif [[ -n "$INITIALS" ]]; then
         initials="$(fmt_text "$INITIALS")"
-        echo "Initials configured in \$INITIALS: $initials"
+        [[ "$initials" != '' ]] && echo "Initials configured in \$INITIALS: $initials"
     fi
+    # If initials is empty by now, we need to prompt user for them
+    while [[ $initials = '' ]]; do
+        read -p "Initials: " initials
+        # Sanitize and verify not empty
+        initials="$(fmt_text "$initials")"
+        [[ $initials != '' ]] && break
+        # Loop if improperly formatted
+        echo "Error: must enter initials."
+    done
 
     # Format branch name
     local branch_name="$client$desc-$(date "$DATE_FMT")-$initials"
+    # TODO parse -b and -P
     create_branch "$branch_name"
 }
 
