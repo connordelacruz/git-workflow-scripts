@@ -86,6 +86,9 @@ create_branch() {
 # Arguments:
 #   None
 main() {
+    # Check that this is a git repo
+    verify_git_repo
+
     # Client
     read -p "(Optional) Client name: " client
     local client="$(fmt_text "$client")"
@@ -120,11 +123,8 @@ main() {
 
     # Format branch name
     local branch_name="$client$desc-$(date "$DATE_FMT")-$initials"
-    # TODO DEBUGGING
-    echo "BRANCH: $branch_name"
-
-    # TODO: git checkout master && git pull
-    # TODO: git checkout -b [<client>-]<brief-description>-<yyyymmdd>-<initials>
+    # TODO: --dry-run
+    create_branch "$branch_name"
 }
 
 # Run main
