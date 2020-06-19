@@ -14,8 +14,9 @@ set -o errexit
 # Script will prompt for details and format appropriately (i.e. no
 # spaces/underscores, all lowercase)
 #
-# If the environment variable $INITIALS is set, the value of that will be used
-# for <initials> and the user will not be prompted to type them.
+# The will use the following environment variables if set:
+#   INITIALS - Skip the prompt for user's initials and use the value of this
+#   GIT_BASE_BRANCH - Use instead of master as the base git branch
 #
 # TODO Add optional args and explain here when implemented
 #
@@ -26,6 +27,8 @@ set -o errexit
 
 # Format for the date string (yyyymmdd)
 readonly DATE_FMT="+%Y%m%d"
+# Default base branch (master if $GIT_BASE_BRANCH not configured)
+readonly BASE_BRANCH="${GIT_BASE_BRANCH:-master}"
 
 # Functions --------------------------------------------------------------------
 
@@ -61,13 +64,14 @@ verify_git_repo() {
 # Switches to specified base branch (master if unspecified) and pulls changes.
 # Then creates a new branch with the specified name.
 #
+# Globals:
+#   GIT_BASE_BRANCH
 # Arguments:
 #   New branch name
-#   (Default: master) Base branch name
+#   (Default: master or $GIT_BASE_BRANCH) Base branch name
 create_branch() {
     local branch_name="$1"
-    # TODO: configure default base branch in env
-    local base_branch="${2:-master}"
+    local base_branch="${2:-$BASE_BRANCH}"
     # Checkout and update master
     echo "Pulling updates to $base_branch..."
     git checkout "$base_branch" > /dev/null 2>&1 && git pull
