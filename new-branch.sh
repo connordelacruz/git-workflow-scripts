@@ -77,7 +77,6 @@ create_branch() {
     git checkout "$base_branch" > /dev/null 2>&1 && git pull
     echo "Creating new branch $branch_name..."
     git checkout -b "$branch_name"
-    # TODO: check exit codes? Verify current branch?
 }
 
 # Prompt -----------------------------------------------------------------------
@@ -127,7 +126,6 @@ main() {
 
     # Format branch name
     local branch_name="$client$desc-$(date "$DATE_FMT")-$initials"
-    # TODO: --dry-run
     create_branch "$branch_name"
 }
 
