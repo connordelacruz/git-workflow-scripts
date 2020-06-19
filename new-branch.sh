@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -o errexit
 # ==============================================================================
 # Create a new git branch with the following name format:
 #
