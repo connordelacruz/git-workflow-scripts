@@ -13,7 +13,10 @@
 # Script will prompt for details and format appropriately (i.e. no
 # spaces/underscores, all lowercase)
 #
-# TODO explain name format and args when implemented
+# If the environment variable $INITIALS is set, the value of that will be used
+# for <initials> and the user will not be prompted to type them.
+#
+# TODO Add optional args and explain here when implemented
 #
 # Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
 # ==============================================================================
@@ -45,6 +48,14 @@ fmt_text() {
 }
 
 # Prompt -----------------------------------------------------------------------
+
+# Prompts the user for info about the branch, validates and formats input, and
+# creates the new branch.
+#
+# Globals:
+#   INITIALS
+# Arguments:
+#   None
 main() {
     # Client
     read -p "(Optional) Client name: " client
@@ -87,5 +98,6 @@ main() {
     # TODO: git checkout -b [<client>-]<brief-description>-<yyyymmdd>-<initials>
 }
 
+# Run main
 main
 
