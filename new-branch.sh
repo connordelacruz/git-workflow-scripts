@@ -46,42 +46,37 @@ fmt_text() {
 
 # Prompt -----------------------------------------------------------------------
 main() {
-    local client desc ts branch_name
-    # TODO: move each input prompt to its own helper?
-    # 1. Client
+    # Client
     read -p "(Optional) Client name: " client
-    client="$(fmt_text "$client")"
+    local client="$(fmt_text "$client")"
     # Append hyphen if not blank
     [[ $client != '' ]] && client="$client-"
-    # [ -n "$client" ] && client="$client-"
 
-    # 2. Description
+    # Description
     while true; do
         read -p "Brief description of ticket: " desc
         # Sanitize and verify not empty
-        desc="$(fmt_text "$desc")"
+        local desc="$(fmt_text "$desc")"
         [[ $desc != '' ]] && break
-        # [ -n "$desc" ] && break
         # Loop if improperly formatted
         echo "Error: description must not be blank."
     done
 
-    # 3. Date
-    ts="$(date "$DATE_FMT")"
+    # Date
+    # ts="$(date "$DATE_FMT")"
 
-    # 4. Initials
+    # Initials
     # TODO: configure via environment var or something, skip if set
     while true; do
         read -p "Initials: " initials
         # Sanitize and verify not empty
-        initials="$(fmt_text "$initials")"
+        local initials="$(fmt_text "$initials")"
         [[ $initials != '' ]] && break
-        # [ -n "$initials" ] && break
         # Loop if improperly formatted
         echo "Error: must enter initials."
     done
 
-    branch_name="$client$desc-$ts-$initials"
+    local branch_name="$client$desc-$(date "$DATE_FMT")-$initials"
 
     # TODO DEBUGGING
     echo "BRANCH: $branch_name"
