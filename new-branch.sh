@@ -13,7 +13,10 @@
 # Script will prompt for details and format appropriately (i.e. no
 # spaces/underscores, all lowercase)
 #
-# TODO explain name format and args when implemented
+# If the environment variable $INITIALS is set, the value of that will be used
+# for <initials> and the user will not be prompted to type them.
+#
+# TODO Add optional args and explain here when implemented
 #
 # Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
 # ==============================================================================
@@ -45,44 +48,49 @@ fmt_text() {
 }
 
 # Prompt -----------------------------------------------------------------------
+
+# Prompts the user for info about the branch, validates and formats input, and
+# creates the new branch.
+#
+# Globals:
+#   INITIALS
+# Arguments:
+#   None
 main() {
-    local client desc ts branch_name
-    # TODO: move each input prompt to its own helper?
-    # 1. Client
+    # Client
     read -p "(Optional) Client name: " client
-    client="$(fmt_text "$client")"
+    local client="$(fmt_text "$client")"
     # Append hyphen if not blank
     [[ $client != '' ]] && client="$client-"
-    # [ -n "$client" ] && client="$client-"
 
-    # 2. Description
+    # Description
     while true; do
         read -p "Brief description of ticket: " desc
         # Sanitize and verify not empty
-        desc="$(fmt_text "$desc")"
+        local desc="$(fmt_text "$desc")"
         [[ $desc != '' ]] && break
-        # [ -n "$desc" ] && break
         # Loop if improperly formatted
         echo "Error: description must not be blank."
     done
 
-    # 3. Date
-    ts="$(date "$DATE_FMT")"
+    # Initials
+    local initials
+    if [[ -z "$INITIALS" ]]; then
+        while true; do
+            read -p "Initials: " initials
+            # Sanitize and verify not empty
+            initials="$(fmt_text "$initials")"
+            [[ $initials != '' ]] && break
+            # Loop if improperly formatted
+            echo "Error: must enter initials."
+        done
+    else
+        initials="$(fmt_text "$INITIALS")"
+        echo "Initials configured in \$INITIALS: $initials"
+    fi
 
-    # 4. Initials
-    # TODO: configure via environment var or something, skip if set
-    while true; do
-        read -p "Initials: " initials
-        # Sanitize and verify not empty
-        initials="$(fmt_text "$initials")"
-        [[ $initials != '' ]] && break
-        # [ -n "$initials" ] && break
-        # Loop if improperly formatted
-        echo "Error: must enter initials."
-    done
-
-    branch_name="$client$desc-$ts-$initials"
-
+    # Format branch name
+    local branch_name="$client$desc-$(date "$DATE_FMT")-$initials"
     # TODO DEBUGGING
     echo "BRANCH: $branch_name"
 
@@ -90,5 +98,6 @@ main() {
     # TODO: git checkout -b [<client>-]<brief-description>-<yyyymmdd>-<initials>
 }
 
+# Run main
 main
 
