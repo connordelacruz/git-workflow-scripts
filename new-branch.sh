@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -o errexit
 # ==============================================================================
 # Create a new git branch with the following name format:
 #
@@ -13,8 +14,9 @@
 # Script will prompt for details and format appropriately (i.e. no
 # spaces/underscores, all lowercase)
 #
-# If the environment variable $INITIALS is set, the value of that will be used
-# for <initials> and the user will not be prompted to type them.
+# The will use the following environment variables if set:
+#   INITIALS - Skip the prompt for user's initials and use the value of this
+#   GIT_BASE_BRANCH - Use instead of master as the base git branch
 #
 # TODO Add optional args and explain here when implemented
 #
@@ -25,6 +27,8 @@
 
 # Format for the date string (yyyymmdd)
 readonly DATE_FMT="+%Y%m%d"
+# Default base branch (master if $GIT_BASE_BRANCH not configured)
+readonly BASE_BRANCH="${GIT_BASE_BRANCH:-master}"
 
 # Functions --------------------------------------------------------------------
 
@@ -44,7 +48,35 @@ fmt_text() {
     formatted="${formatted%%*( )}"
     # replace spaces and underscores with hyphens
     formatted="${formatted//[ _]/-}"
-    echo $formatted
+    echo "$formatted"
+}
+
+# Verify that this is a git repo.
+#
+# Calls git status silently. Any error will be printed to STDERR and the script
+# will exit.
+verify_git_repo() {
+    git status 1> /dev/null
+}
+
+# Create a new branch based off the configured base branch.
+#
+# Switches to specified base branch (master if unspecified) and pulls changes.
+# Then creates a new branch with the specified name.
+#
+# Globals:
+#   GIT_BASE_BRANCH
+# Arguments:
+#   New branch name
+#   (Default: master or $GIT_BASE_BRANCH) Base branch name
+create_branch() {
+    local branch_name="$1"
+    local base_branch="${2:-$BASE_BRANCH}"
+    # Checkout and update master
+    echo "Pulling updates to $base_branch..."
+    git checkout "$base_branch" > /dev/null 2>&1 && git pull
+    echo "Creating new branch $branch_name..."
+    git checkout -b "$branch_name"
 }
 
 # Prompt -----------------------------------------------------------------------
@@ -57,6 +89,9 @@ fmt_text() {
 # Arguments:
 #   None
 main() {
+    # Check that this is a git repo
+    verify_git_repo
+
     # Client
     read -p "(Optional) Client name: " client
     local client="$(fmt_text "$client")"
@@ -91,11 +126,7 @@ main() {
 
     # Format branch name
     local branch_name="$client$desc-$(date "$DATE_FMT")-$initials"
-    # TODO DEBUGGING
-    echo "BRANCH: $branch_name"
-
-    # TODO: git checkout master && git pull
-    # TODO: git checkout -b [<client>-]<brief-description>-<yyyymmdd>-<initials>
+    create_branch "$branch_name"
 }
 
 # Run main
