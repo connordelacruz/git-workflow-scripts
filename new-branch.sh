@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -o errexit
 # ==============================================================================
+# new-branch.sh
+# Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
+# ------------------------------------------------------------------------------
 # Create a new git branch with the following name format:
 #
 #   [<client>-]<brief-description>-<yyyymmdd>-<initials>
@@ -14,14 +17,36 @@ set -o errexit
 # Script will prompt for details and format appropriately (i.e. no
 # spaces/underscores, all lowercase)
 #
+# ------------------------------------------------------------------------------
+# Environment Variables
+# ------------------------------------------------------------------------------
 # The will use the following environment variables if set:
+#
 #   INITIALS - Skip the prompt for user's initials and use the value of this
 #   GIT_BASE_BRANCH - Use instead of master as the base git branch
 #
-# TODO Add optional args and explain here when implemented
+# ------------------------------------------------------------------------------
+# Optional Arguments
+# ------------------------------------------------------------------------------
+# This script accepts optional arguments to skip input prompts and override
+# defaults and environment variables. Running new-branch.sh -h will display
+# details on these arguments:
 #
-# Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
+# Usage: new-branch.sh [-c <client>|-C] [-d <description>] [-i <initials>]
+#                      [-b <base-branch>] [-t <yyyymmdd>] [-P] [-h]
+# Options:
+#   -c <client>       Specify client name.
+#   -C                No client name (overrides -c).
+#   -d <description>  Specify branch description.
+#   -i <initials>     Specify developer initials.
+#   -b <base-branch>  Specify branch to use as base (default: master).
+#   -t <yyyymmdd>     Specify timestamp (default: current date).
+#   -P                Skip pulling changes to base branch.
+#   -h                Show this help message and exit.
+#
 # ==============================================================================
+
+# TODO: consistent use of quotes, -z/-n vs = ''
 
 # Constants --------------------------------------------------------------------
 
@@ -61,22 +86,44 @@ verify_git_repo() {
 
 # Create a new branch based off the configured base branch.
 #
-# Switches to specified base branch (master if unspecified) and pulls changes.
-# Then creates a new branch with the specified name.
+# Switches to specified base branch (master if unspecified), pulls changes
+# (unless 3rd argument is set to 1), then creates a new branch with the
+# specified name.
 #
 # Globals:
 #   GIT_BASE_BRANCH
 # Arguments:
 #   New branch name
 #   (Default: master or $GIT_BASE_BRANCH) Base branch name
+#   (Optional) Set to 1 to skip git pull on base branch
 create_branch() {
     local branch_name="$1"
     local base_branch="${2:-$BASE_BRANCH}"
-    # Checkout and update master
-    echo "Pulling updates to $base_branch..."
-    git checkout "$base_branch" > /dev/null 2>&1 && git pull
+    local no_pull="$3"
+    git checkout "$base_branch"
+    if [[ "$no_pull" > 0 ]]; then
+        echo "(Skipped pulling updates to $base_branch)"
+    else
+        echo "Pulling updates to $base_branch..."
+        git pull
+    fi
     echo "Creating new branch $branch_name..."
     git checkout -b "$branch_name"
+}
+
+# Display help message for script
+show_help() {
+    echo 'Usage: new-branch.sh [-c <client>|-C] [-d <description>] [-i <initials>]'
+    echo '                     [-b <base-branch>] [-t <yyyymmdd>] [-P] [-h]'
+    echo 'Options:'
+    echo '  -c <client>       Specify client name.'
+    echo '  -C                No client name (overrides -c).'
+    echo '  -d <description>  Specify branch description.'
+    echo '  -i <initials>     Specify developer initials.'
+    echo '  -b <base-branch>  Specify branch to use as base (default: master).'
+    echo '  -t <yyyymmdd>     Specify timestamp (default: current date).'
+    echo '  -P                Skip pulling changes to base branch.'
+    echo '  -h                Show this help message and exit.'
 }
 
 # Prompt -----------------------------------------------------------------------
@@ -86,23 +133,80 @@ create_branch() {
 #
 # Globals:
 #   INITIALS
+#   GIT_BASE_BRANCH
 # Arguments:
-#   None
+#   Takes all optional arguments for script. For details on these arguments,
+#   see show_help()
 main() {
     # Check that this is a git repo
     verify_git_repo
 
+    # Parse arguments:
+    # -c <client> OR -C (no client [overrides -c])
+    # -d <description>
+    # -i <initials> (OVERRIDE GLOBAL)
+    # -b <base-branch> (OVERRIDE GLOBAL)
+    # -t <yyyymmdd>
+    # -P (don't pull base branch)
+    local arg_client arg_no_client arg_desc arg_init arg_base_branch arg_timestamp arg_no_pull
+    while getopts 'c:d:i:b:t:PCh' opt; do
+        case ${opt} in
+            c)
+                arg_client="$(fmt_text "$OPTARG")"
+                ;;
+            C)
+                arg_no_client=1
+                ;;
+            d)
+                arg_desc="$(fmt_text "$OPTARG")"
+                ;;
+            i)
+                arg_init="$(fmt_text "$OPTARG")"
+                ;;
+            b)
+                arg_base_branch="$OPTARG"
+                ;;
+            t)
+                arg_timestamp="$OPTARG"
+                ;;
+            P)
+                arg_no_pull=1
+                ;;
+            h|?)
+                show_help
+                [[ "$opt" == "?" ]] && local exit_code=1 || local exit_code=0
+                exit $exit_code
+                ;;
+        esac
+    done
+    shift $((OPTIND -1))
+
     # Client
-    read -p "(Optional) Client name: " client
-    local client="$(fmt_text "$client")"
+    local client
+    # Skip section if -C is passed
+    if [[ $arg_no_client < 1 ]]; then
+        # Use -c arg if specified and not blank after formatting
+        if [[ -n "$arg_client" ]]; then
+            client="$arg_client"
+        # Otherwise prompt user
+        else
+            read -p "(Optional) Client name: " client
+            client="$(fmt_text "$client")"
+        fi
+    fi
     # Append hyphen if not blank
     [[ $client != '' ]] && client="$client-"
 
     # Description
-    while true; do
+    local desc
+    # Use -d if specified and not blank after formatting
+    if [[ -n "$arg_desc" ]]; then
+        desc="$arg_desc"
+    fi
+    while [[ $desc = '' ]]; do
         read -p "Brief description of ticket: " desc
         # Sanitize and verify not empty
-        local desc="$(fmt_text "$desc")"
+        desc="$(fmt_text "$desc")"
         [[ $desc != '' ]] && break
         # Loop if improperly formatted
         echo "Error: description must not be blank."
@@ -110,25 +214,32 @@ main() {
 
     # Initials
     local initials
-    if [[ -z "$INITIALS" ]]; then
-        while true; do
-            read -p "Initials: " initials
-            # Sanitize and verify not empty
-            initials="$(fmt_text "$initials")"
-            [[ $initials != '' ]] && break
-            # Loop if improperly formatted
-            echo "Error: must enter initials."
-        done
-    else
+    # Use -i arg if specified and not blank after formatting
+    if [[ -n "$arg_init" ]]; then
+        initials="$arg_init"
+    # Else use environment variable INITIALS if set
+    elif [[ -n "$INITIALS" ]]; then
         initials="$(fmt_text "$INITIALS")"
-        echo "Initials configured in \$INITIALS: $initials"
+        [[ "$initials" != '' ]] && echo "Initials configured in \$INITIALS: $initials"
     fi
+    # If initials is empty by now, we need to prompt user for them
+    while [[ $initials = '' ]]; do
+        read -p "Initials: " initials
+        # Sanitize and verify not empty
+        initials="$(fmt_text "$initials")"
+        [[ $initials != '' ]] && break
+        # Loop if improperly formatted
+        echo "Error: must enter initials."
+    done
 
+    # Timestamp
+    local timestamp="${arg_timestamp:-$(date "$DATE_FMT")}"
     # Format branch name
-    local branch_name="$client$desc-$(date "$DATE_FMT")-$initials"
-    create_branch "$branch_name"
+    local branch_name="$client$desc-$timestamp-$initials"
+    # Create branch
+    create_branch "$branch_name" "${arg_base_branch:-$BASE_BRANCH}" "$arg_no_pull"
 }
 
-# Run main
-main
+# Run main, pass any command line options to it for parsing
+main "$@"
 
