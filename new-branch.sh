@@ -102,14 +102,15 @@ main() {
     # Check that this is a git repo
     verify_git_repo
 
-    local arg_client arg_no_client arg_desc arg_init arg_base_branch arg_no_pull
+    local arg_client arg_no_client arg_desc arg_init arg_base_branch arg_timestamp arg_no_pull
     # TODO: Take args:
     # -c <client> OR -C (no client [overrides -c])
     # -d <description>
     # -i <initials> (OVERRIDE GLOBAL)
     # -b <base-branch> (OVERRIDE GLOBAL)
+    # -t <yyyymmdd>
     # -P (don't pull base branch)
-    while getopts 'c:d:i:b:PC' opt; do
+    while getopts 'c:d:i:b:t:PC' opt; do
         case ${opt} in
             c)
                 arg_client="$(fmt_text "$OPTARG")"
@@ -126,10 +127,14 @@ main() {
             b)
                 arg_base_branch="$OPTARG"
                 ;;
+            t)
+                arg_timestamp="$OPTARG"
+                ;;
             P)
                 arg_no_pull=1
                 ;;
             ?)
+                # TODO help message
                 echo "TODO HELP MSG"
                 exit 1
                 ;;
@@ -188,8 +193,10 @@ main() {
         echo "Error: must enter initials."
     done
 
+    # Timestamp
+    local timestamp="${arg_timestamp:-$(date "$DATE_FMT")}"
     # Format branch name
-    local branch_name="$client$desc-$(date "$DATE_FMT")-$initials"
+    local branch_name="$client$desc-$timestamp-$initials"
     # Create branch
     create_branch "$branch_name" "${arg_base_branch:-$BASE_BRANCH}" "$arg_no_pull"
 }
