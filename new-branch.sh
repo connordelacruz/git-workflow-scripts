@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -o errexit
 # ==============================================================================
+# new-branch.sh
+# Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
+# ------------------------------------------------------------------------------
 # Create a new git branch with the following name format:
 #
 #   [<client>-]<brief-description>-<yyyymmdd>-<initials>
@@ -14,13 +17,33 @@ set -o errexit
 # Script will prompt for details and format appropriately (i.e. no
 # spaces/underscores, all lowercase)
 #
+# ------------------------------------------------------------------------------
+# Environment Variables
+# ------------------------------------------------------------------------------
 # The will use the following environment variables if set:
+#
 #   INITIALS - Skip the prompt for user's initials and use the value of this
 #   GIT_BASE_BRANCH - Use instead of master as the base git branch
 #
-# TODO Add optional args and explain here when implemented
+# ------------------------------------------------------------------------------
+# Optional Arguments
+# ------------------------------------------------------------------------------
+# This script accepts optional arguments to skip input prompts and override
+# defaults and environment variables. Running new-branch.sh -h will display
+# details on these arguments:
 #
-# Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
+# Usage: new-branch.sh [-c <client>|-C] [-d <description>] [-i <initials>]
+#                      [-b <base-branch>] [-t <yyyymmdd>] [-P] [-h]
+# Options:
+#   -c <client>       Specify client name.
+#   -C                No client name (overrides -c).
+#   -d <description>  Specify branch description.
+#   -i <initials>     Specify developer initials.
+#   -b <base-branch>  Specify branch to use as base (default: master).
+#   -t <yyyymmdd>     Specify timestamp (default: current date).
+#   -P                Skip pulling changes to base branch.
+#   -h                Show this help message and exit.
+#
 # ==============================================================================
 
 # TODO: consistent use of quotes, -z/-n vs = ''
@@ -110,21 +133,22 @@ show_help() {
 #
 # Globals:
 #   INITIALS
-# TODO update args doc
+#   GIT_BASE_BRANCH
 # Arguments:
-#   None
+#   Takes all optional arguments for script. For details on these arguments,
+#   see show_help()
 main() {
     # Check that this is a git repo
     verify_git_repo
 
-    local arg_client arg_no_client arg_desc arg_init arg_base_branch arg_timestamp arg_no_pull
-    # TODO: Take args:
+    # Parse arguments:
     # -c <client> OR -C (no client [overrides -c])
     # -d <description>
     # -i <initials> (OVERRIDE GLOBAL)
     # -b <base-branch> (OVERRIDE GLOBAL)
     # -t <yyyymmdd>
     # -P (don't pull base branch)
+    local arg_client arg_no_client arg_desc arg_init arg_base_branch arg_timestamp arg_no_pull
     while getopts 'c:d:i:b:t:PCh' opt; do
         case ${opt} in
             c)
