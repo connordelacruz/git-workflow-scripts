@@ -63,20 +63,27 @@ verify_git_repo() {
 
 # Create a new branch based off the configured base branch.
 #
-# Switches to specified base branch (master if unspecified) and pulls changes.
-# Then creates a new branch with the specified name.
+# Switches to specified base branch (master if unspecified), pulls changes
+# (unless 3rd argument is set to 1), then creates a new branch with the
+# specified name.
 #
 # Globals:
 #   GIT_BASE_BRANCH
 # Arguments:
 #   New branch name
 #   (Default: master or $GIT_BASE_BRANCH) Base branch name
+#   (Optional) Set to 1 to skip git pull on base branch
 create_branch() {
     local branch_name="$1"
     local base_branch="${2:-$BASE_BRANCH}"
-    # Checkout and update master
-    echo "Pulling updates to $base_branch..."
-    git checkout "$base_branch" > /dev/null 2>&1 && git pull
+    local no_pull="$3"
+    git checkout "$base_branch"
+    if [[ "$no_pull" > 0 ]]; then
+        echo "(Skipped pulling updates to $base_branch)"
+    else
+        echo "Pulling updates to $base_branch..."
+        git pull
+    fi
     echo "Creating new branch $branch_name..."
     git checkout -b "$branch_name"
 }
@@ -183,8 +190,8 @@ main() {
 
     # Format branch name
     local branch_name="$client$desc-$(date "$DATE_FMT")-$initials"
-    # TODO parse -b and -P
-    create_branch "$branch_name"
+    # Create branch
+    create_branch "$branch_name" "${arg_base_branch:-$BASE_BRANCH}" "$arg_no_pull"
 }
 
 # Run main, pass any command line options to it for parsing
