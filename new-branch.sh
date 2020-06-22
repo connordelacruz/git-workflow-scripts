@@ -88,6 +88,21 @@ create_branch() {
     git checkout -b "$branch_name"
 }
 
+# Display help message for script
+show_help() {
+    echo 'Usage: new-branch.sh [-c <client>|-C] [-d <description>] [-i <initials>]'
+    echo '                     [-b <base-branch>] [-t <yyyymmdd>] [-P] [-h]'
+    echo 'Options:'
+    echo '  -c <client>       Specify client name.'
+    echo '  -C                No client name (overrides -c).'
+    echo '  -d <description>  Specify branch description.'
+    echo '  -i <initials>     Specify developer initials.'
+    echo '  -b <base-branch>  Specify branch to use as base (default: master).'
+    echo '  -t <yyyymmdd>     Specify timestamp (default: current date).'
+    echo '  -P                Skip pulling changes to base branch.'
+    echo '  -h                Show this help message and exit.'
+}
+
 # Prompt -----------------------------------------------------------------------
 
 # Prompts the user for info about the branch, validates and formats input, and
@@ -110,7 +125,7 @@ main() {
     # -b <base-branch> (OVERRIDE GLOBAL)
     # -t <yyyymmdd>
     # -P (don't pull base branch)
-    while getopts 'c:d:i:b:t:PC' opt; do
+    while getopts 'c:d:i:b:t:PCh' opt; do
         case ${opt} in
             c)
                 arg_client="$(fmt_text "$OPTARG")"
@@ -133,10 +148,10 @@ main() {
             P)
                 arg_no_pull=1
                 ;;
-            ?)
-                # TODO help message
-                echo "TODO HELP MSG"
-                exit 1
+            h|?)
+                show_help
+                [[ "$opt" == "?" ]] && local exit_code=1 || local exit_code=0
+                exit $exit_code
                 ;;
         esac
     done
