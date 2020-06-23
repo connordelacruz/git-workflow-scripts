@@ -24,6 +24,7 @@ set -o errexit
 #
 #   INITIALS - Skip the prompt for user's initials and use the value of this
 #   GIT_BASE_BRANCH - Use instead of master as the base git branch
+# TODO GIT_INVALID_BRANCH_NAMES space separated!!
 #
 # ------------------------------------------------------------------------------
 # Optional Arguments
@@ -46,7 +47,13 @@ set -o errexit
 #
 # ==============================================================================
 
-# TODO: consistent use of quotes, -z/-n vs = ''
+# TODO CLEANUP:
+# - Consistent use of quotes, -z/-n vs = ''
+# - Should Globals be documented in functions even though main() passes the global to them?
+
+# TODO BRANCH NAME VALIDATION:
+# - Configure list of invalid patterns for branch names. Error if detected
+# - Flag to skip these checks
 
 # Constants --------------------------------------------------------------------
 
@@ -84,14 +91,43 @@ verify_git_repo() {
     git status 1> /dev/null
 }
 
+# Takes branch name and a space-separated list of invalid patterns for branch.
+# If one of the patterns is found, show error message and exit.
+#
+# Arguments:
+#   Name of the branch to check
+#   Space-separated string of invalid patterns to check for
+bad_branch_name_check() {
+    local branch_name="$1"
+    local bad_pattern_list
+    declare -a "bad_pattern_list=($2)"
+    for pattern in "${bad_pattern_list[@]}"; do
+        # Simple check for bad patterns in branch name
+        if [[ "$branch_name" = *"$pattern"* ]]; then
+            echo "Error: branch name contains invalid pattern:"
+            echo "  Desired Branch Name: $branch_name"
+            echo "  Contains Invalid Pattern: $pattern"
+            echo ""
+            echo "Branch names should not include the following patterns:"
+            echo "$( IFS=$'\n'; echo "${bad_pattern_list[@]}" )"
+            echo ""
+            # TODO space separated
+            echo "(Configured in environment variable GIT_INVALID_BRANCH_NAMES)"
+            echo ""
+            echo "Use the -N argument to skip this check."
+            echo "For more information on arguments and environment variables, run:"
+            echo "  new-branch.sh -h"
+            exit 1
+        fi
+    done
+}
+
 # Create a new branch based off the configured base branch.
 #
 # Switches to specified base branch (master if unspecified), pulls changes
 # (unless 3rd argument is set to 1), then creates a new branch with the
 # specified name.
 #
-# Globals:
-#   GIT_BASE_BRANCH
 # Arguments:
 #   New branch name
 #   (Default: master or $GIT_BASE_BRANCH) Base branch name
@@ -124,6 +160,8 @@ show_help() {
     echo '  -t <yyyymmdd>     Specify timestamp (default: current date).'
     echo '  -P                Skip pulling changes to base branch.'
     echo '  -h                Show this help message and exit.'
+    # TODO: -N
+    # TODO show environment vars and what they're set to; explain format of each
 }
 
 # Prompt -----------------------------------------------------------------------
@@ -134,6 +172,7 @@ show_help() {
 # Globals:
 #   INITIALS
 #   GIT_BASE_BRANCH
+#   GIT_INVALID_BRANCH_NAMES
 # Arguments:
 #   Takes all optional arguments for script. For details on these arguments,
 #   see show_help()
@@ -236,6 +275,10 @@ main() {
     local timestamp="${arg_timestamp:-$(date "$DATE_FMT")}"
     # Format branch name
     local branch_name="$client$desc-$timestamp-$initials"
+    # TODO Check for bad branch name (unless arg (-N?) is provided)
+    if [[ -n "$GIT_INVALID_BRANCH_NAMES" ]]; then
+        bad_branch_name_check "$branch_name" "$GIT_INVALID_BRANCH_NAMES"
+    fi
     # Create branch
     create_branch "$branch_name" "${arg_base_branch:-$BASE_BRANCH}" "$arg_no_pull"
 }
