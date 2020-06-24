@@ -60,10 +60,6 @@ set -o errexit
 #
 # ==============================================================================
 
-# TODO CLEANUP:
-# - Consistent use of quotes, -z/-n vs = ''
-# - Should Globals be documented in functions even though main() passes the global to them?
-
 # Constants --------------------------------------------------------------------
 
 # Format for the date string (yyyymmdd)
@@ -109,6 +105,8 @@ verify_git_repo() {
 bad_branch_name_check() {
     local branch_name="$1"
     local bad_pattern_list
+    # Environment variables can't be set to arrays, so expect a space-separated
+    # string and parse it as an array
     declare -a "bad_pattern_list=($2)"
     for pattern in "${bad_pattern_list[@]}"; do
         # Simple check for bad patterns in branch name
@@ -145,7 +143,7 @@ create_branch() {
     local base_branch="${2:-$BASE_BRANCH}"
     local no_pull="$3"
     git checkout "$base_branch"
-    if [[ "$no_pull" > 0 ]]; then
+    if [[ $no_pull > 0 ]]; then
         echo "(Skipped pulling updates to $base_branch)"
     else
         echo "Pulling updates to $base_branch..."
@@ -235,7 +233,7 @@ main() {
                 ;;
             h|?)
                 show_help
-                [[ "$opt" == "?" ]] && local exit_code=1 || local exit_code=0
+                [[ "$opt" = "?" ]] && local exit_code=1 || local exit_code=0
                 exit $exit_code
                 ;;
         esac
@@ -256,7 +254,7 @@ main() {
         fi
     fi
     # Append hyphen if not blank
-    [[ $client != '' ]] && client="$client-"
+    [[ -n "$client" ]] && client="$client-"
 
     # Description
     local desc
@@ -264,11 +262,11 @@ main() {
     if [[ -n "$arg_desc" ]]; then
         desc="$arg_desc"
     fi
-    while [[ $desc = '' ]]; do
+    while [[ -z "$desc" ]]; do
         read -p "Brief description of ticket: " desc
         # Sanitize and verify not empty
         desc="$(fmt_text "$desc")"
-        [[ $desc != '' ]] && break
+        [[ -n "$desc" ]] && break
         # Loop if improperly formatted
         echo "Error: description must not be blank."
     done
@@ -281,14 +279,14 @@ main() {
     # Else use environment variable INITIALS if set
     elif [[ -n "$INITIALS" ]]; then
         initials="$(fmt_text "$INITIALS")"
-        [[ "$initials" != '' ]] && echo "Initials configured in \$INITIALS: $initials"
+        [[ -n "$initials" ]] && echo "Initials configured in \$INITIALS: $initials"
     fi
     # If initials is empty by now, we need to prompt user for them
-    while [[ $initials = '' ]]; do
+    while [[ -z "$initials" ]]; do
         read -p "Initials: " initials
         # Sanitize and verify not empty
         initials="$(fmt_text "$initials")"
-        [[ $initials != '' ]] && break
+        [[ -n "$initials" ]] && break
         # Loop if improperly formatted
         echo "Error: must enter initials."
     done
