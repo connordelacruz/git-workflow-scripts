@@ -263,7 +263,7 @@ main() {
         desc="$arg_desc"
     fi
     while [[ -z "$desc" ]]; do
-        read -p "Brief description of ticket: " desc
+        read -p "Brief description of branch: " desc
         # Sanitize and verify not empty
         desc="$(fmt_text "$desc")"
         [[ -n "$desc" ]] && break
