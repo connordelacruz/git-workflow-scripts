@@ -291,6 +291,9 @@ main() {
         echo "Error: must enter initials."
     done
 
+    # Blank line after prompts
+    echo ""
+
     # Timestamp
     local timestamp="${arg_timestamp:-$(date "$DATE_FMT")}"
     # Format branch name
