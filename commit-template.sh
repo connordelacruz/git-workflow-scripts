@@ -4,7 +4,9 @@ set -o errexit
 # commit-template.sh
 # Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
 #
-# TODO DOCUMENT
+# TODO DOCUMENT:
+#   - usage
+#   - adding .gitmessage_local* to global gitignore
 # ==============================================================================
 
 # Constants --------------------------------------------------------------------
@@ -35,6 +37,11 @@ verify_git_repo() {
     git status 1> /dev/null
 }
 
+# Returns the path to the root of this git repo
+git_repo_root() {
+    git rev-parse --show-toplevel
+}
+
 # Prompt -----------------------------------------------------------------------
 
 # Prompts the user for a ticket number, validates and sanitizes input,
@@ -42,13 +49,17 @@ verify_git_repo() {
 # the local git repo to use that template.
 #
 # Arguments:
-# TODO
+#   (Optional) Ticket number, will be prompted if not provided or invalid
 main() {
     # Check that this is a git repo
     verify_git_repo
 
-    # TODO take ticket number as argument
     local ticket
+    # If a positional argument was provided, try using it as the ticket number
+    if [[ $# > 0 ]]; then
+        ticket="$(fmt_ticket_number "$1")"
+    fi
+    # If $ticket is empty, prompt for ticket number
     while [[ -z "$ticket" ]]; do
         read -p "Ticket number: " ticket
         # Sanitize and verify not empty
@@ -59,33 +70,31 @@ main() {
     done
 
     # Create template
-    # TODO (unless already exists or -f specified)
-    # Go to root of current repo
     local current_dir="$(pwd)"
-    local repo_root_dir="$(git rev-parse --show-toplevel)"
-    cd "$repo_root_dir"
+    local repo_root_dir="$(git_repo_root)"
+    # Append ticket number to filename on the off-chance a file
+    # .gitmessage_local already exists
+    local commit_template_file="${LOCAL_COMMIT_TEMPLATE_FILE}_${ticket}"
     echo "Creating commit template file..."
-    echo "[#$ticket] " > "$LOCAL_COMMIT_TEMPLATE_FILE"
+    # Go to root of current repo
+    cd "$repo_root_dir"
+    echo "[#$ticket] " > "$commit_template_file"
     # Verify that file was created
-    if [[ ! -f "$LOCAL_COMMIT_TEMPLATE_FILE" ]]; then
+    if [[ ! -f "$commit_template_file" ]]; then
         echo "Error: something went wrong when attempting to create commit template."
         exit 1
     else
         echo "Template file created:"
-        echo "$(pwd)/$LOCAL_COMMIT_TEMPLATE_FILE"
+        echo "$(pwd)/$commit_template_file"
     fi
 
     # Configure commit template
-    # TODO unless flag to skip configuration was specified?
     echo "Configuring commit.template for this repo..."
-    git config --local commit.template "$LOCAL_COMMIT_TEMPLATE_FILE"
-    # TODO verify?
+    git config --local commit.template "$commit_template_file"
     echo "Template configured."
 
     # Return to previous directory before exiting
     cd "$current_dir"
-
-    # TODO Flag for cleaning up and un-configuring template?
 }
 
 # Run main, pass any command line options to it for parsing
