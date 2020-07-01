@@ -7,6 +7,7 @@ set -o errexit
 # TODO DOCUMENT:
 #   - usage
 #   - adding .gitmessage_local* to global gitignore
+#   - see unset-commit-template.sh
 # ==============================================================================
 
 # Constants --------------------------------------------------------------------
