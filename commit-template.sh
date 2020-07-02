@@ -3,11 +3,60 @@ set -o errexit
 # ==============================================================================
 # commit-template.sh
 # Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
+# ------------------------------------------------------------------------------
+# Creates and configures a local git commit template that includes a ticket
+# number in brackets before the commit message. E.g. for ticket number 12345:
 #
-# TODO DOCUMENT:
-#   - usage
-#   - adding .gitmessage_local* to global gitignore
-#   - see unset-commit-template.sh
+#   [#12345] <commit message text goes here>
+#
+# Usage: commit-template.sh [<ticket number>]
+#
+# If not arguments are passed, user will be prompted for the ticket number.
+#
+# ------------------------------------------------------------------------------
+# Remove local template
+# ------------------------------------------------------------------------------
+# Use unset-commit-template.sh to quickly unset local commit.template config
+# and remove template file.
+#
+# (See comments in unset-commit-template.sh for more information)
+#
+# ------------------------------------------------------------------------------
+# Generated template files
+# ------------------------------------------------------------------------------
+# Templates generated with this script are created in the root of the git
+# repository with this name format:
+#
+#   .gitmessage_local_<ticket>
+#
+# Where <ticket> is the ticket number used in the template.
+#
+# ------------------------------------------------------------------------------
+# Configure git to ignore generated template files
+# ------------------------------------------------------------------------------
+# FOR INDIVIDUAL REPO:
+#
+# To ignore generated templates in a single repository, add the following to
+# the .gitignore:
+#
+#   .gitmessage_local*
+#
+# FOR ALL REPOS (RECOMMENDED):
+#
+# To have git always ignore generated templates,
+#
+#   1. Create a global gitignore file, e.g. ~/.gitignore_global
+#   2. Set the global git config for core.excludesfile to the path to the
+#      global gitignore, e.g.:
+#
+#      git config --global core.excludesfile ~/.gitignore_global
+#
+#   3. Add the following to your global gitignore:
+#
+#      .gitmessage_local*
+#
+# For more information on core.excludesfile:
+# https://git-scm.com/book/en/v2/Customizing-Git-Git-Configuration#_core_excludesfile
 # ==============================================================================
 
 # Constants --------------------------------------------------------------------
