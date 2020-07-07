@@ -15,23 +15,24 @@ set -o errexit
 #   <initials> - Engineer's initials
 #
 # Script will prompt for details and format appropriately (i.e. no
-# spaces/underscores, all lowercase)
+# spaces/underscores, all lowercase).
 #
 # ------------------------------------------------------------------------------
 # Environment Variables
 # ------------------------------------------------------------------------------
-# The will use the following environment variables if set:
+# Script will use the following environment variables if set:
 #
-#   - INITIALS - Skip the prompt for user's initials and use the value of this.
-#     E.g.:
+#   - INITIALS: Skip the prompt for user's initials and use the value of this.
+#     E.g. to automatically use "cd":
 #
 #       export INITIALS=cd
 #
-#   - GIT_BASE_BRANCH - Use instead of master as the base git branch. E.g.:
+#   - GIT_BASE_BRANCH: Use instead of master as the base git branch when
+#     creating the new branch. E.g. to base branches off develop:
 #
 #       export GIT_BASE_BRANCH=develop
 #
-#   - GIT_BAD_BRANCH_NAMES - Set to a **space-separated string** of patterns
+#   - GIT_BAD_BRANCH_NAMES: Set to a **space-separated string** of patterns
 #     that should not appear in a branch name. Script will check for these
 #     before attempting to create a branch. E.g. if branch names shouldn't
 #     include the words "-web" or "-plugins":
