@@ -31,6 +31,7 @@ export PATH="$HOME/bin/scripts:$PATH"
             * [For individal repo:](#for-individal-repo)
             * [For all repos (RECOMMENDED):](#for-all-repos-recommended)
 * [unset-commit-template.sh](#unset-commit-templatesh)
+    * [Usage](#usage-2)
 
 <!-- vim-markdown-toc -->
 
@@ -185,5 +186,19 @@ See the following articles for more information on `core.excludesfile`:
 
 ## unset-commit-template.sh
 
-**TODO**
+*For use with (commit-template.sh)[#commit-templatesh]*
+
+Unset local git config for `commit.template` if configured. Template file will
+be deleted unless `-D` argument was specified.
+
+### Usage
+
+Running `unset-commit-template -h` will display details on usage and arguments:
+
+```
+Usage: unset-commit-template.sh [-D] [-h]
+Options:
+  -D  Don't delete commit template file.
+  -h  Show this help message and exit.
+```
 
