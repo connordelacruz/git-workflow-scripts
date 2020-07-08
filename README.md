@@ -3,10 +3,10 @@
 ## Setup
 
 Clone this repo and update your `.bashrc` to include it in your `PATH`. E.g. if
-you cloned it into `~/bin/scripts`:
+you cloned it into `~/bin/git-workflow-scripts`:
 
 ```bash
-export PATH="$HOME/bin/scripts:$PATH"
+export PATH="$HOME/bin/git-workflow-scripts:$PATH"
 ```
 
 # Scripts
@@ -137,7 +137,8 @@ If not arguments are passed, user will be prompted for the ticket number.
 Use `unset-commit-template.sh` to quickly unset local `commit.template` config
 and remote the template file.
 
-(See [unset-commit-template.sh](#unset-commit-templatesh) for more information.)
+(See [`unset-commit-template.sh`](#unset-commit-templatesh) for more
+information.)
 
 ### Configuration
 
