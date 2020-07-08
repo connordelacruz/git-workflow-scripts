@@ -1,11 +1,5 @@
 # Git Workflow Scripts
 
-## TODO
-
-- explain scripts
-- environment variables w/ examples
-- global gitignore example
-
 ## Setup
 
 Clone this repo and update your `.bashrc` to include it in your `PATH`. E.g. if
@@ -186,7 +180,7 @@ See the following articles for more information on `core.excludesfile`:
 
 ## unset-commit-template.sh
 
-*For use with (commit-template.sh)[#commit-templatesh]*
+For use with (`commit-template.sh`)[#commit-templatesh]
 
 Unset local git config for `commit.template` if configured. Template file will
 be deleted unless `-D` argument was specified.
