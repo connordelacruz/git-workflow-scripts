@@ -4,6 +4,8 @@ set -o errexit
 # unset-commit-template.sh
 # Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
 # ------------------------------------------------------------------------------
+# For use with commit-template.sh
+#
 # Unset local git config for commit.template if configured. Template file will
 # be deleted unless -D argument was specified.
 #
