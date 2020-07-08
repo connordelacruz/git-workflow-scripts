@@ -39,6 +39,7 @@ set -o errexit
 # To ignore generated templates in a single repository, add the following to
 # the .gitignore:
 #
+#   # Commit message templates
 #   .gitmessage_local*
 #
 # FOR ALL REPOS (RECOMMENDED):

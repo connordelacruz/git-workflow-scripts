@@ -15,16 +15,24 @@ you cloned it into `~/bin/scripts`:
 export PATH="$HOME/bin/scripts:$PATH"
 ```
 
+# Scripts
+
 <!-- vim-markdown-toc GFM -->
 
-* [Scripts](#scripts)
-    * [new-branch.sh](#new-branchsh)
-        * [Environment Variables](#environment-variables)
-        * [Optional Arguments](#optional-arguments)
+* [new-branch.sh](#new-branchsh)
+    * [Usage](#usage)
+    * [Optional Arguments](#optional-arguments)
+    * [Environment Variables](#environment-variables)
+* [commit-template.sh](#commit-templatesh)
+    * [Usage](#usage-1)
+        * [Remove and unconfigure local template](#remove-and-unconfigure-local-template)
+    * [Configuration](#configuration)
+        * [Configure git to ignore generated template files](#configure-git-to-ignore-generated-template-files)
+            * [For individal repo:](#for-individal-repo)
+            * [For all repos (RECOMMENDED):](#for-all-repos-recommended)
+* [unset-commit-template.sh](#unset-commit-templatesh)
 
 <!-- vim-markdown-toc -->
-
-# Scripts
 
 ## new-branch.sh
 
@@ -42,6 +50,38 @@ Where:
 
 Script will prompt for details and format appropriately (i.e. no
 spaces/underscores, all lowercase).
+
+### Usage
+
+```
+new-branch.sh [<optional arguments>]
+```
+
+You will be prompted for information used in the branch name (client,
+description, etc). 
+
+See below for details on [optional arguments](#optional-arguments).
+
+### Optional Arguments
+
+This script accepts optional arguments to skip input prompts and override
+defaults and environment variables. Running `new-branch.sh -h` will display
+details on these arguments:
+
+```
+Usage: new-branch.sh [-c <client>|-C] [-d <description>] [-i <initials>]
+                     [-b <base-branch>] [-t <yyyymmdd>] [-P] [-N] [-h]
+Options:
+  -c <client>       Specify client name.
+  -C                No client name (overrides -c).
+  -d <description>  Specify branch description.
+  -i <initials>     Specify developer initials.
+  -b <base-branch>  Specify branch to use as base (default: master).
+  -t <yyyymmdd>     Specify timestamp (default: current date).
+  -P                Skip pulling changes to base branch.
+  -N                Skip check for bad branch names.
+  -h                Show this help message and exit.
+```
 
 ### Environment Variables
 
@@ -70,23 +110,80 @@ Script will use the following environment variables if set:
     export GIT_BAD_BRANCH_NAMES="-web -plugins"
     ```
 
-### Optional Arguments
 
-This script accepts optional arguments to skip input prompts and override
-defaults and environment variables. Running `new-branch.sh -h` will display
-details on these arguments:
+## commit-template.sh
+
+Creates and configures a local git commit template that includes a ticket number
+in brackets before the commit message. E.g. for ticket number `12345`:
+
+    ```
+    [#12345] <commit message text goes here>
+    ```
+
+Templates generated with this script are created in the root of the git
+repository with this name format:
+
+    ```
+    .gitmessage_local_<ticket>
+    ```
+
+Where `<ticket>` is the ticket number used in the template.
+
+### Usage
 
 ```
-Usage: new-branch.sh [-c <client>|-C] [-d <description>] [-i <initials>]
-                     [-b <base-branch>] [-t <yyyymmdd>] [-P] [-N] [-h]
-Options:
-  -c <client>       Specify client name.
-  -C                No client name (overrides -c).
-  -d <description>  Specify branch description.
-  -i <initials>     Specify developer initials.
-  -b <base-branch>  Specify branch to use as base (default: master).
-  -t <yyyymmdd>     Specify timestamp (default: current date).
-  -P                Skip pulling changes to base branch.
-  -N                Skip check for bad branch names.
-  -h                Show this help message and exit.
+commit-template.sh [<ticket number>]
 ```
+
+If not arguments are passed, user will be prompted for the ticket number.
+
+#### Remove and unconfigure local template
+
+Use `unset-commit-template.sh` to quickly unset local `commit.template` config
+and remote the template file.
+
+(See [unset-commit-template.sh](#unset-commit-templatesh) for more information.)
+
+### Configuration
+
+#### Configure git to ignore generated template files
+
+##### For individal repo:
+
+To ignore generated templates in a single repository, add the following to the
+`.gitignore`:
+
+```
+# Commit message templates
+.gitmessage_local*
+```
+
+##### For all repos (RECOMMENDED):
+
+To have git always ignore generated templates:
+
+1. Create a global gitignore file, e.g. `~/.gitignore_global`
+2. Set the global git config for `core.excludesfile` to the path to the global
+   gitignore, e.g.:
+
+    ```
+    git config --global core.excludesfile ~/.gitignore_global
+    ```
+
+3. Add the following to your global gitignore:
+
+    ```
+    # Commit message templates
+    .gitmessage_local*
+    ```
+
+See the following articles for more information on `core.excludesfile`:
+
+- [GitHub - Ignoring files](https://docs.github.com/en/github/using-git/ignoring-files#configuring-ignored-files-for-all-repositories-on-your-computer)
+- [Git Configuration - core.excludesfile](https://git-scm.com/book/en/v2/Customizing-Git-Git-Configuration#_core_excludesfile)
+
+
+## unset-commit-template.sh
+
+**TODO**
+
