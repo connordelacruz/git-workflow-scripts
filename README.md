@@ -13,23 +13,23 @@ export PATH="$HOME/bin/git-workflow-scripts:$PATH"
 
 <!-- vim-markdown-toc GFM -->
 
-* [new-branch.sh](#new-branchsh)
+* [`new-branch.sh`](#new-branchsh)
     * [Usage](#usage)
     * [Optional Arguments](#optional-arguments)
     * [Environment Variables](#environment-variables)
-* [commit-template.sh](#commit-templatesh)
+* [`commit-template.sh`](#commit-templatesh)
     * [Usage](#usage-1)
         * [Remove and unconfigure local template](#remove-and-unconfigure-local-template)
     * [Configuration](#configuration)
         * [Configure git to ignore generated template files](#configure-git-to-ignore-generated-template-files)
             * [For individal repo:](#for-individal-repo)
             * [For all repos (RECOMMENDED):](#for-all-repos-recommended)
-* [unset-commit-template.sh](#unset-commit-templatesh)
+* [`unset-commit-template.sh`](#unset-commit-templatesh)
     * [Usage](#usage-2)
 
 <!-- vim-markdown-toc -->
 
-## new-branch.sh
+## `new-branch.sh`
 
 Create a new git branch with the following name format:
 
@@ -106,7 +106,7 @@ Script will use the following environment variables if set:
     ```
 
 
-## commit-template.sh
+## `commit-template.sh`
 
 Creates and configures a local git commit template that includes a ticket number
 in brackets before the commit message. E.g. for ticket number `12345`:
@@ -179,7 +179,7 @@ See the following articles for more information on `core.excludesfile`:
 - [Git Configuration - core.excludesfile](https://git-scm.com/book/en/v2/Customizing-Git-Git-Configuration#_core_excludesfile)
 
 
-## unset-commit-template.sh
+## `unset-commit-template.sh`
 
 For use with [`commit-template.sh`](#commit-templatesh)
 
