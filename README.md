@@ -116,16 +116,16 @@ Script will use the following environment variables if set:
 Creates and configures a local git commit template that includes a ticket number
 in brackets before the commit message. E.g. for ticket number `12345`:
 
-    ```
-    [#12345] <commit message text goes here>
-    ```
+ ```
+ [#12345] <commit message text goes here>
+ ```
 
 Templates generated with this script are created in the root of the git
 repository with this name format:
 
-    ```
-    .gitmessage_local_<ticket>
-    ```
+ ```
+ .gitmessage_local_<ticket>
+ ```
 
 Where `<ticket>` is the ticket number used in the template.
 
