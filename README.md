@@ -42,10 +42,11 @@ Create a new git branch with the following name format:
 ```
 
 Where:
-  `<client>` - (Optional) Client's name
-  `<brief-description>` - Description of the work
-  `<yyyymmdd>` - Today's date
-  `<initials>` - Engineer's initials
+
+  - `<client>` - (Optional) Client's name
+  - `<brief-description>` - Description of the work
+  - `<yyyymmdd>` - Today's date
+  - `<initials>` - Engineer's initials
 
 Script will prompt for details and format appropriately (i.e. no
 spaces/underscores, all lowercase).
