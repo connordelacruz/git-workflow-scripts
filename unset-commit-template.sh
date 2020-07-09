@@ -57,9 +57,6 @@ show_help() {
 #   Takes all optional arguments for script. For details on these arguments,
 #   see show_help()
 main() {
-    # Check that this is a git repo
-    verify_git_repo
-
     # Parse arguments:
     # -D (don't delete template file)
     local arg_no_delete
@@ -76,6 +73,9 @@ main() {
         esac
     done
     shift $((OPTIND -1))
+
+    # Check that this is a git repo before proceeding
+    verify_git_repo
 
     # Get template (if configured)
     local commit_template_file="$(git_commit_template)"

@@ -209,10 +209,6 @@ show_help() {
 #   Takes all optional arguments for script. For details on these arguments,
 #   see show_help()
 main() {
-    # Check that this is a git repo
-    # TODO move below arg check (so -h works outside of repo)
-    verify_git_repo
-
     # Parse arguments:
     # -c <client> OR -C (no client [overrides -c])
     # -d <description>
@@ -265,6 +261,9 @@ main() {
         esac
     done
     shift $((OPTIND -1))
+
+    # Check that this is a git repo before proceeding
+    verify_git_repo
 
     # Client
     local client
