@@ -156,6 +156,7 @@ create_branch() {
 
 # Display help message for script
 show_help() {
+    # TODO UPDATE FOR -s/-S (if feature not disabled by env)
     echo 'Usage: new-branch.sh [-c <client>|-C] [-d <description>] [-i <initials>]'
     echo '                     [-b <base-branch>] [-t <yyyymmdd>] [-P] [-N] [-h]'
     echo 'Options:'
@@ -195,6 +196,7 @@ show_help() {
 #   see show_help()
 main() {
     # Check that this is a git repo
+    # TODO move below arg check (so -h works outside of repo)
     verify_git_repo
 
     # Parse arguments:
@@ -205,8 +207,11 @@ main() {
     # -t <yyyymmdd>
     # -P (don't pull base branch)
     # -N (skip bad name check)
-    local arg_client arg_no_client arg_desc arg_init arg_base_branch arg_timestamp arg_no_pull arg_skip_name_check
-    while getopts 'c:d:i:b:t:PCNh' opt; do
+    # -s <ticket#> OR -S (no commit template)
+    local arg_client arg_no_client arg_desc arg_timestamp arg_init \
+          arg_base_branch arg_no_pull arg_skip_name_check \
+          arg_ticket arg_no_ticket
+    while getopts 'c:d:i:b:t:PCNs:Sh' opt; do
         case ${opt} in
             c)
                 arg_client="$(fmt_text "$OPTARG")"
@@ -231,6 +236,12 @@ main() {
                 ;;
             N)
                 arg_skip_name_check=1
+                ;;
+            s)
+                arg_ticket="$OPTARG"
+                ;;
+            S)
+                arg_no_ticket=1
                 ;;
             h|?)
                 show_help
@@ -292,6 +303,21 @@ main() {
         echo "Error: must enter initials."
     done
 
+    # Ticket Number
+    local ticket
+    # Skip section if -S is passed
+    # TODO or NEW_BRANCH_CREATE_COMMIT_TEMPLATE=0
+    if [[ $arg_no_ticket < 1 ]]; then
+        # Use -s arg if specified
+        if [[ -n "$arg_ticket" ]]; then
+            ticket="$arg_ticket"
+        # Otherwise prompt user
+        else
+            read -p "(Optional) Ticket number: " ticket
+            # NOTE: commit-template will handle formatting of $ticket
+        fi
+    fi
+
     # Blank line after prompts
     echo ""
 
@@ -310,8 +336,16 @@ main() {
             bad_branch_name_check "$branch_name" "$GIT_BAD_BRANCH_NAMES"
         fi
     fi
+
     # Create branch
     create_branch "$branch_name" "${arg_base_branch:-$BASE_BRANCH}" "$arg_no_pull"
+
+    # If specified, call commit-template.sh
+    # TODO also check global var?
+    if [[ -n "$ticket" ]]; then
+        local script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+        "$script_dir/commit-template.sh" "$ticket"
+    fi
 }
 
 # Run main, pass any command line options to it for parsing
