@@ -1,5 +1,9 @@
 # Git Workflow Scripts
 
+## Overview
+
+**TODO: walk thru workflow**
+
 ## Setup
 
 Clone this repo and update your `.bashrc` to include it in your `PATH`. E.g. if
@@ -60,12 +64,13 @@ See below for details on [optional arguments](#optional-arguments).
 ### Optional Arguments
 
 This script accepts optional arguments to skip input prompts and override
-defaults and environment variables. Running `new-branch.sh -h` will display
-details on these arguments:
+defaults and [environment variables](#environment-variables). Running
+`new-branch.sh -h` will display details on these arguments:
 
 ```
 Usage: new-branch.sh [-c <client>|-C] [-d <description>] [-i <initials>]
-                     [-b <base-branch>] [-t <yyyymmdd>] [-P] [-N] [-h]
+                     [-b <base-branch>] [-t <yyyymmdd>] [-s <ticket#>|-S]
+                     [-P] [-N] [-h]
 Options:
   -c <client>       Specify client name.
   -C                No client name (overrides -c).
@@ -73,6 +78,8 @@ Options:
   -i <initials>     Specify developer initials.
   -b <base-branch>  Specify branch to use as base (default: master).
   -t <yyyymmdd>     Specify timestamp (default: current date).
+  -s <ticket#>      Specify ticket number (will create commit template).
+  -S                No commit message template (overrides -s).
   -P                Skip pulling changes to base branch.
   -N                Skip check for bad branch names.
   -h                Show this help message and exit.
@@ -104,6 +111,13 @@ Script will use the following environment variables if set:
     ```bash
     export GIT_BAD_BRANCH_NAMES="-web -plugins"
     ```
+
+- `NEW_BRANCH_COMMIT_TEMPLATE`: By default, script will prompt for an optional
+  ticket number and create a commit message template with it (see
+  [commit-template.sh](#commit-templatesh)). Set this to `0` to disable the
+  ticket number prompt.
+
+For more information on environment variables, run `new-branch.sh -h`.
 
 
 ## `commit-template.sh`

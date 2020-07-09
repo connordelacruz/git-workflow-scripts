@@ -38,7 +38,10 @@ set -o errexit
 #     include the words "-web" or "-plugins":
 #
 #       export GIT_BAD_BRANCH_NAMES="-web -plugins"
-# TODO UPDATE
+#
+#   - NEW_BRANCH_COMMIT_TEMPLATE: By default, script will prompt for an
+#     optional ticket number and create a commit message template with it (see
+#     commit-template.sh). Set this to 0 to disable the ticket number prompt.
 #
 # ------------------------------------------------------------------------------
 # Optional Arguments
@@ -46,10 +49,10 @@ set -o errexit
 # This script accepts optional arguments to skip input prompts and override
 # defaults and environment variables. Running new-branch.sh -h will display
 # details on these arguments:
-# TODO UPDATE
 #
 # Usage: new-branch.sh [-c <client>|-C] [-d <description>] [-i <initials>]
-#                      [-b <base-branch>] [-t <yyyymmdd>] [-P] [-N] [-h]
+#                      [-b <base-branch>] [-t <yyyymmdd>] [-s <ticket#>|-S]
+#                      [-P] [-N] [-h]
 # Options:
 #   -c <client>       Specify client name.
 #   -C                No client name (overrides -c).
@@ -57,6 +60,8 @@ set -o errexit
 #   -i <initials>     Specify developer initials.
 #   -b <base-branch>  Specify branch to use as base (default: master).
 #   -t <yyyymmdd>     Specify timestamp (default: current date).
+#   -s <ticket#>      Specify ticket number (will create commit template).
+#   -S                No commit message template (overrides -s).
 #   -P                Skip pulling changes to base branch.
 #   -N                Skip check for bad branch names.
 #   -h                Show this help message and exit.
