@@ -156,9 +156,9 @@ create_branch() {
 
 # Display help message for script
 show_help() {
-    # TODO UPDATE FOR -s/-S (if feature not disabled by env)
     echo 'Usage: new-branch.sh [-c <client>|-C] [-d <description>] [-i <initials>]'
-    echo '                     [-b <base-branch>] [-t <yyyymmdd>] [-P] [-N] [-h]'
+    echo '                     [-b <base-branch>] [-t <yyyymmdd>] [-s <ticket#>|-S]'
+    echo '                     [-P] [-N] [-h]'
     echo 'Options:'
     echo '  -c <client>       Specify client name.'
     echo '  -C                No client name (overrides -c).'
@@ -166,6 +166,8 @@ show_help() {
     echo '  -i <initials>     Specify developer initials.'
     echo '  -b <base-branch>  Specify branch to use as base (default: master).'
     echo '  -t <yyyymmdd>     Specify timestamp (default: current date).'
+    echo '  -s <ticket#>      Specify ticket number (will create commit template).'
+    echo '  -S                No commit message template (overrides -s).'
     echo '  -P                Skip pulling changes to base branch.'
     echo '  -N                Skip check for bad branch names.'
     echo '  -h                Show this help message and exit.'
