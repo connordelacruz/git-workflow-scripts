@@ -39,6 +39,10 @@ set -o errexit
 #
 #       export GIT_BAD_BRANCH_NAMES="-web -plugins"
 #
+#   - NEW_BRANCH_COMMIT_TEMPLATE: By default, script will prompt for an
+#     optional ticket number and create a commit message template with it (see
+#     commit-template.sh). Set this to 0 to disable the ticket number prompt.
+#
 # ------------------------------------------------------------------------------
 # Optional Arguments
 # ------------------------------------------------------------------------------
@@ -47,7 +51,8 @@ set -o errexit
 # details on these arguments:
 #
 # Usage: new-branch.sh [-c <client>|-C] [-d <description>] [-i <initials>]
-#                      [-b <base-branch>] [-t <yyyymmdd>] [-P] [-N] [-h]
+#                      [-b <base-branch>] [-t <yyyymmdd>] [-s <ticket#>|-S]
+#                      [-P] [-N] [-h]
 # Options:
 #   -c <client>       Specify client name.
 #   -C                No client name (overrides -c).
@@ -55,6 +60,8 @@ set -o errexit
 #   -i <initials>     Specify developer initials.
 #   -b <base-branch>  Specify branch to use as base (default: master).
 #   -t <yyyymmdd>     Specify timestamp (default: current date).
+#   -s <ticket#>      Specify ticket number (will create commit template).
+#   -S                No commit message template (overrides -s).
 #   -P                Skip pulling changes to base branch.
 #   -N                Skip check for bad branch names.
 #   -h                Show this help message and exit.
@@ -67,6 +74,8 @@ set -o errexit
 readonly DATE_FMT="+%Y%m%d"
 # Default base branch (master if $GIT_BASE_BRANCH not configured)
 readonly BASE_BRANCH="${GIT_BASE_BRANCH:-master}"
+# If NEW_BRANCH_COMMIT_TEMPLATE is unset, default to enabling feature
+readonly COMMIT_TEMPLATE="${NEW_BRANCH_COMMIT_TEMPLATE:-1}"
 
 # Functions --------------------------------------------------------------------
 
@@ -157,7 +166,8 @@ create_branch() {
 # Display help message for script
 show_help() {
     echo 'Usage: new-branch.sh [-c <client>|-C] [-d <description>] [-i <initials>]'
-    echo '                     [-b <base-branch>] [-t <yyyymmdd>] [-P] [-N] [-h]'
+    echo '                     [-b <base-branch>] [-t <yyyymmdd>] [-s <ticket#>|-S]'
+    echo '                     [-P] [-N] [-h]'
     echo 'Options:'
     echo '  -c <client>       Specify client name.'
     echo '  -C                No client name (overrides -c).'
@@ -165,20 +175,24 @@ show_help() {
     echo '  -i <initials>     Specify developer initials.'
     echo '  -b <base-branch>  Specify branch to use as base (default: master).'
     echo '  -t <yyyymmdd>     Specify timestamp (default: current date).'
+    echo '  -s <ticket#>      Specify ticket number (will create commit template).'
+    echo '  -S                No commit message template (overrides -s).'
     echo '  -P                Skip pulling changes to base branch.'
     echo '  -N                Skip check for bad branch names.'
     echo '  -h                Show this help message and exit.'
     echo ''
     echo 'Environment Variables:'
-    echo '  INITIALS              If set, skip prompt for developer initials'
-    echo '                        and use the value of this. Override with -i.'
-    echo '  GIT_BASE_BRANCH       If set, use this branch as a base instead of'
-    echo '                        master. Override with -b.'
-    echo '  GIT_BAD_BRANCH_NAMES  Set to a space-separated string of patterns that'
-    echo '                        should not appear in a branch name. Script will'
-    echo '                        check for these before creating a new branch.'
-    echo '                        Skip bad name check with -N.'
-    # TODO show environment vars and what they're set to; explain format of each
+    echo '  INITIALS                    If set, skip prompt for developer initials'
+    echo '                              and use the value of this. Override with -i.'
+    echo '  GIT_BASE_BRANCH             If set, use this branch as a base instead of'
+    echo '                              master. Override with -b.'
+    echo '  GIT_BAD_BRANCH_NAMES        Set to a space-separated string of patterns that'
+    echo '                              should not appear in a branch name. Script will'
+    echo '                              check for these before creating a new branch.'
+    echo '                              Skip bad name check with -N.'
+    echo '  NEW_BRANCH_COMMIT_TEMPLATE  If set to 0, script will not prompt for ticket'
+    echo '                              number and not create a commit message template.'
+    echo '                              Override with -s.'
 }
 
 # Prompt -----------------------------------------------------------------------
@@ -190,11 +204,13 @@ show_help() {
 #   INITIALS
 #   GIT_BASE_BRANCH
 #   GIT_BAD_BRANCH_NAMES
+#   NEW_BRANCH_COMMIT_TEMPLATE
 # Arguments:
 #   Takes all optional arguments for script. For details on these arguments,
 #   see show_help()
 main() {
     # Check that this is a git repo
+    # TODO move below arg check (so -h works outside of repo)
     verify_git_repo
 
     # Parse arguments:
@@ -205,8 +221,11 @@ main() {
     # -t <yyyymmdd>
     # -P (don't pull base branch)
     # -N (skip bad name check)
-    local arg_client arg_no_client arg_desc arg_init arg_base_branch arg_timestamp arg_no_pull arg_skip_name_check
-    while getopts 'c:d:i:b:t:PCNh' opt; do
+    # -s <ticket#> OR -S (no commit template)
+    local arg_client arg_no_client arg_desc arg_timestamp arg_init \
+          arg_base_branch arg_no_pull arg_skip_name_check \
+          arg_ticket arg_no_ticket
+    while getopts 'c:d:i:b:t:PCNs:Sh' opt; do
         case ${opt} in
             c)
                 arg_client="$(fmt_text "$OPTARG")"
@@ -231,6 +250,12 @@ main() {
                 ;;
             N)
                 arg_skip_name_check=1
+                ;;
+            s)
+                arg_ticket="$OPTARG"
+                ;;
+            S)
+                arg_no_ticket=1
                 ;;
             h|?)
                 show_help
@@ -292,6 +317,20 @@ main() {
         echo "Error: must enter initials."
     done
 
+    # Ticket Number
+    local ticket
+    # Skip section if -S is passed
+    if [[ $arg_no_ticket < 1 ]]; then
+        # Use -s arg if specified
+        if [[ -n "$arg_ticket" ]]; then
+            ticket="$arg_ticket"
+        # Otherwise prompt user (unless feature is disabled)
+        elif [[  $COMMIT_TEMPLATE > 0 ]]; then
+            read -p "(Optional) Ticket number: " ticket
+            # NOTE: commit-template will handle formatting of $ticket
+        fi
+    fi
+
     # Blank line after prompts
     echo ""
 
@@ -310,8 +349,15 @@ main() {
             bad_branch_name_check "$branch_name" "$GIT_BAD_BRANCH_NAMES"
         fi
     fi
+
     # Create branch
     create_branch "$branch_name" "${arg_base_branch:-$BASE_BRANCH}" "$arg_no_pull"
+
+    # If specified, call commit-template.sh
+    if [[ -n "$ticket" ]]; then
+        local script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+        "$script_dir/commit-template.sh" "$ticket"
+    fi
 }
 
 # Run main, pass any command line options to it for parsing
