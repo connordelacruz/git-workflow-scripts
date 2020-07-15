@@ -53,6 +53,7 @@ show_help() {
 
 # Checks the local commit.template config for the current repo. If configured,
 # will unset and delete the template file it was set to.
+#
 # Arguments:
 #   Takes all optional arguments for script. For details on these arguments,
 #   see show_help()
