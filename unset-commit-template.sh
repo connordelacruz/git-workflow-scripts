@@ -23,6 +23,7 @@ set -o errexit
 
 # Imports ----------------------------------------------------------------------
 readonly UTIL_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )/util"
+source "$UTIL_DIR/output.sh"
 source "$UTIL_DIR/git.sh"
 
 # Functions --------------------------------------------------------------------
@@ -93,7 +94,7 @@ main() {
     echo "Removing branch config for $project_branch..."
     git config --local --unset includeIf.onbranch:${project_branch}.path
     rm "$repo_root_dir/.git/$branch_config"
-    echo "Branch config removed."
+    success "Branch config removed."
 
     # Get template (if configured)
     [[ -z "$commit_template_file" ]] && echo "No local commit template configured." && exit
@@ -103,11 +104,11 @@ main() {
     # git config --local --unset commit.template
 
     if [[ -n "$arg_no_delete" ]]; then
-        echo "-D was specified, leaving template file $commit_template_file."
+        warning "-D was specified, leaving template file $commit_template_file."
     else
-        echo "Removing template file..."
+        echo "Removing commit template file..."
         rm "$repo_root_dir/$commit_template_file"
-        echo "Template removed."
+        success "Commit template removed."
     fi
 }
 

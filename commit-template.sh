@@ -63,6 +63,7 @@ set -o errexit
 
 # Imports ----------------------------------------------------------------------
 readonly UTIL_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )/util"
+source "$UTIL_DIR/output.sh"
 source "$UTIL_DIR/git.sh"
 
 # Constants --------------------------------------------------------------------
@@ -136,9 +137,10 @@ main() {
         ticket="$(fmt_ticket_number "$ticket")"
         [[ -n "$ticket" ]] && break
         # Loop if improperly formatted
-        echo "Error: enter a valid ticket number."
+        error "Enter a valid ticket number."
     done
 
+    echo ""
     # Create template
     local current_dir="$(pwd)"
     local repo_root_dir="$(git_repo_root)"
@@ -151,11 +153,10 @@ main() {
     echo "[#$ticket] " > "$commit_template_file"
     # Verify that file was created
     if [[ ! -f "$commit_template_file" ]]; then
-        echo "Error: something went wrong when attempting to create commit template."
+        error "Something went wrong when attempting to create commit template."
         exit 1
     else
-        echo "Template file created:"
-        echo "$(pwd)/$commit_template_file"
+        success "Template file created: $(pwd)/$commit_template_file"
     fi
 
     # Configure commit template
@@ -165,7 +166,7 @@ main() {
     # echo "Configuring commit.template for this repo..."
     echo "Configuring commit.template for branch $project_branch..."
     git_set_branch_template "$commit_template_file" "$project_branch"
-    echo "Template configured."
+    success "Template configured."
 
     # Return to previous directory before exiting
     cd "$current_dir"
