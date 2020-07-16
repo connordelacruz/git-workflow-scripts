@@ -115,15 +115,15 @@ git_current_branch() {
     git symbolic-ref --short HEAD
 }
 
-# TODO implement as fallback?
+# TODO local fallback?
 # Configure commit template for local repo
 #
 # Arguments:
 #   Commit template file name
-git_set_local_template() {
-    local commit_template_file="$1"
-    git config --local commit.template "$commit_template_file"
-}
+# git_set_local_template() {
+#     local commit_template_file="$1"
+#     git config --local commit.template "$commit_template_file"
+# }
 
 # Configure commit template for a specified branch (requires git 2.23+)
 #
@@ -133,9 +133,8 @@ git_set_local_template() {
 git_set_branch_template() {
     local commit_template_file="$1"
     local branch_name="$2"
-    # Remove any slashes for filename
-    # TODO MAKE SURE THIS DOESN'T OVERRIDE BUILTIN FILES??
-    local config_file_name="${branch_name//[\/]/}"
+    # Add 'config_' prefix and remove any slashes for filename
+    local config_file_name="config_${branch_name//[\/]/}"
     # Create this branch's config file and set commit template
     git config -f .git/${config_file_name} commit.template "$commit_template_file"
     # Include the above file for the project branch
@@ -190,9 +189,9 @@ main() {
     fi
 
     # Configure commit template
-    # TODO accept override branch arg
     local project_branch="$(git_current_branch)"
-    # TODO FALLBACK: git_set_local_template "$commit_template_file"
+    # TODO local fallback?
+    #  git_set_local_template "$commit_template_file"
     # echo "Configuring commit.template for this repo..."
     echo "Configuring commit.template for branch $project_branch..."
     git_set_branch_template "$commit_template_file" "$project_branch"

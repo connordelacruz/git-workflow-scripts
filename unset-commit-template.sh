@@ -71,11 +71,11 @@ git_branch_commit_template() {
     git config -f ".git/$branch_config" --get commit.template
 }
 
+# TODO local fallback?
 # Returns the configured value of commit.template for this repo.
-# TODO LOCAL FALLBACK
-git_commit_template() {
-    git config --local --get commit.template
-}
+# git_local_commit_template() {
+#     git config --local --get commit.template
+# }
 
 # Display help message for this script
 show_help() {
@@ -121,15 +121,16 @@ main() {
     [[ -z "$branch_config" ]] && echo "No config file specified for this branch." && exit
     local commit_template_file="$(git_branch_commit_template "$branch_config")"
     local repo_root_dir="$(git_repo_root)"
-    echo "Removing branch config..."
+
+    echo "Removing branch config for $project_branch..."
     git config --local --unset includeIf.onbranch:${project_branch}.path
     rm "$repo_root_dir/.git/$branch_config"
+    echo "Branch config removed."
 
-    # TODO USE AS FALLBACK??
     # Get template (if configured)
-    # local commit_template_file="$(git_commit_template)"
     [[ -z "$commit_template_file" ]] && echo "No local commit template configured." && exit
-
+    # TODO local fallback?
+    # local commit_template_file="$(git_local_commit_template)"
     # echo "Unsetting commit.template..."
     # git config --local --unset commit.template
 
