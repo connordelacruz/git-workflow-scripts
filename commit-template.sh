@@ -4,9 +4,9 @@ set -o errexit
 # commit-template.sh
 # Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
 # ------------------------------------------------------------------------------
-# TODO for current branch:
-# Creates and configures a local git commit template that includes a ticket
-# number in brackets before the commit message. E.g. for ticket number 12345:
+# Creates and configures a git commit template for the current branch that
+# includes a ticket number in brackets before the commit message. E.g. for
+# ticket number 12345:
 #
 #   [#12345] <commit message text goes here>
 #

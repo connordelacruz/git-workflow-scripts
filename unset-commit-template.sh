@@ -6,8 +6,8 @@ set -o errexit
 # ------------------------------------------------------------------------------
 # For use with commit-template.sh
 #
-# Unset local git config for commit.template if configured. Template file will
-# be deleted unless -D argument was specified.
+# Unset current branch's git config for commit.template. Template file will be
+# deleted unless -D argument was specified.
 #
 # ------------------------------------------------------------------------------
 # Usage

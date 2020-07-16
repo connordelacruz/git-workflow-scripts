@@ -6,12 +6,31 @@
 
 ## Setup
 
+### Prerequisites
+
+These scripts use features that require **git 2.23 or greater**. To install an
+updated version of `git` on macOS using [Homebrew](https://brew.sh/):
+
+```
+brew install git
+```
+
+Make sure `/usr/local/bin` is added to your `PATH` e.g.:
+
+```
+export PATH="/usr/local/bin:$PATH"
+```
+
+
+### Installation
+
 Clone this repo and update your `.bashrc` to include it in your `PATH`. E.g. if
 you cloned it into `~/bin/git-workflow-scripts`:
 
 ```bash
 export PATH="$HOME/bin/git-workflow-scripts:$PATH"
 ```
+
 
 # Scripts
 
@@ -123,8 +142,9 @@ For more information on environment variables, run `new-branch.sh -h`.
 
 ## `commit-template.sh`
 
-Creates and configures a local git commit template that includes a ticket number
-in brackets before the commit message. E.g. for ticket number `12345`:
+Creates and configures a git commit template for the current branch that
+includes a ticket number in brackets before the commit message. E.g. for ticket
+number `12345`:
 
  ```
  [#12345] <commit message text goes here>
@@ -198,8 +218,8 @@ See the following articles for more information on `core.excludesfile`:
 
 For use with [`commit-template.sh`](#commit-templatesh)
 
-Unset local git config for `commit.template` if configured. Template file will
-be deleted unless `-D` argument was specified.
+Unset current branch's git config for `commit.template`. Template file will be
+deleted unless `-D` argument was specified.
 
 ### Usage
 
