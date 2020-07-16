@@ -4,6 +4,7 @@ set -o errexit
 # commit-template.sh
 # Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
 # ------------------------------------------------------------------------------
+# TODO for current branch:
 # Creates and configures a local git commit template that includes a ticket
 # number in brackets before the commit message. E.g. for ticket number 12345:
 #
@@ -93,6 +94,38 @@ git_repo_root() {
     git rev-parse --show-toplevel
 }
 
+# Returns the name of the current branch
+git_current_branch() {
+    git symbolic-ref --short HEAD
+}
+
+# TODO implement as fallback?
+# Configure commit template for local repo
+#
+# Arguments:
+#   Commit template file name
+git_set_local_template() {
+    local commit_template_file="$1"
+    git config --local commit.template "$commit_template_file"
+}
+
+# Configure commit template for a specified branch (requires git 2.23+)
+#
+# Arguments:
+#   Commit template file name
+#   Name of the branch to configure template for
+git_set_branch_template() {
+    local commit_template_file="$1"
+    local branch_name="$2"
+    # Remove any slashes for filename
+    # TODO MAKE SURE THIS DOESN'T OVERRIDE BUILTIN FILES??
+    local config_file_name="${branch_name//[\/]/}"
+    # Create this branch's config file and set commit template
+    git config -f .git/${config_file_name} commit.template "$commit_template_file"
+    # Include the above file for the project branch
+    git config --local includeIf.onbranch:${branch_name}.path "$config_file_name"
+}
+
 # Prompt -----------------------------------------------------------------------
 
 # Prompts the user for a ticket number, validates and sanitizes input,
@@ -140,8 +173,12 @@ main() {
     fi
 
     # Configure commit template
-    echo "Configuring commit.template for this repo..."
-    git config --local commit.template "$commit_template_file"
+    # TODO accept override branch arg
+    local project_branch="$(git_current_branch)"
+    # TODO FALLBACK: git_set_local_template "$commit_template_file"
+    # echo "Configuring commit.template for this repo..."
+    echo "Configuring commit.template for branch $project_branch..."
+    git_set_branch_template "$commit_template_file" "$project_branch"
     echo "Template configured."
 
     # Return to previous directory before exiting

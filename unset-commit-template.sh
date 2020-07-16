@@ -36,7 +36,27 @@ git_repo_root() {
     git rev-parse --show-toplevel
 }
 
+# Returns the name of the current branch
+git_current_branch() {
+    git symbolic-ref --short HEAD
+}
+
+# Returns the formatted name of
+
+# Returns the of the branch's config file
+git_branch_config_path() {
+    local branch_name="$1"
+    git config --local --get includeif.onbranch:${branch_name}.path
+}
+
+# Returns the filename of the configured commit template
+git_branch_commit_template() {
+    local branch_config="$1"
+    git config -f ".git/$branch_config" --get commit.template
+}
+
 # Returns the configured value of commit.template for this repo.
+# TODO LOCAL FALLBACK
 git_commit_template() {
     git config --local --get commit.template
 }
@@ -78,24 +98,30 @@ main() {
     # Check that this is a git repo before proceeding
     verify_git_repo
 
+    # Get current branch and assiociated config
+    local project_branch="$(git_current_branch)"
+    local branch_config="$(git_branch_config_path "$project_branch")"
+    [[ -z "$branch_config" ]] && echo "No config file specified for this branch." && exit
+    local commit_template_file="$(git_branch_commit_template "$branch_config")"
+    local repo_root_dir="$(git_repo_root)"
+    echo "Removing branch config..."
+    git config --local --unset includeIf.onbranch:${project_branch}.path
+    rm "$repo_root_dir/.git/$branch_config"
+
+    # TODO USE AS FALLBACK??
     # Get template (if configured)
-    local commit_template_file="$(git_commit_template)"
+    # local commit_template_file="$(git_commit_template)"
     [[ -z "$commit_template_file" ]] && echo "No local commit template configured." && exit
 
-    echo "Unsetting commit.template..."
-    git config --local --unset commit.template
+    # echo "Unsetting commit.template..."
+    # git config --local --unset commit.template
 
     if [[ -n "$arg_no_delete" ]]; then
         echo "-D was specified, leaving template file $commit_template_file."
     else
         echo "Removing template file..."
-        local current_dir="$(pwd)"
-        local repo_root_dir="$(git_repo_root)"
-        cd "$repo_root_dir"
-        rm -f "$commit_template_file"
+        rm "$repo_root_dir/$commit_template_file"
         echo "Template removed."
-        # Return to previous directory before exiting
-        cd "$current_dir"
     fi
 }
 
