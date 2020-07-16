@@ -89,6 +89,22 @@ verify_git_repo() {
     git status 1> /dev/null
 }
 
+# Check for git 2.23+ (required for per-branch configs)
+verify_git_version() {
+    local expr="git version ([0-9]+)\.([0-9]*)\.[0-9]*.*"
+    local version="$(git --version)"
+    if [[ $version =~ $expr ]]; then
+        local major="${BASH_REMATCH[1]}"
+        local minor="${BASH_REMATCH[2]}"
+        if (( $major < 2 )) || (( $minor < 23 )); then
+            echo "Requires git version 2.23 or greater (installed: $version)"
+            exit 1
+        fi
+    # else
+    #     # TODO something went wrong?
+    fi
+}
+
 # Returns the path to the root of this git repo
 git_repo_root() {
     git rev-parse --show-toplevel
@@ -135,7 +151,8 @@ git_set_branch_template() {
 # Arguments:
 #   (Optional) Ticket number, will be prompted if not provided or invalid
 main() {
-    # Check that this is a git repo
+    # Check git version > 2.23 and that we're in a repo currently
+    verify_git_version
     verify_git_repo
 
     local ticket
