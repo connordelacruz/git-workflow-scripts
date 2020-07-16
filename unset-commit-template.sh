@@ -21,43 +21,11 @@ set -o errexit
 #
 # ==============================================================================
 
+# Imports ----------------------------------------------------------------------
+readonly UTIL_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )/util"
+source "$UTIL_DIR/git.sh"
+
 # Functions --------------------------------------------------------------------
-
-# Verify that this is a git repo.
-#
-# Calls git status silently. Any error will be printed to STDERR and the script
-# will exit.
-verify_git_repo() {
-    git status 1> /dev/null
-}
-
-# Check for git 2.23+ (required for per-branch configs)
-verify_git_version() {
-    local expr="git version ([0-9]+)\.([0-9]*)\.[0-9]*.*"
-    local version="$(git --version)"
-    if [[ $version =~ $expr ]]; then
-        local major="${BASH_REMATCH[1]}"
-        local minor="${BASH_REMATCH[2]}"
-        if (( $major < 2 )) || (( $minor < 23 )); then
-            echo "Requires git version 2.23 or greater (installed: $version)"
-            exit 1
-        fi
-    # else
-    #     # TODO something went wrong?
-    fi
-}
-
-# Returns the path to the root of this git repo.
-git_repo_root() {
-    git rev-parse --show-toplevel
-}
-
-# Returns the name of the current branch
-git_current_branch() {
-    git symbolic-ref --short HEAD
-}
-
-# Returns the formatted name of
 
 # Returns the of the branch's config file
 git_branch_config_path() {

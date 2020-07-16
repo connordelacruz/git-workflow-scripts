@@ -68,6 +68,11 @@ set -o errexit
 #
 # ==============================================================================
 
+# Imports ----------------------------------------------------------------------
+readonly SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+readonly UTIL_DIR="$SCRIPT_DIR/util"
+source "$UTIL_DIR/git.sh"
+
 # Constants --------------------------------------------------------------------
 
 # Format for the date string (yyyymmdd)
@@ -96,14 +101,6 @@ fmt_text() {
     # replace spaces and underscores with hyphens
     formatted="${formatted//[ _]/-}"
     echo "$formatted"
-}
-
-# Verify that this is a git repo.
-#
-# Calls git status silently. Any error will be printed to STDERR and the script
-# will exit.
-verify_git_repo() {
-    git status 1> /dev/null
 }
 
 # Takes branch name and a space-separated list of invalid patterns for branch.
@@ -354,8 +351,7 @@ main() {
 
     # If specified, call commit-template.sh
     if [[ -n "$ticket" ]]; then
-        local script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-        "$script_dir/commit-template.sh" "$ticket"
+        "$SCRIPT_DIR/commit-template.sh" "$ticket"
     fi
 }
 

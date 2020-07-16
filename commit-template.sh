@@ -61,6 +61,10 @@ set -o errexit
 # https://git-scm.com/book/en/v2/Customizing-Git-Git-Configuration#_core_excludesfile
 # ==============================================================================
 
+# Imports ----------------------------------------------------------------------
+readonly UTIL_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )/util"
+source "$UTIL_DIR/git.sh"
+
 # Constants --------------------------------------------------------------------
 
 # Name of local commit.template file
@@ -81,50 +85,6 @@ fmt_ticket_number() {
     echo "$formatted"
 }
 
-# Verify that this is a git repo.
-#
-# Calls git status silently. Any error will be printed to STDERR and the script
-# will exit.
-verify_git_repo() {
-    git status 1> /dev/null
-}
-
-# Check for git 2.23+ (required for per-branch configs)
-verify_git_version() {
-    local expr="git version ([0-9]+)\.([0-9]*)\.[0-9]*.*"
-    local version="$(git --version)"
-    if [[ $version =~ $expr ]]; then
-        local major="${BASH_REMATCH[1]}"
-        local minor="${BASH_REMATCH[2]}"
-        if (( $major < 2 )) || (( $minor < 23 )); then
-            echo "Requires git version 2.23 or greater (installed: $version)"
-            exit 1
-        fi
-    # else
-    #     # TODO something went wrong?
-    fi
-}
-
-# Returns the path to the root of this git repo
-git_repo_root() {
-    git rev-parse --show-toplevel
-}
-
-# Returns the name of the current branch
-git_current_branch() {
-    git symbolic-ref --short HEAD
-}
-
-# TODO local fallback?
-# Configure commit template for local repo
-#
-# Arguments:
-#   Commit template file name
-# git_set_local_template() {
-#     local commit_template_file="$1"
-#     git config --local commit.template "$commit_template_file"
-# }
-
 # Configure commit template for a specified branch (requires git 2.23+)
 #
 # Arguments:
@@ -140,6 +100,16 @@ git_set_branch_template() {
     # Include the above file for the project branch
     git config --local includeIf.onbranch:${branch_name}.path "$config_file_name"
 }
+
+# TODO local fallback?
+# Configure commit template for local repo
+#
+# Arguments:
+#   Commit template file name
+# git_set_local_template() {
+#     local commit_template_file="$1"
+#     git config --local commit.template "$commit_template_file"
+# }
 
 # Prompt -----------------------------------------------------------------------
 
