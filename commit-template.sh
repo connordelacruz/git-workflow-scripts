@@ -122,7 +122,8 @@ git_set_branch_template() {
 #   (Optional) Ticket number, will be prompted if not provided or invalid
 main() {
     # Check git version > 2.23 and that we're in a repo currently
-    verify_git_version
+    local version_check="$(verify_git_version)"
+    [[ -n "$version_check" ]] && error "$version_check" && exit 1
     verify_git_repo
 
     local ticket
