@@ -40,12 +40,6 @@ git_branch_commit_template() {
     git config -f ".git/$branch_config" --get commit.template
 }
 
-# TODO local fallback?
-# Returns the configured value of commit.template for this repo.
-# git_local_commit_template() {
-#     git config --local --get commit.template
-# }
-
 # Display help message for this script
 show_help() {
     echo "Usage: unset-commit-template.sh [-D] [-h]"
@@ -103,10 +97,6 @@ main() {
 
     # Get template (if configured)
     [[ -z "$commit_template_file" ]] && echo "No local commit template configured." && exit
-    # TODO local fallback?
-    # local commit_template_file="$(git_local_commit_template)"
-    # echo "Unsetting commit.template..."
-    # git config --local --unset commit.template
 
     if [[ -n "$arg_no_delete" ]]; then
         warning "-D was specified, leaving template file $commit_template_file."

@@ -351,7 +351,6 @@ main() {
 
     # Create branch
     create_branch "$branch_name" "${arg_base_branch:-$BASE_BRANCH}" "$arg_no_pull"
-    # TODO verify current branch name matches desired
     success "Branch created."
 
     # If specified, call commit-template.sh
