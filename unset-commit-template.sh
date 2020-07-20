@@ -23,6 +23,7 @@ set -o errexit
 
 # Imports ----------------------------------------------------------------------
 readonly UTIL_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )/util"
+source "$UTIL_DIR/output.sh"
 source "$UTIL_DIR/git.sh"
 
 # Functions --------------------------------------------------------------------
@@ -80,7 +81,8 @@ main() {
     shift $((OPTIND -1))
 
     # Check git version > 2.23 and that we're in a repo currently
-    verify_git_version
+    local version_check="$(verify_git_version)"
+    [[ -n "$version_check" ]] && error "$version_check" && exit 1
     verify_git_repo
 
     # Get current branch and assiociated config
@@ -90,10 +92,14 @@ main() {
     local commit_template_file="$(git_branch_commit_template "$branch_config")"
     local repo_root_dir="$(git_repo_root)"
 
-    echo "Removing branch config for $project_branch..."
+    echo "Unsetting local repo config..."
     git config --local --unset includeIf.onbranch:${project_branch}.path
+    success "Local repo updated." \
+        "Will no longer include configs from .git/$branch_config" \
+        "when on branch $project_branch."
+    echo "Deleting branch config file .git/$branch_config..."
     rm "$repo_root_dir/.git/$branch_config"
-    echo "Branch config removed."
+    success "Branch config file removed."
 
     # Get template (if configured)
     [[ -z "$commit_template_file" ]] && echo "No local commit template configured." && exit
@@ -103,11 +109,11 @@ main() {
     # git config --local --unset commit.template
 
     if [[ -n "$arg_no_delete" ]]; then
-        echo "-D was specified, leaving template file $commit_template_file."
+        warning "-D was specified, leaving template file $commit_template_file."
     else
-        echo "Removing template file..."
+        echo "Removing commit template file $commit_template_file..."
         rm "$repo_root_dir/$commit_template_file"
-        echo "Template removed."
+        success "Commit template removed."
     fi
 }
 

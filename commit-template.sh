@@ -63,6 +63,7 @@ set -o errexit
 
 # Imports ----------------------------------------------------------------------
 readonly UTIL_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )/util"
+source "$UTIL_DIR/output.sh"
 source "$UTIL_DIR/git.sh"
 
 # Constants --------------------------------------------------------------------
@@ -96,9 +97,15 @@ git_set_branch_template() {
     # Add 'config_' prefix and remove any slashes for filename
     local config_file_name="config_${branch_name//[\/]/}"
     # Create this branch's config file and set commit template
+    echo "Creating git config for branch $branch_name..."
     git config -f .git/${config_file_name} commit.template "$commit_template_file"
-    # Include the above file for the project branch
+    success "Config created:" \
+        "$(pwd)/.git/$config_file_name"
+    echo "Configuring local repo..."
     git config --local includeIf.onbranch:${branch_name}.path "$config_file_name"
+    success  "Local repo configured." \
+        "Will include configs from .git/$config_file_name" \
+        "when on branch $branch_name."
 }
 
 # TODO local fallback?
@@ -121,7 +128,8 @@ git_set_branch_template() {
 #   (Optional) Ticket number, will be prompted if not provided or invalid
 main() {
     # Check git version > 2.23 and that we're in a repo currently
-    verify_git_version
+    local version_check="$(verify_git_version)"
+    [[ -n "$version_check" ]] && error "$version_check" && exit 1
     verify_git_repo
 
     local ticket
@@ -131,13 +139,15 @@ main() {
     fi
     # If $ticket is empty, prompt for ticket number
     while [[ -z "$ticket" ]]; do
-        read -p "Ticket number: " ticket
+        echo "Enter ticket number to use in commit messages."
+        read -p "$(prompt "Ticket Number")" ticket
         # Sanitize and verify not empty
         ticket="$(fmt_ticket_number "$ticket")"
         [[ -n "$ticket" ]] && break
         # Loop if improperly formatted
-        echo "Error: enter a valid ticket number."
+        error "Enter a valid ticket number."
     done
+    echo ""
 
     # Create template
     local current_dir="$(pwd)"
@@ -151,11 +161,11 @@ main() {
     echo "[#$ticket] " > "$commit_template_file"
     # Verify that file was created
     if [[ ! -f "$commit_template_file" ]]; then
-        echo "Error: something went wrong when attempting to create commit template."
+        error "Something went wrong when attempting to create commit template."
         exit 1
     else
-        echo "Template file created:"
-        echo "$(pwd)/$commit_template_file"
+        success "Template file created:" \
+            "$(pwd)/$commit_template_file"
     fi
 
     # Configure commit template
@@ -163,9 +173,7 @@ main() {
     # TODO local fallback?
     #  git_set_local_template "$commit_template_file"
     # echo "Configuring commit.template for this repo..."
-    echo "Configuring commit.template for branch $project_branch..."
     git_set_branch_template "$commit_template_file" "$project_branch"
-    echo "Template configured."
 
     # Return to previous directory before exiting
     cd "$current_dir"
