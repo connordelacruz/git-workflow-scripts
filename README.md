@@ -4,6 +4,23 @@
 
 **TODO: walk thru workflow**
 
+### Create a New Branch with Commit Template
+
+![new-branch.sh demo](../assets/0-new-branch.gif?raw=true)
+
+### Commits Will Include Ticket Number
+
+![commit-template.sh demo](../assets/1-commit-template.gif?raw=true)
+
+### Use `unset-commit-template.sh` to Remove Commit Template
+
+![unset-commit-template.sh demo](../assets/2-unset-template.gif?raw=true)
+
+### Commit Templates are Configured Separately for Each Branch
+
+![multiple branch demo](../assets/3-multi-branch.gif?raw=true)
+
+
 ## Setup
 
 ### Prerequisites
