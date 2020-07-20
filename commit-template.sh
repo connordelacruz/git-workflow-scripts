@@ -108,16 +108,6 @@ git_set_branch_template() {
         "when on branch $branch_name."
 }
 
-# TODO local fallback?
-# Configure commit template for local repo
-#
-# Arguments:
-#   Commit template file name
-# git_set_local_template() {
-#     local commit_template_file="$1"
-#     git config --local commit.template "$commit_template_file"
-# }
-
 # Prompt -----------------------------------------------------------------------
 
 # Prompts the user for a ticket number, validates and sanitizes input,
@@ -170,9 +160,6 @@ main() {
 
     # Configure commit template
     local project_branch="$(git_current_branch)"
-    # TODO local fallback?
-    #  git_set_local_template "$commit_template_file"
-    # echo "Configuring commit.template for this repo..."
     git_set_branch_template "$commit_template_file" "$project_branch"
 
     # Return to previous directory before exiting
