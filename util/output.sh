@@ -9,16 +9,18 @@
 readonly FG_RED="$(tput setaf 1)"
 readonly FG_GREEN="$(tput setaf 2)"
 readonly FG_YELLOW="$(tput setaf 3)"
+readonly FG_MAGENTA="$(tput setaf 5)"
+readonly FG_CYAN="$(tput setaf 6)"
 # Formatting
 readonly TXT_BOLD="$(tput bold)"
 readonly TXT_RESET="$(tput sgr0)"
 # Misc
-readonly INDENT="  "
+readonly INDENT="    "
 
-# Functions --------------------------------------------------------------------
+# Print Functions --------------------------------------------------------------
 
 error() {
-    echo "${FG_RED}Error: ${1}${TXT_RESET}"
+    echo "${TXT_BOLD}${FG_RED}Error: ${1}${TXT_RESET}"
     if [[ $# > 1 ]]; then
         shift
         for line in "$@"; do
@@ -47,5 +49,11 @@ success() {
     fi
 }
 
-# TODO info() ?
+info() {
+    echo "${FG_CYAN}Info: ${1}${TXT_RESET}"
+}
+
+prompt() {
+    echo "${FG_MAGENTA}> ${1}: ${TXT_RESET}"
+}
 

@@ -92,10 +92,14 @@ main() {
     local commit_template_file="$(git_branch_commit_template "$branch_config")"
     local repo_root_dir="$(git_repo_root)"
 
-    echo "Removing branch config for $project_branch..."
+    echo "Unsetting local repo config..."
     git config --local --unset includeIf.onbranch:${project_branch}.path
+    success "Local repo updated." \
+        "Will no longer include configs from .git/$branch_config" \
+        "when on branch $project_branch."
+    echo "Deleting branch config file .git/$branch_config..."
     rm "$repo_root_dir/.git/$branch_config"
-    success "Branch config removed."
+    success "Branch config file removed."
 
     # Get template (if configured)
     [[ -z "$commit_template_file" ]] && echo "No local commit template configured." && exit
@@ -107,7 +111,7 @@ main() {
     if [[ -n "$arg_no_delete" ]]; then
         warning "-D was specified, leaving template file $commit_template_file."
     else
-        echo "Removing commit template file..."
+        echo "Removing commit template file $commit_template_file..."
         rm "$repo_root_dir/$commit_template_file"
         success "Commit template removed."
     fi

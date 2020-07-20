@@ -152,7 +152,7 @@ create_branch() {
     local no_pull="$3"
     git checkout "$base_branch"
     if [[ $no_pull > 0 ]]; then
-        echo "(Skipped pulling updates to $base_branch)"
+        info "-P argument was specified, not pulling updates to $base_branch."
     else
         echo "Pulling updates to $base_branch..."
         git pull
@@ -263,7 +263,6 @@ main() {
     # Check that this is a git repo before proceeding
     verify_git_repo
 
-    # Client
     local client
     # Skip section if -C is passed
     if [[ $arg_no_client < 1 ]]; then
@@ -272,29 +271,31 @@ main() {
             client="$arg_client"
         # Otherwise prompt user
         else
-            read -p "(Optional) Client name: " client
+            echo "(Optional) Enter the name of the affected client."
+            read -p "$(prompt "Client")" client
             client="$(fmt_text "$client")"
         fi
     fi
     # Append hyphen if not blank
     [[ -n "$client" ]] && client="$client-"
+    echo ""
 
-    # Description
     local desc
     # Use -d if specified and not blank after formatting
     if [[ -n "$arg_desc" ]]; then
         desc="$arg_desc"
     fi
     while [[ -z "$desc" ]]; do
-        read -p "Brief description of branch: " desc
+        echo "Enter a brief description for the branch."
+        read -p "$(prompt "Description")" desc
         # Sanitize and verify not empty
         desc="$(fmt_text "$desc")"
         [[ -n "$desc" ]] && break
         # Loop if improperly formatted
         error "Description must not be blank."
     done
+    echo ""
 
-    # Initials
     local initials
     # Use -i arg if specified and not blank after formatting
     if [[ -n "$arg_init" ]]; then
@@ -302,19 +303,20 @@ main() {
     # Else use environment variable INITIALS if set
     elif [[ -n "$INITIALS" ]]; then
         initials="$(fmt_text "$INITIALS")"
-        [[ -n "$initials" ]] && echo "Initials configured in \$INITIALS: $initials"
+        [[ -n "$initials" ]] && info "Initials configured in \$INITIALS: $initials"
     fi
     # If initials is empty by now, we need to prompt user for them
     while [[ -z "$initials" ]]; do
-        read -p "Initials: " initials
+        echo "Enter your initials."
+        read -p "$(prompt "Initials")" initials
         # Sanitize and verify not empty
         initials="$(fmt_text "$initials")"
         [[ -n "$initials" ]] && break
         # Loop if improperly formatted
         error "Must enter initials."
     done
+    echo ""
 
-    # Ticket Number
     local ticket
     # Skip section if -S is passed
     if [[ $arg_no_ticket < 1 ]]; then
@@ -323,12 +325,11 @@ main() {
             ticket="$arg_ticket"
         # Otherwise prompt user (unless feature is disabled)
         elif [[  $COMMIT_TEMPLATE > 0 ]]; then
-            read -p "(Optional) Ticket number: " ticket
-            # NOTE: commit-template will handle formatting of $ticket
+            echo "(Optional) Enter ticket number to use in commit messages."
+            echo "Leave blank if you don't want to create a commit template."
+            read -p "$(prompt "Ticket Number")" ticket
         fi
     fi
-
-    # Blank line after prompts
     echo ""
 
     # Timestamp
@@ -344,11 +345,14 @@ main() {
         else
             echo "Validating branch name..."
             bad_branch_name_check "$branch_name" "$GIT_BAD_BRANCH_NAMES"
+            success "Branch name OK."
         fi
     fi
 
     # Create branch
     create_branch "$branch_name" "${arg_base_branch:-$BASE_BRANCH}" "$arg_no_pull"
+    # TODO verify current branch name matches desired
+    success "Branch created."
 
     # If specified, call commit-template.sh
     if [[ -n "$ticket" ]]; then
