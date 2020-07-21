@@ -277,11 +277,11 @@ main() {
             echo "(Optional) Enter the name of the affected client."
             read -p "$(prompt "Client")" client
             client="$(fmt_text "$client")"
+            echo ""
         fi
     fi
     # Append hyphen if not blank
     [[ -n "$client" ]] && client="$client-"
-    echo ""
 
     local desc
     # Use -d if specified and not blank after formatting
@@ -292,11 +292,10 @@ main() {
         echo "Enter a brief description for the branch."
         read -p "$(prompt "Description")" desc
         desc="$(fmt_text "$desc")"
-        [[ -n "$desc" ]] && break
+        [[ -n "$desc" ]] && echo"" && break
         # Loop if improperly formatted
         error "Description must not be blank."
     done
-    echo ""
 
     local initials
     # Use -i arg if specified and not blank after formatting
@@ -305,18 +304,17 @@ main() {
     # Else use environment variable INITIALS if set
     elif [[ -n "$INITIALS" ]]; then
         initials="$(fmt_text "$INITIALS")"
-        [[ -n "$initials" ]] && info "Initials configured in \$INITIALS: $initials"
+        [[ -n "$initials" ]] && info "Initials configured in \$INITIALS: $initials" && echo ""
     fi
     # If initials is empty by now, we need to prompt user for them
     while [[ -z "$initials" ]]; do
         echo "Enter your initials."
         read -p "$(prompt "Initials")" initials
         initials="$(fmt_text "$initials")"
-        [[ -n "$initials" ]] && break
+        [[ -n "$initials" ]] && echo "" && break
         # Loop if improperly formatted
         error "Must enter initials."
     done
-    echo ""
 
     local ticket
     # Skip section if git version check failed or if -S is passed
@@ -329,9 +327,9 @@ main() {
             echo "(Optional) Enter ticket number to use in commit messages."
             echo "Leave blank if you don't want to create a commit template."
             read -p "$(prompt "Ticket Number")" ticket
+            echo ""
         fi
     fi
-    echo ""
 
     local timestamp="${arg_timestamp:-$(date "$DATE_FMT")}"
     local branch_name="$client$desc-$timestamp-$initials"

@@ -131,11 +131,10 @@ main() {
         echo "Enter ticket number to use in commit messages."
         read -p "$(prompt "Ticket Number")" ticket
         ticket="$(fmt_ticket_number "$ticket")"
-        [[ -n "$ticket" ]] && break
+        [[ -n "$ticket" ]] && echo "" && break
         # Loop if improperly formatted
         error "Enter a valid ticket number."
     done
-    echo ""
 
     # Create template
     local current_dir="$(pwd)"
