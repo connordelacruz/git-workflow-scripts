@@ -260,6 +260,11 @@ main() {
 
     # Check that this is a git repo before proceeding
     verify_git_repo
+    # Commit template requires git 2.23+
+    local skip_commit_template
+    if [[ -n "$(verify_git_version)" ]]; then
+        skip_commit_template=1
+    fi
 
     local client
     # Skip section if -C is passed
@@ -314,8 +319,8 @@ main() {
     echo ""
 
     local ticket
-    # Skip section if -S is passed
-    if [[ $arg_no_ticket < 1 ]]; then
+    # Skip section if git version check failed or if -S is passed
+    if [[ $skip_commit_template < 1 ]] && [[ $arg_no_ticket < 1 ]]; then
         # Use -s arg if specified
         if [[ -n "$arg_ticket" ]]; then
             ticket="$arg_ticket"
