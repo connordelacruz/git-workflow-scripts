@@ -75,7 +75,6 @@ source "$UTIL_DIR/output.sh"
 source "$UTIL_DIR/git.sh"
 
 # Constants --------------------------------------------------------------------
-
 # Format for the date string (yyyymmdd)
 readonly DATE_FMT="+%Y%m%d"
 # Default base branch (master if $GIT_BASE_BRANCH not configured)
@@ -120,17 +119,17 @@ bad_branch_name_check() {
         # Simple check for bad patterns in branch name
         if [[ "$branch_name" = *"$pattern"* ]]; then
             error "Branch name contains invalid pattern:" \
-                "Desired Branch Name: $branch_name" \
-                "Contains Invalid Pattern: $pattern" \
-                "" \
-                "Branch names should not include the following patterns:" \
-                "$( IFS=$'\n'; echo "${bad_pattern_list[@]}" )" \
-                "" \
-                "(Configured in environment variable GIT_BAD_BRANCH_NAMES)" \
-                "" \
-                "Use the -N argument to skip this check." \
-                "For more information on arguments and environment variables, run:" \
-                "  new-branch.sh -h"
+                  "Desired Branch Name: $branch_name" \
+                  "Contains Invalid Pattern: $pattern" \
+                  "" \
+                  "Branch names should not include the following patterns:" \
+                  "$( IFS=$'\n'; echo "${bad_pattern_list[@]}" )" \
+                  "" \
+                  "(Configured in environment variable GIT_BAD_BRANCH_NAMES)" \
+                  "" \
+                  "Use the -N argument to skip this check." \
+                  "For more information on arguments and environment variables, run:" \
+                  "  new-branch.sh -h"
             exit 1
         fi
     done
@@ -161,7 +160,6 @@ create_branch() {
     git checkout -b "$branch_name"
 }
 
-# Display help message for script
 show_help() {
     echo 'Usage: new-branch.sh [-c <client>|-C] [-d <description>] [-i <initials>]'
     echo '                     [-b <base-branch>] [-t <yyyymmdd>] [-s <ticket#>|-S]'
@@ -193,7 +191,7 @@ show_help() {
     echo '                              Override with -s.'
 }
 
-# Prompt -----------------------------------------------------------------------
+# Main -------------------------------------------------------------------------
 
 # Prompts the user for info about the branch, validates and formats input, and
 # creates the new branch.
@@ -288,7 +286,6 @@ main() {
     while [[ -z "$desc" ]]; do
         echo "Enter a brief description for the branch."
         read -p "$(prompt "Description")" desc
-        # Sanitize and verify not empty
         desc="$(fmt_text "$desc")"
         [[ -n "$desc" ]] && break
         # Loop if improperly formatted
@@ -309,7 +306,6 @@ main() {
     while [[ -z "$initials" ]]; do
         echo "Enter your initials."
         read -p "$(prompt "Initials")" initials
-        # Sanitize and verify not empty
         initials="$(fmt_text "$initials")"
         [[ -n "$initials" ]] && break
         # Loop if improperly formatted
@@ -332,33 +328,25 @@ main() {
     fi
     echo ""
 
-    # Timestamp
     local timestamp="${arg_timestamp:-$(date "$DATE_FMT")}"
-    # Format branch name
     local branch_name="$client$desc-$timestamp-$initials"
     # Check for bad branch name
     if [[ -n "$GIT_BAD_BRANCH_NAMES" ]]; then
         # Skip if -N arg is provided
         if [[ -n "$arg_skip_name_check" ]]; then
             warning "GIT_BAD_BRANCH_NAMES is set but -N argument was specified." \
-                "Skipping bad branch name check."
+                    "Skipping bad branch name check."
         else
             echo "Validating branch name..."
             bad_branch_name_check "$branch_name" "$GIT_BAD_BRANCH_NAMES"
             success "Branch name OK."
         fi
     fi
-
-    # Create branch
     create_branch "$branch_name" "${arg_base_branch:-$BASE_BRANCH}" "$arg_no_pull"
     success "Branch created."
-
     # If specified, call commit-template.sh
     if [[ -n "$ticket" ]]; then
         "$SCRIPT_DIR/commit-template.sh" "$ticket"
     fi
 }
-
-# Run main, pass any command line options to it for parsing
 main "$@"
-

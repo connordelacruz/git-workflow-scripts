@@ -40,7 +40,6 @@ git_branch_commit_template() {
     git config -f ".git/$branch_config" --get commit.template
 }
 
-# Display help message for this script
 show_help() {
     echo "Usage: unset-commit-template.sh [-D] [-h]"
     echo "Options:"
@@ -85,19 +84,17 @@ main() {
     [[ -z "$branch_config" ]] && echo "No config file specified for this branch." && exit
     local commit_template_file="$(git_branch_commit_template "$branch_config")"
     local repo_root_dir="$(git_repo_root)"
-
+    # Unset branch config
     echo "Unsetting local repo config..."
     git config --local --unset includeIf.onbranch:${project_branch}.path
     success "Local repo updated." \
-        "Will no longer include configs from .git/$branch_config" \
-        "when on branch $project_branch."
+            "Will no longer include configs from .git/$branch_config" \
+            "when on branch $project_branch."
     echo "Deleting branch config file .git/$branch_config..."
     rm "$repo_root_dir/.git/$branch_config"
     success "Branch config file removed."
-
-    # Get template (if configured)
-    [[ -z "$commit_template_file" ]] && echo "No local commit template configured." && exit
-
+    # Delete commit template (unless -D was specified)
+    [[ -z "$commit_template_file" ]] && echo "Template file $commit_template_file not found." && exit
     if [[ -n "$arg_no_delete" ]]; then
         warning "-D was specified, leaving template file $commit_template_file."
     else
@@ -106,6 +103,4 @@ main() {
         success "Commit template removed."
     fi
 }
-
-# Run main, pass any command line options to it for parsing
 main "$@"

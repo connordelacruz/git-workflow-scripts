@@ -67,7 +67,6 @@ source "$UTIL_DIR/output.sh"
 source "$UTIL_DIR/git.sh"
 
 # Constants --------------------------------------------------------------------
-
 # Name of local commit.template file
 readonly LOCAL_COMMIT_TEMPLATE_FILE='.gitmessage_local'
 
@@ -100,15 +99,15 @@ git_set_branch_template() {
     echo "Creating git config for branch $branch_name..."
     git config -f .git/${config_file_name} commit.template "$commit_template_file"
     success "Config created:" \
-        "$(pwd)/.git/$config_file_name"
+            "$(pwd)/.git/$config_file_name"
     echo "Configuring local repo..."
     git config --local includeIf.onbranch:${branch_name}.path "$config_file_name"
-    success  "Local repo configured." \
-        "Will include configs from .git/$config_file_name" \
-        "when on branch $branch_name."
+    success "Local repo configured." \
+            "Will include configs from .git/$config_file_name" \
+            "when on branch $branch_name."
 }
 
-# Prompt -----------------------------------------------------------------------
+# Main -------------------------------------------------------------------------
 
 # Prompts the user for a ticket number, validates and sanitizes input,
 # then creates a commit template with the ticket number and configures
@@ -131,7 +130,6 @@ main() {
     while [[ -z "$ticket" ]]; do
         echo "Enter ticket number to use in commit messages."
         read -p "$(prompt "Ticket Number")" ticket
-        # Sanitize and verify not empty
         ticket="$(fmt_ticket_number "$ticket")"
         [[ -n "$ticket" ]] && break
         # Loop if improperly formatted
@@ -142,30 +140,21 @@ main() {
     # Create template
     local current_dir="$(pwd)"
     local repo_root_dir="$(git_repo_root)"
-    # Append ticket number to filename on the off-chance a file
-    # .gitmessage_local already exists
     local commit_template_file="${LOCAL_COMMIT_TEMPLATE_FILE}_${ticket}"
     echo "Creating commit template file..."
-    # Go to root of current repo
     cd "$repo_root_dir"
     echo "[#$ticket] " > "$commit_template_file"
-    # Verify that file was created
     if [[ ! -f "$commit_template_file" ]]; then
         error "Something went wrong when attempting to create commit template."
         exit 1
     else
         success "Template file created:" \
-            "$(pwd)/$commit_template_file"
+                "$(pwd)/$commit_template_file"
     fi
-
     # Configure commit template
     local project_branch="$(git_current_branch)"
     git_set_branch_template "$commit_template_file" "$project_branch"
-
     # Return to previous directory before exiting
     cd "$current_dir"
 }
-
-# Run main, pass any command line options to it for parsing
 main "$@"
-
