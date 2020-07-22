@@ -3,7 +3,7 @@
 <!-- vim-markdown-toc GFM -->
 
 * [Overview](#overview)
-* [Screencasts](#screencasts)
+* [Demos](#demos)
     * [Create a New Branch with Commit Template](#create-a-new-branch-with-commit-template)
     * [Commits Will Include Ticket Number](#commits-will-include-ticket-number)
     * [Use `unset-commit-template.sh` to Remove Commit Template](#use-unset-commit-templatesh-to-remove-commit-template)
@@ -32,7 +32,7 @@
 
 **TODO: walk thru workflow**
 
-# Screencasts
+# Demos
 
 ## Create a New Branch with Commit Template
 
