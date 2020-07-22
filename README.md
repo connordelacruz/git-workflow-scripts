@@ -1,29 +1,59 @@
 # Git Workflow Scripts
 
-## Overview
+<!-- vim-markdown-toc GFM -->
+
+* [Overview](#overview)
+* [Screencasts](#screencasts)
+    * [Create a New Branch with Commit Template](#create-a-new-branch-with-commit-template)
+    * [Commits Will Include Ticket Number](#commits-will-include-ticket-number)
+    * [Use `unset-commit-template.sh` to Remove Commit Template](#use-unset-commit-templatesh-to-remove-commit-template)
+    * [Commit Templates are Configured Separately for Each Branch](#commit-templates-are-configured-separately-for-each-branch)
+* [Setup](#setup)
+    * [Prerequisites](#prerequisites)
+    * [Installation](#installation)
+* [Scripts](#scripts)
+    * [`new-branch.sh`](#new-branchsh)
+        * [Usage](#usage)
+        * [Optional Arguments](#optional-arguments)
+        * [Environment Variables](#environment-variables)
+    * [`commit-template.sh`](#commit-templatesh)
+        * [Usage](#usage-1)
+            * [Remove and unconfigure local template](#remove-and-unconfigure-local-template)
+        * [Configuration](#configuration)
+            * [Configure git to ignore generated template files](#configure-git-to-ignore-generated-template-files)
+                * [For individal repo:](#for-individal-repo)
+                * [For all repos (RECOMMENDED):](#for-all-repos-recommended)
+    * [`unset-commit-template.sh`](#unset-commit-templatesh)
+        * [Usage](#usage-2)
+
+<!-- vim-markdown-toc -->
+
+# Overview
 
 **TODO: walk thru workflow**
 
-### Create a New Branch with Commit Template
+# Screencasts
+
+## Create a New Branch with Commit Template
 
 ![new-branch.sh demo](../assets/0-new-branch.gif?raw=true)
 
-### Commits Will Include Ticket Number
+## Commits Will Include Ticket Number
 
 ![commit-template.sh demo](../assets/1-commit-template.gif?raw=true)
 
-### Use `unset-commit-template.sh` to Remove Commit Template
+## Use `unset-commit-template.sh` to Remove Commit Template
 
 ![unset-commit-template.sh demo](../assets/2-unset-template.gif?raw=true)
 
-### Commit Templates are Configured Separately for Each Branch
+## Commit Templates are Configured Separately for Each Branch
 
 ![multiple branch demo](../assets/3-multi-branch.gif?raw=true)
 
 
-## Setup
+# Setup
 
-### Prerequisites
+## Prerequisites
 
 These scripts use features that require **git 2.23 or greater**. To install an
 updated version of `git` on macOS using [Homebrew](https://brew.sh/):
@@ -34,12 +64,12 @@ brew install git
 
 Make sure `/usr/local/bin` is added to your `PATH` e.g.:
 
-```
+```bash
 export PATH="/usr/local/bin:$PATH"
 ```
 
 
-### Installation
+## Installation
 
 Clone this repo and update your `.bashrc` to include it in your `PATH`. E.g. if
 you cloned it into `~/bin/git-workflow-scripts`:
@@ -50,24 +80,6 @@ export PATH="$HOME/bin/git-workflow-scripts:$PATH"
 
 
 # Scripts
-
-<!-- vim-markdown-toc GFM -->
-
-* [`new-branch.sh`](#new-branchsh)
-    * [Usage](#usage)
-    * [Optional Arguments](#optional-arguments)
-    * [Environment Variables](#environment-variables)
-* [`commit-template.sh`](#commit-templatesh)
-    * [Usage](#usage-1)
-        * [Remove and unconfigure local template](#remove-and-unconfigure-local-template)
-    * [Configuration](#configuration)
-        * [Configure git to ignore generated template files](#configure-git-to-ignore-generated-template-files)
-            * [For individal repo:](#for-individal-repo)
-            * [For all repos (RECOMMENDED):](#for-all-repos-recommended)
-* [`unset-commit-template.sh`](#unset-commit-templatesh)
-    * [Usage](#usage-2)
-
-<!-- vim-markdown-toc -->
 
 ## `new-branch.sh`
 
