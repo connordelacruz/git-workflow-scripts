@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+set -o errexit
+# ==============================================================================
+# git-workflow.sh
+# Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
+# ------------------------------------------------------------------------------
+# TODO DOC
+# ==============================================================================
+
+# Imports ----------------------------------------------------------------------
+readonly SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+readonly UTIL_DIR="$SCRIPT_DIR/util"
+source "$UTIL_DIR/output.sh"
+source "$UTIL_DIR/git.sh"
+
+# Functions --------------------------------------------------------------------
+
+show_help() {
+    # TODO full help message
+    echo 'Usage: git workflow <subcommand>'
+}
+
+# Main -------------------------------------------------------------------------
+main() {
+    if [[ $# < 1 ]]; then
+        show_help
+        exit 1
+    fi
+
+    local SUBCOMMAND="$1"; shift
+
+    if [[ ! -e "$SCRIPT_DIR/$SUBCOMMAND" ]]; then
+        show_help
+        exit 1
+    fi
+
+    echo "$SCRIPT_DIR/$SUBCOMMAND $@"
+}
+main "$@"

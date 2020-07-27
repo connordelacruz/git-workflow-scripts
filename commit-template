@@ -68,6 +68,7 @@ source "$UTIL_DIR/git.sh"
 
 # Constants --------------------------------------------------------------------
 # Name of local commit.template file
+# TODO DOES THIS NEED TO BE A CONSTANT
 readonly LOCAL_COMMIT_TEMPLATE_FILE='.gitmessage_local'
 
 # Functions --------------------------------------------------------------------

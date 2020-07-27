@@ -76,6 +76,7 @@ source "$UTIL_DIR/git.sh"
 
 # Constants --------------------------------------------------------------------
 # Format for the date string (yyyymmdd)
+# TODO DOES THIS NEED TO BE A CONSTANT
 readonly DATE_FMT="+%Y%m%d"
 # Default base branch (master if $GIT_BASE_BRANCH not configured)
 readonly BASE_BRANCH="${GIT_BASE_BRANCH:-master}"
@@ -349,7 +350,7 @@ main() {
     success "Branch created."
     # If specified, call commit-template.sh
     if [[ -n "$ticket" ]]; then
-        "$SCRIPT_DIR/commit-template.sh" "$ticket"
+        "$SCRIPT_DIR/commit-template" "$ticket"
     fi
 }
 main "$@"
