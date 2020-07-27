@@ -1,5 +1,4 @@
-#!/usr/bin/env bash
-set -o errexit
+# vim: set ft=sh:
 # ==============================================================================
 # commit-template.sh
 # Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
@@ -61,11 +60,6 @@ set -o errexit
 # https://git-scm.com/book/en/v2/Customizing-Git-Git-Configuration#_core_excludesfile
 # ==============================================================================
 
-# Imports ----------------------------------------------------------------------
-readonly UTIL_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )/util"
-source "$UTIL_DIR/output.sh"
-source "$UTIL_DIR/git.sh"
-
 # Constants --------------------------------------------------------------------
 # Name of local commit.template file
 # TODO DOES THIS NEED TO BE A CONSTANT
@@ -116,7 +110,7 @@ git_set_branch_template() {
 #
 # Arguments:
 #   (Optional) Ticket number, will be prompted if not provided or invalid
-main() {
+cmd_commit-template() {
     # Check git version > 2.23 and that we're in a repo currently
     local version_check="$(verify_git_version)"
     [[ -n "$version_check" ]] && error "$version_check" && exit 1
@@ -157,4 +151,3 @@ main() {
     # Return to previous directory before exiting
     cd "$current_dir"
 }
-main "$@"

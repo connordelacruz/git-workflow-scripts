@@ -34,6 +34,8 @@ main() {
         exit 1
     fi
 
-    echo "$SCRIPT_DIR/$SUBCOMMAND $@"
+    # Run command
+    . "$SCRIPT_DIR/$SUBCOMMAND"
+    cmd_$SUBCOMMAND "$@"
 }
 main "$@"
