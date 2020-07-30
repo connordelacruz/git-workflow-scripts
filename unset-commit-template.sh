@@ -28,18 +28,6 @@ source "$UTIL_DIR/git.sh"
 
 # Functions --------------------------------------------------------------------
 
-# Returns the of the branch's config file
-git_branch_config_path() {
-    local branch_name="$1"
-    git config --local --get includeif.onbranch:${branch_name}.path
-}
-
-# Returns the filename of the configured commit template
-git_branch_commit_template() {
-    local branch_config="$1"
-    git config -f ".git/$branch_config" --get commit.template
-}
-
 show_help() {
     echo "Usage: unset-commit-template.sh [-D] [-h]"
     echo "Options:"
@@ -80,10 +68,13 @@ main() {
 
     # Get current branch and assiociated config
     local project_branch="$(git_current_branch)"
-    local branch_config="$(git_branch_config_path "$project_branch")"
+    local branch_config="$(git config --local --get includeif.onbranch:${project_branch}.path)"
     [[ -z "$branch_config" ]] && echo "No config file specified for this branch." && exit
-    local commit_template_file="$(git_branch_commit_template "$branch_config")"
     local repo_root_dir="$(git_repo_root)"
+    local branch_config_path="$repo_root_dir/.git/$branch_config"
+    local commit_template_file="$(git config -f "$branch_config_path" --get commit.template)"
+    local commit_template_path="$repo_root_dir/$commit_template_file"
+
     # Unset branch config
     echo "Unsetting local repo config..."
     git config --local --unset includeIf.onbranch:${project_branch}.path
@@ -91,16 +82,20 @@ main() {
             "Will no longer include configs from .git/$branch_config" \
             "when on branch $project_branch."
     echo "Deleting branch config file .git/$branch_config..."
-    rm "$repo_root_dir/.git/$branch_config"
+    rm "$branch_config_path"
     success "Branch config file removed."
+
     # Delete commit template (unless -D was specified)
-    [[ -z "$commit_template_file" ]] && echo "Template file $commit_template_file not found." && exit
+    if [[ -z "$commit_template_file" ]]; then
+        echo "Template file $commit_template_file not found."
+        exit
+    fi
     if [[ -n "$arg_no_delete" ]]; then
         warning "-D was specified, leaving template file $commit_template_file."
     else
         echo "Removing commit template file $commit_template_file..."
-        rm "$repo_root_dir/$commit_template_file"
-        success "Commit template removed."
+        rm "$commit_template_path"
+        success "Removed $commit_template_path"
     fi
 }
 main "$@"
