@@ -90,16 +90,19 @@ fmt_ticket_number() {
 # Arguments:
 #   Commit template file name
 #   Name of the branch to configure template for
+#   Repo root directory
 git_set_branch_template() {
     local commit_template_file="$1"
     local branch_name="$2"
+    local repo_root_dir="$3"
     # Add 'config_' prefix and remove any slashes for filename
     local config_file_name="config_${branch_name//[\/]/}"
+    local config_file_path="$repo_root_dir/.git/$config_file_name"
     # Create this branch's config file and set commit template
     echo "Creating git config for branch $branch_name..."
-    git config -f .git/${config_file_name} commit.template "$commit_template_file"
+    git config -f "$config_file_path" commit.template "$commit_template_file"
     success "Config created:" \
-            "$(pwd)/.git/$config_file_name"
+            "$config_file_path"
     echo "Configuring local repo..."
     git config --local includeIf.onbranch:${branch_name}.path "$config_file_name"
     success "Local repo configured." \
@@ -136,24 +139,23 @@ main() {
         error "Enter a valid ticket number."
     done
 
-    # Create template
-    local current_dir="$(pwd)"
     local repo_root_dir="$(git_repo_root)"
     local commit_template_file="${LOCAL_COMMIT_TEMPLATE_FILE}_${ticket}"
+    local commit_template_path="$repo_root_dir/$commit_template_file"
+    local project_branch="$(git_current_branch)"
+
+    # Create template
     echo "Creating commit template file..."
-    cd "$repo_root_dir"
-    echo "[#$ticket] " > "$commit_template_file"
-    if [[ ! -f "$commit_template_file" ]]; then
+    echo "[#$ticket] " > "$commit_template_path"
+    if [[ ! -f "$commit_template_path" ]]; then
         error "Something went wrong when attempting to create commit template."
         exit 1
     else
         success "Template file created:" \
-                "$(pwd)/$commit_template_file"
+                "$commit_template_path"
     fi
+
     # Configure commit template
-    local project_branch="$(git_current_branch)"
-    git_set_branch_template "$commit_template_file" "$project_branch"
-    # Return to previous directory before exiting
-    cd "$current_dir"
+    git_set_branch_template "$commit_template_file" "$project_branch" "$repo_root_dir"
 }
 main "$@"
