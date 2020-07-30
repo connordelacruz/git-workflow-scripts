@@ -67,8 +67,8 @@ main() {
     verify_git_repo
 
     # Get current branch and assiociated config
-    local project_branch="$(git_current_branch)"
-    local branch_config="$(git config --local --get includeif.onbranch:${project_branch}.path)"
+    local branch_name="$(git_current_branch)"
+    local branch_config="$(git config --local --get includeif.onbranch:${branch_name}.path)"
     [[ -z "$branch_config" ]] && echo "No config file specified for this branch." && exit
     local repo_root_dir="$(git_repo_root)"
     local branch_config_path="$repo_root_dir/.git/$branch_config"
@@ -77,17 +77,17 @@ main() {
 
     # Unset branch config
     echo "Unsetting local repo config..."
-    git config --local --unset includeIf.onbranch:${project_branch}.path
+    git config --local --unset includeIf.onbranch:${branch_name}.path
     success "Local repo updated." \
             "Will no longer include configs from .git/$branch_config" \
-            "when on branch $project_branch."
+            "when on branch $branch_name."
     echo "Deleting branch config file .git/$branch_config..."
     rm "$branch_config_path"
     success "Branch config file removed."
 
     # Delete commit template (unless -D was specified)
     if [[ -z "$commit_template_file" ]]; then
-        echo "Template file $commit_template_file not found."
+        warning "Template file $commit_template_file not found."
         exit
     fi
     if [[ -n "$arg_no_delete" ]]; then

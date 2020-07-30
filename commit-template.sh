@@ -66,10 +66,6 @@ readonly UTIL_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && p
 source "$UTIL_DIR/output.sh"
 source "$UTIL_DIR/git.sh"
 
-# Constants --------------------------------------------------------------------
-# Name of local commit.template file
-readonly LOCAL_COMMIT_TEMPLATE_FILE='.gitmessage_local'
-
 # Functions --------------------------------------------------------------------
 
 # Sanitize and format input for ticket number.
@@ -83,31 +79,6 @@ fmt_ticket_number() {
     # Remove all non-numeric characters
     local formatted="${1//[^0-9]}"
     echo "$formatted"
-}
-
-# Configure commit template for a specified branch (requires git 2.23+)
-#
-# Arguments:
-#   Commit template file name
-#   Name of the branch to configure template for
-#   Repo root directory
-git_set_branch_template() {
-    local commit_template_file="$1"
-    local branch_name="$2"
-    local repo_root_dir="$3"
-    # Add 'config_' prefix and remove any slashes for filename
-    local config_file_name="config_${branch_name//[\/]/}"
-    local config_file_path="$repo_root_dir/.git/$config_file_name"
-    # Create this branch's config file and set commit template
-    echo "Creating git config for branch $branch_name..."
-    git config -f "$config_file_path" commit.template "$commit_template_file"
-    success "Config created:" \
-            "$config_file_path"
-    echo "Configuring local repo..."
-    git config --local includeIf.onbranch:${branch_name}.path "$config_file_name"
-    success "Local repo configured." \
-            "Will include configs from .git/$config_file_name" \
-            "when on branch $branch_name."
 }
 
 # Main -------------------------------------------------------------------------
@@ -140,11 +111,10 @@ main() {
     done
 
     local repo_root_dir="$(git_repo_root)"
-    local commit_template_file="${LOCAL_COMMIT_TEMPLATE_FILE}_${ticket}"
+    local commit_template_file=".gitmessage_local_${ticket}"
     local commit_template_path="$repo_root_dir/$commit_template_file"
-    local project_branch="$(git_current_branch)"
+    local branch_name="$(git_current_branch)"
 
-    # Create template
     echo "Creating commit template file..."
     echo "[#$ticket] " > "$commit_template_path"
     if [[ ! -f "$commit_template_path" ]]; then
@@ -155,7 +125,17 @@ main() {
                 "$commit_template_path"
     fi
 
-    # Configure commit template
-    git_set_branch_template "$commit_template_file" "$project_branch" "$repo_root_dir"
+    # Add 'config_' prefix and remove any slashes for filename
+    local config_file_name="config_${branch_name//[\/]/}"
+    local config_file_path="$repo_root_dir/.git/$config_file_name"
+    echo "Creating git config for branch $branch_name..."
+    git config -f "$config_file_path" commit.template "$commit_template_file"
+    success "Config created:" \
+            "$config_file_path"
+    echo "Configuring local repo..."
+    git config --local includeIf.onbranch:${branch_name}.path "$config_file_name"
+    success "Local repo configured." \
+            "Will include configs from .git/$config_file_name" \
+            "when on branch $branch_name."
 }
 main "$@"
