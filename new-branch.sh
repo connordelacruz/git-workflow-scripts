@@ -75,8 +75,6 @@ source "$UTIL_DIR/output.sh"
 source "$UTIL_DIR/git.sh"
 
 # Constants --------------------------------------------------------------------
-# Format for the date string (yyyymmdd)
-readonly DATE_FMT="+%Y%m%d"
 # Default base branch (master if $GIT_BASE_BRANCH not configured)
 readonly BASE_BRANCH="${GIT_BASE_BRANCH:-master}"
 # If NEW_BRANCH_COMMIT_TEMPLATE is unset, default to enabling feature
@@ -331,7 +329,7 @@ main() {
         fi
     fi
 
-    local timestamp="${arg_timestamp:-$(date "$DATE_FMT")}"
+    local timestamp="${arg_timestamp:-$(date "+%Y%m%d")}"
     local branch_name="$client$desc-$timestamp-$initials"
     # Check for bad branch name
     if [[ -n "$GIT_BAD_BRANCH_NAMES" ]]; then
