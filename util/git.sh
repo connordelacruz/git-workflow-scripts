@@ -44,3 +44,27 @@ git_current_branch() {
     git symbolic-ref --short HEAD
 }
 
+# Framework Checks -------------------------------------------------------------
+
+# Returns 1 if current repo is already configured, 0 otherwise
+is_workflow_configured() {
+    local repo_root_dir="$(git_repo_root)"
+    local config_file_exists="$(verify_workflow_config_file "$repo_root_dir")"
+    local config_include_exists="$(verify_workflow_config_include)"
+    echo $(( $config_file_exists * $config_include_exists ))
+}
+
+# Returns 1 if repo has config file for workflow, 0 otherwise
+verify_workflow_config_file() {
+    local repo_root_dir="$1"
+    local workflow_config_path="$repo_root_dir/.git/config_workflow"
+    [[ -f "$workflow_config_path" ]] && echo 1 || echo 0
+}
+
+# Returns 1 if local config + includes has workflow.configpath set, 0
+# otherwise
+verify_workflow_config_include() {
+    [[ -n "$(git config --local --includes --get workflow.configpath)" ]] &&
+        echo 1 || echo 0
+}
+

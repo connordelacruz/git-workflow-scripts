@@ -21,13 +21,13 @@ main() {
     [[ -n "$version_check" ]] && error "$version_check" && exit 1
     verify_git_repo
 
-    # TODO See if this repo has been initialized, do nothing if it has (unless -f?)
+    [[ "$(is_workflow_configured)" > 0 ]] && echo "Repo already initialized." && exit
 
     local repo_root_dir="$(git_repo_root)"
     local workflow_config_path="$repo_root_dir/.git/config_workflow"
     echo "Creating workflow config file for this repo..."
     git config -f "$workflow_config_path" workflow.configpath "$workflow_config_path"
-    if [[ -f "$workflow_config_path" ]]; then
+    if [[ "$(verify_workflow_config_file "$repo_root_dir")" > 0 ]]; then
         success "Workflow config created:" \
                 "$workflow_config_path"
     else
@@ -35,9 +35,16 @@ main() {
               "$workflow_config_path"
         exit 1
     fi
-    echo "Updating local config..."
-    git config --local --add include.path config_workflow
-    if [[ -n "$(git config --local --includes --get workflow.configpath)" ]]; then
+    # It may be possible that the config file was deleted but the include.path
+    # value was still present in local git config. To avoid adding duplicate
+    # entries, check for the include before updating configurations
+    if [[ "$(verify_workflow_config_include)" < 1 ]]; then
+        echo "Updating local config..."
+        git config --local --add include.path config_workflow
+    fi
+    # Regardless of whether the config was updated above or not, we want to
+    # check again here before displaying the success message
+    if [[ "$(verify_workflow_config_include)" > 0 ]]; then
         success "Repo configured. Initialization complete."
     else
         error "Something went wrong when adding include.path for workflow config to local repo."
