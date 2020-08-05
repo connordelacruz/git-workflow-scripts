@@ -4,7 +4,19 @@ set -o errexit
 # workflow-init.sh
 # Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
 # ------------------------------------------------------------------------------
-# Creates workflow git config file and adds include to local git config.
+# Set up the git repository for use with workflow scripts.
+#
+# NOTE: Scripts that depend on the workflow config set up should run this
+# script automagically if the current repo has not been initialized, so you
+# probably won't ever need to run this directly.
+#
+# ------------------------------------------------------------------------------
+# Details
+# ------------------------------------------------------------------------------
+# 1. Create .git/config_workflow. Any configurations made by other workflow
+#    scripts will be set in this file.
+# 2. Add include.path=config_workflow to local repo config. This will pull in
+#    any configurations from that file into the local repo.
 # ==============================================================================
 
 # Imports ----------------------------------------------------------------------

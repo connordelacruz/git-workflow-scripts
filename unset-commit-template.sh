@@ -78,7 +78,7 @@ main() {
     local commit_template_path="$repo_root_dir/$commit_template_file"
 
     # Unset branch config
-    echo "Unsetting local repo config..."
+    echo "Unsetting branch config include..."
     git config -f "$workflow_config_path" --unset includeIf.onbranch:${branch_name}.path
     success "Local repo updated." \
             "Will no longer include configs from .git/$branch_config_file" \

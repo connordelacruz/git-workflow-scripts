@@ -66,6 +66,8 @@ export PATH="$HOME/bin/git-workflow-scripts:$PATH"
             * [For all repos (RECOMMENDED):](#for-all-repos-recommended)
 * [`unset-commit-template.sh`](#unset-commit-templatesh)
     * [Usage](#usage-2)
+* [`workflow-init.sh`](#workflow-initsh)
+    * [Details](#details)
 
 <!-- vim-markdown-toc -->
 
@@ -248,4 +250,20 @@ Options:
   -D  Don't delete commit template file.
   -h  Show this help message and exit.
 ```
+
+
+## `workflow-init.sh`
+
+Set up the git repository for use with workflow scripts.
+
+**NOTE:** Scripts that depend on the workflow config set up should run this
+script automagically if the current repo has not been initialized, so you
+probably won't ever need to run this directly.
+
+### Details
+
+1. Create `.git/config_workflow`. Any configurations made by other workflow
+   scripts will be set in this file.
+2. Add `include.path=config_workflow` to local repo config. This will pull in
+   any configurations from that file into the local repo.
 
