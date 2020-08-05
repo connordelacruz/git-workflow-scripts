@@ -68,20 +68,22 @@ main() {
 
     # Get current branch and assiociated config
     local branch_name="$(git_current_branch)"
-    local branch_config="$(git config --local --get includeif.onbranch:${branch_name}.path)"
-    [[ -z "$branch_config" ]] && echo "No config file specified for this branch." && exit
+    local branch_config_file="$(git config --local --includes --get includeif.onbranch:${branch_name}.path)"
+    [[ -z "$branch_config_file" ]] && echo "No config file specified for this branch." && exit
     local repo_root_dir="$(git_repo_root)"
-    local branch_config_path="$repo_root_dir/.git/$branch_config"
+    # TODO check if initialized, otherwise use --show-origin to find the target file?
+    local workflow_config_path="$repo_root_dir/.git/config_workflow"
+    local branch_config_path="$repo_root_dir/.git/$branch_config_file"
     local commit_template_file="$(git config -f "$branch_config_path" --get commit.template)"
     local commit_template_path="$repo_root_dir/$commit_template_file"
 
     # Unset branch config
     echo "Unsetting local repo config..."
-    git config --local --unset includeIf.onbranch:${branch_name}.path
+    git config -f "$workflow_config_path" --unset includeIf.onbranch:${branch_name}.path
     success "Local repo updated." \
-            "Will no longer include configs from .git/$branch_config" \
+            "Will no longer include configs from .git/$branch_config_file" \
             "when on branch $branch_name."
-    echo "Deleting branch config file .git/$branch_config..."
+    echo "Deleting branch config file .git/$branch_config_file..."
     rm "$branch_config_path"
     success "Branch config file removed."
 

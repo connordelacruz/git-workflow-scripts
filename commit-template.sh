@@ -62,7 +62,8 @@ set -o errexit
 # ==============================================================================
 
 # Imports ----------------------------------------------------------------------
-readonly UTIL_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )/util"
+readonly SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+readonly UTIL_DIR="$SCRIPT_DIR/util"
 source "$UTIL_DIR/output.sh"
 source "$UTIL_DIR/git.sh"
 
@@ -111,6 +112,12 @@ main() {
     done
 
     local repo_root_dir="$(git_repo_root)"
+    # Initialize repo if not already
+    if [[ "$(is_workflow_configured "$repo_root_dir")" < 1 ]]; then
+        echo "Repo hasn't been initialized. Running workflow-init.sh..."
+        "$SCRIPT_DIR/workflow-init.sh"
+    fi
+    local workflow_config_path="$repo_root_dir/.git/config_workflow"
     local commit_template_file=".gitmessage_local_${ticket}"
     local commit_template_path="$repo_root_dir/$commit_template_file"
     local branch_name="$(git_current_branch)"
@@ -126,16 +133,16 @@ main() {
     fi
 
     # Add 'config_' prefix and remove any slashes for filename
-    local config_file_name="config_${branch_name//[\/]/}"
-    local config_file_path="$repo_root_dir/.git/$config_file_name"
+    local branch_config_file="config_${branch_name//[\/]/}"
+    local branch_config_path="$repo_root_dir/.git/$branch_config_file"
     echo "Creating git config for branch $branch_name..."
-    git config -f "$config_file_path" commit.template "$commit_template_file"
+    git config -f "$branch_config_path" commit.template "$commit_template_file"
     success "Config created:" \
-            "$config_file_path"
+            "$branch_config_path"
     echo "Configuring local repo..."
-    git config --local includeIf.onbranch:${branch_name}.path "$config_file_name"
+    git config -f "$workflow_config_path" includeIf.onbranch:${branch_name}.path "$branch_config_file"
     success "Local repo configured." \
-            "Will include configs from .git/$config_file_name" \
+            "Will include configs from .git/$branch_config_file" \
             "when on branch $branch_name."
 }
 main "$@"
