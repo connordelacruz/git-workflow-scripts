@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -o errexit
 # ==============================================================================
-# init.sh
+# workflow-init.sh
 # Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
 # ------------------------------------------------------------------------------
-# TODO DOC
+# Creates workflow git config file and adds include to local git config.
 # ==============================================================================
 
 # Imports ----------------------------------------------------------------------
@@ -14,7 +14,6 @@ source "$UTIL_DIR/git.sh"
 
 # Main -------------------------------------------------------------------------
 
-# TODO DOC
 main() {
     # Check git version > 2.23 and that we're in a repo currently
     local version_check="$(verify_git_version)"

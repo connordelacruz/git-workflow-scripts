@@ -47,8 +47,12 @@ git_current_branch() {
 # Framework Checks -------------------------------------------------------------
 
 # Returns 1 if current repo is already configured, 0 otherwise
+#
+# Arguments:
+#   (Optional) Root of the git repo. Will determine using git_repo_root if
+#   unspecified
 is_workflow_configured() {
-    local repo_root_dir="$(git_repo_root)"
+    local repo_root_dir="${1:-$(git_repo_root)}"
     local config_file_exists="$(verify_workflow_config_file "$repo_root_dir")"
     local config_include_exists="$(verify_workflow_config_include)"
     echo $(( $config_file_exists * $config_include_exists ))
