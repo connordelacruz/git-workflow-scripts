@@ -64,8 +64,7 @@ set -o errexit
 # Imports ----------------------------------------------------------------------
 readonly SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 readonly UTIL_DIR="$SCRIPT_DIR/util"
-source "$UTIL_DIR/output.sh"
-source "$UTIL_DIR/git.sh"
+source "$UTIL_DIR/ALL.sh"
 
 # Functions --------------------------------------------------------------------
 
