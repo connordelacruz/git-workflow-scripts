@@ -117,7 +117,7 @@ main() {
         echo "Repo hasn't been initialized. Running workflow-init.sh..."
         "$SCRIPT_DIR/workflow-init.sh"
     fi
-    local workflow_config_path="$repo_root_dir/.git/config_workflow"
+    local workflow_config_path="$(git config --local --includes --get workflow.configpath)"
     local commit_template_file=".gitmessage_local_${ticket}"
     local commit_template_path="$repo_root_dir/$commit_template_file"
     local branch_name="$(git_current_branch)"

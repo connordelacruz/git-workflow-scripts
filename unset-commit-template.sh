@@ -72,7 +72,7 @@ main() {
     [[ -z "$branch_config_file" ]] && echo "No config file specified for this branch." && exit
     local repo_root_dir="$(git_repo_root)"
     # TODO check if initialized, otherwise use --show-origin to find the target file?
-    local workflow_config_path="$repo_root_dir/.git/config_workflow"
+    local workflow_config_path="$(git config --local --includes --get workflow.configpath)"
     local branch_config_path="$repo_root_dir/.git/$branch_config_file"
     local commit_template_file="$(git config -f "$branch_config_path" --get commit.template)"
     local commit_template_path="$repo_root_dir/$commit_template_file"
