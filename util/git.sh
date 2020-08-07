@@ -44,6 +44,11 @@ git_current_branch() {
     git symbolic-ref --short HEAD
 }
 
+# Returns the name of branch's upstream remoet (may be empty)
+git_upstream() {
+    git for-each-ref --format='%(upstream:short)' "$(git symbolic-ref -q HEAD)"
+}
+
 # Framework Checks -------------------------------------------------------------
 
 # Returns 1 if current repo is already configured, 0 otherwise

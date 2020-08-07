@@ -149,7 +149,7 @@ create_branch() {
     git checkout "$base_branch"
     if [[ $no_pull > 0 ]]; then
         info "-P argument was specified, not pulling updates to $base_branch."
-    else
+    elif [[ -n "$(git_upstream)" ]]; then
         echo "Pulling updates to $base_branch..."
         git pull
     fi
