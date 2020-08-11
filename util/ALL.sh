@@ -9,6 +9,8 @@
 #
 # ==============================================================================
 
+# Configs
+source "$UTIL_DIR/configs.sh"
 # Output functions
 source "$UTIL_DIR/output.sh"
 # Git utilities

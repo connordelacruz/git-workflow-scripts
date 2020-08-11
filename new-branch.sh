@@ -18,28 +18,28 @@ set -o errexit
 # spaces/underscores, all lowercase).
 #
 # ------------------------------------------------------------------------------
-# Environment Variables
+# Configurations
 # ------------------------------------------------------------------------------
-# Script will use the following environment variables if set:
+# This script will use the following git configs if set:
 #
-#   - INITIALS: Skip the prompt for user's initials and use the value of this.
-#     E.g. to automatically use "cd":
+#   - workflow.initials: Skip the prompt for user's initials and use the value
+#     of this. E.g. to automatically use "cd":
 #
-#       export INITIALS=cd
+#       git config --global workflow.initials cd
 #
-#   - GIT_BASE_BRANCH: Use instead of master as the base git branch when
+#   - workflow.baseBranch: Use instead of master as the base git branch when
 #     creating the new branch. E.g. to base branches off develop:
 #
-#       export GIT_BASE_BRANCH=develop
+#       git config workflow.baseBranch develop
 #
-#   - GIT_BAD_BRANCH_NAMES: Set to a **space-separated string** of patterns
-#     that should not appear in a branch name. Script will check for these
-#     before attempting to create a branch. E.g. if branch names shouldn't
-#     include the words "-web" or "-plugins":
+#   - workflow.badBranchNamePatterns: Set to a space-separated string of
+#     patterns that should not appear in a standard branch name. Script will
+#     check for these before attempting to create a branch. E.g. if branch
+#     names shouldn't include the words "-web" or "-plugins":
 #
-#       export GIT_BAD_BRANCH_NAMES="-web -plugins"
+#       git config workflow.badBranchNamePatterns "-web -plugins"
 #
-#   - NEW_BRANCH_COMMIT_TEMPLATE: By default, script will prompt for an
+#   - workflow.enableCommitTemplate: By default, script will prompt for an
 #     optional ticket number and create a commit message template with it (see
 #     commit-template.sh). Set this to 0 to disable the ticket number prompt.
 #
@@ -47,8 +47,8 @@ set -o errexit
 # Optional Arguments
 # ------------------------------------------------------------------------------
 # This script accepts optional arguments to skip input prompts and override
-# defaults and environment variables. Running new-branch.sh -h will display
-# details on these arguments:
+# defaults and git configs. Running new-branch.sh -h will display details on
+# these arguments:
 #
 # Usage: new-branch.sh [-c <client>|-C] [-d <description>] [-i <initials>]
 #                      [-b <base-branch>] [-t <yyyymmdd>] [-s <ticket#>|-S]
@@ -68,16 +68,14 @@ set -o errexit
 #
 # ==============================================================================
 
+# TODO: ========================================================================
+# - Add -B, which uses the current branch as the base
+# ==============================================================================
+
 # Imports ----------------------------------------------------------------------
 readonly SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 readonly UTIL_DIR="$SCRIPT_DIR/util"
 source "$UTIL_DIR/ALL.sh"
-
-# Constants --------------------------------------------------------------------
-# Default base branch (master if $GIT_BASE_BRANCH not configured)
-readonly BASE_BRANCH="${GIT_BASE_BRANCH:-master}"
-# If NEW_BRANCH_COMMIT_TEMPLATE is unset, default to enabling feature
-readonly COMMIT_TEMPLATE="${NEW_BRANCH_COMMIT_TEMPLATE:-1}"
 
 # Functions --------------------------------------------------------------------
 
@@ -109,8 +107,7 @@ fmt_text() {
 bad_branch_name_check() {
     local branch_name="$1"
     local bad_pattern_list
-    # Environment variables can't be set to arrays, so expect a space-separated
-    # string and parse it as an array
+    # Parse string as an array
     declare -a "bad_pattern_list=($2)"
     for pattern in "${bad_pattern_list[@]}"; do
         # Simple check for bad patterns in branch name
@@ -122,29 +119,26 @@ bad_branch_name_check() {
                   "Branch names should not include the following patterns:" \
                   "$( IFS=$'\n'; echo "${bad_pattern_list[@]}" )" \
                   "" \
-                  "(Configured in environment variable GIT_BAD_BRANCH_NAMES)" \
+                  "(From git config workflow.badBranchNamePatterns)" \
                   "" \
-                  "Use the -N argument to skip this check." \
-                  "For more information on arguments and environment variables, run:" \
-                  "  new-branch.sh -h"
+                  "Use the -N argument to skip this check."
             exit 1
         fi
     done
 }
 
-# Create a new branch based off the configured base branch.
+# Create a new branch based off the specified base branch.
 #
-# Switches to specified base branch (master if unspecified), pulls changes
-# (unless 3rd argument is set to 1), then creates a new branch with the
-# specified name.
+# Switches to specified base branch, pulls changes (unless 3rd argument is set
+# to 1), then creates a new branch with the specified name.
 #
 # Arguments:
 #   New branch name
-#   (Default: master or $GIT_BASE_BRANCH) Base branch name
+#   Base branch name
 #   (Optional) Set to 1 to skip git pull on base branch
 create_branch() {
     local branch_name="$1"
-    local base_branch="${2:-$BASE_BRANCH}"
+    local base_branch="$2"
     local no_pull="$3"
     git checkout "$base_branch"
     if [[ $no_pull > 0 ]]; then
@@ -173,19 +167,6 @@ show_help() {
     echo '  -P                Skip pulling changes to base branch.'
     echo '  -N                Skip check for bad branch names.'
     echo '  -h                Show this help message and exit.'
-    echo ''
-    echo 'Environment Variables:'
-    echo '  INITIALS                    If set, skip prompt for developer initials'
-    echo '                              and use the value of this. Override with -i.'
-    echo '  GIT_BASE_BRANCH             If set, use this branch as a base instead of'
-    echo '                              master. Override with -b.'
-    echo '  GIT_BAD_BRANCH_NAMES        Set to a space-separated string of patterns that'
-    echo '                              should not appear in a branch name. Script will'
-    echo '                              check for these before creating a new branch.'
-    echo '                              Skip bad name check with -N.'
-    echo '  NEW_BRANCH_COMMIT_TEMPLATE  If set to 0, script will not prompt for ticket'
-    echo '                              number and not create a commit message template.'
-    echo '                              Override with -s.'
 }
 
 # Main -------------------------------------------------------------------------
@@ -195,8 +176,8 @@ show_help() {
 #
 # Globals:
 #   INITIALS
-#   GIT_BASE_BRANCH
-#   GIT_BAD_BRANCH_NAMES
+#   BASE_BRANCH
+#   BAD_BRANCH_NAME_PATTERNS
 #   NEW_BRANCH_COMMIT_TEMPLATE
 # Arguments:
 #   Takes all optional arguments for script. For details on these arguments,
@@ -298,10 +279,10 @@ main() {
     # Use -i arg if specified and not blank after formatting
     if [[ -n "$arg_init" ]]; then
         initials="$arg_init"
-    # Else use environment variable INITIALS if set
+    # Else use config workflow.initials if set
     elif [[ -n "$INITIALS" ]]; then
         initials="$(fmt_text "$INITIALS")"
-        [[ -n "$initials" ]] && info "Initials configured in \$INITIALS: $initials" && echo ""
+        [[ -n "$initials" ]] && info "Initials configured in workflow.initials: $initials" && echo ""
     fi
     # If initials is empty by now, we need to prompt user for them
     while [[ -z "$initials" ]]; do
@@ -331,14 +312,14 @@ main() {
     local timestamp="${arg_timestamp:-$(date "+%Y%m%d")}"
     local branch_name="$client$desc-$timestamp-$initials"
     # Check for bad branch name
-    if [[ -n "$GIT_BAD_BRANCH_NAMES" ]]; then
+    if [[ -n "$BAD_BRANCH_NAME_PATTERNS" ]]; then
         # Skip if -N arg is provided
         if [[ -n "$arg_skip_name_check" ]]; then
-            warning "GIT_BAD_BRANCH_NAMES is set but -N argument was specified." \
+            warning "workflow.badBranchNamePatterns is configured but -N argument was specified." \
                     "Skipping bad branch name check."
         else
             echo "Validating branch name..."
-            bad_branch_name_check "$branch_name" "$GIT_BAD_BRANCH_NAMES"
+            bad_branch_name_check "$branch_name" "$BAD_BRANCH_NAME_PATTERNS"
             success "Branch name OK."
         fi
     fi
