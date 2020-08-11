@@ -56,7 +56,7 @@ export PATH="$HOME/bin/git-workflow-scripts:$PATH"
 * [`new-branch.sh`](#new-branchsh)
     * [Usage](#usage)
     * [Optional Arguments](#optional-arguments)
-    * [Environment Variables](#environment-variables)
+    * [Git Configurations](#git-configurations)
 * [`commit-template.sh`](#commit-templatesh)
     * [Usage](#usage-1)
         * [Remove and unconfigure local template](#remove-and-unconfigure-local-template)
@@ -103,8 +103,8 @@ See below for details on [optional arguments](#optional-arguments).
 ### Optional Arguments
 
 This script accepts optional arguments to skip input prompts and override
-defaults and [environment variables](#environment-variables). Running
-`new-branch.sh -h` will display details on these arguments:
+defaults and [git configurations](#git-configurations). Running `new-branch.sh
+-h` will display details on these arguments:
 
 ```
 Usage: new-branch.sh [-c <client>|-C] [-d <description>] [-i <initials>]
@@ -124,39 +124,36 @@ Options:
   -h                Show this help message and exit.
 ```
 
-### Environment Variables
+### Git Configurations
 
-Script will use the following environment variables if set:
+Script will use the following git configs if set:
 
-- `INITIALS`: Skip the prompt for user's initials and use the value of this.
-  E.g. to automatically use "cd":
+- `workflow.initials`: Skip the prompt for user's initials and use the value
+  of this. E.g. to automatically use "cd":
 
     ```bash
-    export INITIALS=cd
+    git config --global workflow.initials cd
     ```
 
-- `GIT_BASE_BRANCH`: Use instead of `master` as the base git branch when
+- `workflow.baseBranch`: Use instead of `master` as the base git branch when
   creating the new branch. E.g. to base branches off `develop`:
 
     ```bash
-    export GIT_BASE_BRANCH=develop    
+    git config workflow.baseBranch develop
     ```
-
-- `GIT_BAD_BRANCH_NAMES`: Set to a **space-separated string** of patterns that
-  should not appear in a branch name. Script will check for these before
-  attempting to create a branch. E.g. if branch names shouldn't include the
-  words `-web` or `-plugins`:
+- `workflow.badBranchNamePatterns`: Set to a **space-separated** string of
+  patterns that should not appear in a standard branch name. Script will
+  check for these before attempting to create a branch. E.g. if branch
+  names shouldn't include the words `-web` or `-plugins`:
 
     ```bash
-    export GIT_BAD_BRANCH_NAMES="-web -plugins"
+    git config workflow.badBranchNamePatterns "-web -plugins"
     ```
 
-- `NEW_BRANCH_COMMIT_TEMPLATE`: By default, script will prompt for an optional
-  ticket number and create a commit message template with it (see
+- `workflow.enableCommitTemplate`: By default, script will prompt for an
+  optional ticket number and create a commit message template with it (see
   [commit-template.sh](#commit-templatesh)). Set this to `0` to disable the
   ticket number prompt.
-
-For more information on environment variables, run `new-branch.sh -h`.
 
 
 ## `commit-template.sh`
