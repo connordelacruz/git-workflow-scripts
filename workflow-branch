@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -o errexit
 # ==============================================================================
-# new-branch.sh
+# workflow-branch
 # Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
 # ------------------------------------------------------------------------------
 # Create a new git branch with the following name format:
@@ -20,14 +20,14 @@ set -o errexit
 # ------------------------------------------------------------------------------
 # Usage
 # ------------------------------------------------------------------------------
-# Usage: new-branch.sh [-c <client>|-C] [-d <description>] [-i <initials>]
-#                      [-b <base-branch>|-B] [-t <yyyymmdd>] [-s <ticket#>|-S]
-#                      [-P] [-N] [-h]
+# Usage: workflow-branch [-c <client>|-C] [-d <description>] [-i <initials>]
+#                        [-b <base-branch>|-B] [-t <yyyymmdd>] [-s <ticket#>|-S]
+#                        [-P] [-N] [-h]
 #
 # This script accepts optional arguments to skip input prompts and override
 # defaults and git configurations. For details on optional arguments, run:
 #
-#       new-branch.sh -h
+#       workflow-branch -h
 #
 # If no optional arguments are provided, you will be prompted for information
 # used in the branch name (client, description, etc).
@@ -141,9 +141,9 @@ create_branch() {
 
 show_help() {
     # TODO pull from configs for default vals?
-    echo 'Usage: new-branch.sh [-c <client>|-C] [-d <description>] [-i <initials>]'
-    echo '                     [-b <base-branch>|-B] [-t <yyyymmdd>] [-s <ticket#>|-S]'
-    echo '                     [-P] [-N] [-h]'
+    echo 'Usage: workflow-branch [-c <client>|-C] [-d <description>] [-i <initials>]'
+    echo '                       [-b <base-branch>|-B] [-t <yyyymmdd>] [-s <ticket#>|-S]'
+    echo '                       [-P] [-N] [-h]'
     echo 'Options:'
     echo '  -c <client>       Specify client name.'
     echo '  -C                No client name (overrides -c).'

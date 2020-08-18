@@ -6,7 +6,7 @@
 
 ### Create a New Branch with Commit Template
 
-![new-branch.sh demo](../assets/0-new-branch.gif?raw=true)
+![workflow-branch demo](../assets/0-new-branch.gif?raw=true)
 
 ### Commits Will Include Ticket Number
 
@@ -53,7 +53,7 @@ export PATH="$HOME/bin/git-workflow-scripts:$PATH"
 
 <!-- vim-markdown-toc GFM -->
 
-* [`new-branch.sh`](#new-branchsh)
+* [`workflow-branch`](#workflow-branch)
     * [Usage](#usage)
     * [Configurations](#configurations)
 * [`commit-template.sh`](#commit-templatesh)
@@ -70,7 +70,7 @@ export PATH="$HOME/bin/git-workflow-scripts:$PATH"
 
 <!-- vim-markdown-toc -->
 
-## `new-branch.sh`
+## `workflow-branch`
 
 Create a new git branch with the following name format:
 
@@ -91,9 +91,9 @@ spaces/underscores, all lowercase).
 ### Usage
 
 ```
-Usage: new-branch.sh [-c <client>|-C] [-d <description>] [-i <initials>]
-                     [-b <base-branch>|-B] [-t <yyyymmdd>] [-s <ticket#>|-S]
-                     [-P] [-N] [-h]
+Usage: workflow-branch [-c <client>|-C] [-d <description>] [-i <initials>]
+                       [-b <base-branch>|-B] [-t <yyyymmdd>] [-s <ticket#>|-S]
+                       [-P] [-N] [-h]
 ```
 
 This script accepts optional arguments to skip input prompts and override
@@ -101,7 +101,7 @@ defaults and [git configurations](#configurations). For details on optional
 arguments, run:
 
 ```
-new-branch.sh -h
+workflow-branch -h
 ```
 
 If no optional arguments are provided, you will be prompted for information used
