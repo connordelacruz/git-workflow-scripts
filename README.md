@@ -65,7 +65,7 @@ export PATH="$HOME/bin/git-workflow-scripts:$PATH"
             * [For all repos (RECOMMENDED):](#for-all-repos-recommended)
 * [`workflow-unset-commit-template`](#workflow-unset-commit-template)
     * [Usage](#usage-2)
-* [`workflow-init.sh`](#workflow-initsh)
+* [`workflow-init`](#workflow-init)
     * [Details](#details)
 
 <!-- vim-markdown-toc -->
@@ -234,7 +234,7 @@ workflow-unset-commit-template -h
 ```
 
 
-## `workflow-init.sh`
+## `workflow-init`
 
 Set up the git repository for use with workflow scripts.
 

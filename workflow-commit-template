@@ -113,8 +113,8 @@ main() {
     local repo_root_dir="$(git_repo_root)"
     # Initialize repo if not already
     if [[ "$(is_workflow_configured "$repo_root_dir")" < 1 ]]; then
-        echo "Repo hasn't been initialized. Running workflow-init.sh..."
-        "$SCRIPT_DIR/workflow-init.sh"
+        echo "Repo hasn't been initialized. Running workflow-init..."
+        "$SCRIPT_DIR/workflow-init"
     fi
     local workflow_config_path="$(git config --local --includes --get workflow.configpath)"
     local commit_template_file=".gitmessage_local_${ticket}"
