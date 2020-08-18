@@ -17,10 +17,10 @@ set -o errexit
 # ------------------------------------------------------------------------------
 # Remove local template
 # ------------------------------------------------------------------------------
-# Use unset-commit-template.sh to quickly unset local commit.template config
-# and remove template file.
+# Use workflow-unset-commit-template to quickly unset local commit.template
+# config and remove template file.
 #
-# (See comments in unset-commit-template.sh for more information)
+# (See comments in workflow-unset-commit-template for more information)
 #
 # ------------------------------------------------------------------------------
 # Generated template files

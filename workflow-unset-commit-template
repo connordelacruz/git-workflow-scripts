@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -o errexit
 # ==============================================================================
-# unset-commit-template.sh
+# workflow-unset-commit-template
 # Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
 # ------------------------------------------------------------------------------
 # For use with commit-template.sh
@@ -12,12 +12,12 @@ set -o errexit
 # ------------------------------------------------------------------------------
 # Usage
 # ------------------------------------------------------------------------------
-# Usage: unset-commit-template.sh [-b <branch>] [-D] [-h]
+# Usage: workflow-unset-commit-template [-b <branch>] [-D] [-h]
 #
 # This script accepts optional arguments to override defaults. For details on
 # optional arguments, run:
 #
-#   unset-commit-template.sh -h
+#   workflow-unset-commit-template -h
 #
 # ==============================================================================
 
@@ -29,7 +29,7 @@ source "$UTIL_DIR/ALL.sh"
 # Functions --------------------------------------------------------------------
 
 show_help() {
-    echo "Usage: unset-commit-template.sh [-b <branch>] [-D] [-h]"
+    echo "Usage: workflow-unset-commit-template [-b <branch>] [-D] [-h]"
     echo "Options:"
     echo "  -b <branch>  Specify branch to unset template for (default: current branch)."
     echo "  -D           Don't delete commit template file."

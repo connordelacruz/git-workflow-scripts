@@ -12,9 +12,9 @@
 
 ![commit-template.sh demo](../assets/1-commit-template.gif?raw=true)
 
-### Use `unset-commit-template.sh` to Remove Commit Template
+### Use `workflow-unset-commit-template` to Remove Commit Template
 
-![unset-commit-template.sh demo](../assets/2-unset-template.gif?raw=true)
+![workflow-unset-commit-template demo](../assets/2-unset-template.gif?raw=true)
 
 ### Commit Templates are Configured Separately for Each Branch
 
@@ -63,7 +63,7 @@ export PATH="$HOME/bin/git-workflow-scripts:$PATH"
         * [Configure git to ignore generated template files](#configure-git-to-ignore-generated-template-files)
             * [For individal repo:](#for-individal-repo)
             * [For all repos (RECOMMENDED):](#for-all-repos-recommended)
-* [`unset-commit-template.sh`](#unset-commit-templatesh)
+* [`workflow-unset-commit-template`](#workflow-unset-commit-template)
     * [Usage](#usage-2)
 * [`workflow-init.sh`](#workflow-initsh)
     * [Details](#details)
@@ -168,11 +168,11 @@ If not arguments are passed, user will be prompted for the ticket number.
 
 #### Remove and unconfigure local template
 
-Use `unset-commit-template.sh` to quickly unset local `commit.template` config
-and remote the template file.
+Use `workflow-unset-commit-template` to quickly unset local `commit.template`
+config and remote the template file.
 
-(See [`unset-commit-template.sh`](#unset-commit-templatesh) for more
-information.)
+(See [`workflow-unset-commit-template`](#workflow-unset-commit-template) for
+more information.)
 
 ### Configuring Git
 
@@ -213,7 +213,7 @@ See the following articles for more information on `core.excludesfile`:
 - [Git Configuration - core.excludesfile](https://git-scm.com/book/en/v2/Customizing-Git-Git-Configuration#_core_excludesfile)
 
 
-## `unset-commit-template.sh`
+## `workflow-unset-commit-template`
 
 For use with [`commit-template.sh`](#commit-templatesh)
 
@@ -223,14 +223,14 @@ unless `-D` argument was specified.
 ### Usage
 
 ```
-Usage: unset-commit-template.sh [-b <branch>] [-D] [-h]
+Usage: workflow-unset-commit-template [-b <branch>] [-D] [-h]
 ```
 
 This script accepts optional arguments to override defaults. For details on
 optional arguments, run:
 
 ```
-unset-commit-template.sh -h
+workflow-unset-commit-template -h
 ```
 
 
