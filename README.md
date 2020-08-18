@@ -55,11 +55,11 @@ export PATH="$HOME/bin/git-workflow-scripts:$PATH"
 
 * [`new-branch.sh`](#new-branchsh)
     * [Usage](#usage)
-    * [Git Configurations](#git-configurations)
+    * [Configurations](#configurations)
 * [`commit-template.sh`](#commit-templatesh)
     * [Usage](#usage-1)
         * [Remove and unconfigure local template](#remove-and-unconfigure-local-template)
-    * [Configuration](#configuration)
+    * [Configuring Git](#configuring-git)
         * [Configure git to ignore generated template files](#configure-git-to-ignore-generated-template-files)
             * [For individal repo:](#for-individal-repo)
             * [For all repos (RECOMMENDED):](#for-all-repos-recommended)
@@ -97,7 +97,7 @@ Usage: new-branch.sh [-c <client>|-C] [-d <description>] [-i <initials>]
 ```
 
 This script accepts optional arguments to skip input prompts and override
-defaults and [git configurations](#git-configurations). For details on optional
+defaults and [git configurations](#configurations). For details on optional
 arguments, run:
 
 ```
@@ -107,7 +107,7 @@ new-branch.sh -h
 If no optional arguments are provided, you will be prompted for information used
 in the branch name (client, description, etc). 
 
-### Git Configurations
+### Configurations
 
 Script will use the following git configs if set:
 
@@ -174,7 +174,7 @@ and remote the template file.
 (See [`unset-commit-template.sh`](#unset-commit-templatesh) for more
 information.)
 
-### Configuration
+### Configuring Git
 
 #### Configure git to ignore generated template files
 
@@ -217,18 +217,20 @@ See the following articles for more information on `core.excludesfile`:
 
 For use with [`commit-template.sh`](#commit-templatesh)
 
-Unset current branch's git config for `commit.template`. Template file will be
-deleted unless `-D` argument was specified.
+Unset branch's git config for `commit.template`. Template file will be deleted
+unless `-D` argument was specified.
 
 ### Usage
 
-Running `unset-commit-template -h` will display details on usage and arguments:
+```
+Usage: unset-commit-template.sh [-b <branch>] [-D] [-h]
+```
+
+This script accepts optional arguments to override defaults. For details on
+optional arguments, run:
 
 ```
-Usage: unset-commit-template.sh [-D] [-h]
-Options:
-  -D  Don't delete commit template file.
-  -h  Show this help message and exit.
+unset-commit-template.sh -h
 ```
 
 

@@ -6,18 +6,18 @@ set -o errexit
 # ------------------------------------------------------------------------------
 # For use with commit-template.sh
 #
-# Unset current branch's git config for commit.template. Template file will be
-# deleted unless -D argument was specified.
+# Unset branch's git config for commit.template. Template file will be deleted
+# unless -D argument was specified.
 #
 # ------------------------------------------------------------------------------
 # Usage
 # ------------------------------------------------------------------------------
-# Running unset-commit-template -h will display details on usage and arguments:
+# Usage: unset-commit-template.sh [-b <branch>] [-D] [-h]
 #
-# Usage: unset-commit-template.sh [-D] [-h]
-# Options:
-#   -D  Don't delete commit template file.
-#   -h  Show this help message and exit.
+# This script accepts optional arguments to override defaults. For details on
+# optional arguments, run:
+#
+#   unset-commit-template.sh -h
 #
 # ==============================================================================
 
@@ -29,10 +29,11 @@ source "$UTIL_DIR/ALL.sh"
 # Functions --------------------------------------------------------------------
 
 show_help() {
-    echo "Usage: unset-commit-template.sh [-D] [-h]"
+    echo "Usage: unset-commit-template.sh [-b <branch>] [-D] [-h]"
     echo "Options:"
-    echo "  -D  Don't delete commit template file."
-    echo "  -h  Show this help message and exit."
+    echo "  -b <branch>  Specify branch to unset template for (default: current branch)."
+    echo "  -D           Don't delete commit template file."
+    echo "  -h           Show this help message and exit."
 }
 
 # Main -------------------------------------------------------------------------
@@ -45,12 +46,16 @@ show_help() {
 #   see show_help()
 main() {
     # Parse arguments:
-    # -D (don't delete template file)
-    local arg_no_delete
-    while getopts 'Dh' opt; do
+    # -D don't delete template file
+    # -b <branch> unset a different branch
+    local arg_no_delete arg_branch_name
+    while getopts 'Db:h' opt; do
         case ${opt} in
             D)
                 arg_no_delete=1
+                ;;
+            b)
+                arg_branch_name="$OPTARG"
                 ;;
             h|?)
                 show_help
@@ -67,9 +72,9 @@ main() {
     verify_git_repo
 
     # Get current branch and assiociated config
-    local branch_name="$(git_current_branch)"
+    local branch_name="${arg_branch_name:-$(git_current_branch)}"
     local branch_config_file="$(git config --local --includes --get includeif.onbranch:${branch_name}.path)"
-    [[ -z "$branch_config_file" ]] && echo "No config file specified for this branch." && exit
+    [[ -z "$branch_config_file" ]] && echo "No config file specified for branch $branch_name." && exit
     local repo_root_dir="$(git_repo_root)"
     # TODO check if initialized, otherwise use --show-origin to find the target file?
     local workflow_config_path="$(git config --local --includes --get workflow.configpath)"
