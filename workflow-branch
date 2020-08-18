@@ -56,7 +56,8 @@ set -o errexit
 #
 #   - workflow.enableCommitTemplate: By default, script will prompt for an
 #     optional ticket number and create a commit message template with it (see
-#     commit-template.sh). Set this to 0 to disable the ticket number prompt.
+#     workflow-commit-template). Set this to 0 to disable the ticket number
+#     prompt.
 #
 # ==============================================================================
 
@@ -318,9 +319,9 @@ main() {
     fi
     create_branch "$branch_name" "${arg_base_branch:-$BASE_BRANCH}" "$arg_no_pull"
     success "Branch created."
-    # If specified, call commit-template.sh
+    # If specified, call workflow-commit-template
     if [[ -n "$ticket" ]]; then
-        "$SCRIPT_DIR/commit-template.sh" "$ticket"
+        "$SCRIPT_DIR/workflow-commit-template" "$ticket"
     fi
 }
 main "$@"

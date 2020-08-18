@@ -25,7 +25,7 @@ readonly INITIALS="$(git_config_default workflow.initials)"
 readonly BASE_BRANCH="$(git_config_default workflow.baseBranch master)"
 # Space-separated list of words that should not appear in a branch name
 readonly BAD_BRANCH_NAME_PATTERNS="$(git_config_default workflow.badBranchNamePatterns)"
-# If > 0, enable commit-template.sh integration with workflow-branch
+# If > 0, enable workflow-commit-template integration with workflow-branch
 # (DEFAULT: 1)
 readonly COMMIT_TEMPLATE="$(git_config_default workflow.enableCommitTemplate 1)"
 

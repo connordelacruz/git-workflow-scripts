@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -o errexit
 # ==============================================================================
-# commit-template.sh
+# workflow-commit-template
 # Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
 # ------------------------------------------------------------------------------
 # Creates and configures a git commit template for the current branch that
@@ -10,7 +10,7 @@ set -o errexit
 #
 #   [#12345] <commit message text goes here>
 #
-# Usage: commit-template.sh [<ticket number>]
+# Usage: workflow-commit-template [<ticket number>]
 #
 # If not arguments are passed, user will be prompted for the ticket number.
 #

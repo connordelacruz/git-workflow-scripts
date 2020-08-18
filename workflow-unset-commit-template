@@ -4,7 +4,7 @@ set -o errexit
 # workflow-unset-commit-template
 # Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
 # ------------------------------------------------------------------------------
-# For use with commit-template.sh
+# For use with workflow-commit-template
 #
 # Unset branch's git config for commit.template. Template file will be deleted
 # unless -D argument was specified.

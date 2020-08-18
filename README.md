@@ -10,7 +10,7 @@
 
 ### Commits Will Include Ticket Number
 
-![commit-template.sh demo](../assets/1-commit-template.gif?raw=true)
+![workflow-commit-template demo](../assets/1-commit-template.gif?raw=true)
 
 ### Use `workflow-unset-commit-template` to Remove Commit Template
 
@@ -56,7 +56,7 @@ export PATH="$HOME/bin/git-workflow-scripts:$PATH"
 * [`workflow-branch`](#workflow-branch)
     * [Usage](#usage)
     * [Configurations](#configurations)
-* [`commit-template.sh`](#commit-templatesh)
+* [`workflow-commit-template`](#workflow-commit-template)
     * [Usage](#usage-1)
         * [Remove and unconfigure local template](#remove-and-unconfigure-local-template)
     * [Configuring Git](#configuring-git)
@@ -135,11 +135,11 @@ Script will use the following git configs if set:
 
 - `workflow.enableCommitTemplate`: By default, script will prompt for an
   optional ticket number and create a commit message template with it (see
-  [commit-template.sh](#commit-templatesh)). Set this to `0` to disable the
-  ticket number prompt.
+  [`workflow-commit-template`](#workflow-commit-template)). Set this to `0` to
+  disable the ticket number prompt.
 
 
-## `commit-template.sh`
+## `workflow-commit-template`
 
 Creates and configures a git commit template for the current branch that
 includes a ticket number in brackets before the commit message. E.g. for ticket
@@ -161,7 +161,7 @@ Where `<ticket>` is the ticket number used in the template.
 ### Usage
 
 ```
-commit-template.sh [<ticket number>]
+workflow-commit-template [<ticket number>]
 ```
 
 If not arguments are passed, user will be prompted for the ticket number.
@@ -215,7 +215,7 @@ See the following articles for more information on `core.excludesfile`:
 
 ## `workflow-unset-commit-template`
 
-For use with [`commit-template.sh`](#commit-templatesh)
+For use with [`workflow-commit-template`](#workflow-commit-template)
 
 Unset branch's git config for `commit.template`. Template file will be deleted
 unless `-D` argument was specified.
