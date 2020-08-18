@@ -55,7 +55,6 @@ export PATH="$HOME/bin/git-workflow-scripts:$PATH"
 
 * [`new-branch.sh`](#new-branchsh)
     * [Usage](#usage)
-    * [Optional Arguments](#optional-arguments)
     * [Git Configurations](#git-configurations)
 * [`commit-template.sh`](#commit-templatesh)
     * [Usage](#usage-1)
@@ -92,37 +91,21 @@ spaces/underscores, all lowercase).
 ### Usage
 
 ```
-new-branch.sh [<optional arguments>]
+Usage: new-branch.sh [-c <client>|-C] [-d <description>] [-i <initials>]
+                     [-b <base-branch>|-B] [-t <yyyymmdd>] [-s <ticket#>|-S]
+                     [-P] [-N] [-h]
 ```
-
-You will be prompted for information used in the branch name (client,
-description, etc). 
-
-See below for details on [optional arguments](#optional-arguments).
-
-### Optional Arguments
 
 This script accepts optional arguments to skip input prompts and override
-defaults and [git configurations](#git-configurations). Running `new-branch.sh
--h` will display details on these arguments:
+defaults and [git configurations](#git-configurations). For details on optional
+arguments, run:
 
 ```
-Usage: new-branch.sh [-c <client>|-C] [-d <description>] [-i <initials>]
-                     [-b <base-branch>] [-t <yyyymmdd>] [-s <ticket#>|-S]
-                     [-P] [-N] [-h]
-Options:
-  -c <client>       Specify client name.
-  -C                No client name (overrides -c).
-  -d <description>  Specify branch description.
-  -i <initials>     Specify developer initials.
-  -b <base-branch>  Specify branch to use as base (default: master).
-  -t <yyyymmdd>     Specify timestamp (default: current date).
-  -s <ticket#>      Specify ticket number (will create commit template).
-  -S                No commit message template (overrides -s).
-  -P                Skip pulling changes to base branch.
-  -N                Skip check for bad branch names.
-  -h                Show this help message and exit.
+new-branch.sh -h
 ```
+
+If no optional arguments are provided, you will be prompted for information used
+in the branch name (client, description, etc). 
 
 ### Git Configurations
 

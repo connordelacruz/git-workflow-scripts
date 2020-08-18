@@ -18,6 +18,21 @@ set -o errexit
 # spaces/underscores, all lowercase).
 #
 # ------------------------------------------------------------------------------
+# Usage
+# ------------------------------------------------------------------------------
+# Usage: new-branch.sh [-c <client>|-C] [-d <description>] [-i <initials>]
+#                      [-b <base-branch>|-B] [-t <yyyymmdd>] [-s <ticket#>|-S]
+#                      [-P] [-N] [-h]
+#
+# This script accepts optional arguments to skip input prompts and override
+# defaults and git configurations. For details on optional arguments, run:
+#
+#       new-branch.sh -h
+#
+# If no optional arguments are provided, you will be prompted for information
+# used in the branch name (client, description, etc).
+#
+# ------------------------------------------------------------------------------
 # Configurations
 # ------------------------------------------------------------------------------
 # This script will use the following git configs if set:
@@ -43,33 +58,6 @@ set -o errexit
 #     optional ticket number and create a commit message template with it (see
 #     commit-template.sh). Set this to 0 to disable the ticket number prompt.
 #
-# ------------------------------------------------------------------------------
-# Optional Arguments
-# ------------------------------------------------------------------------------
-# This script accepts optional arguments to skip input prompts and override
-# defaults and git configs. Running new-branch.sh -h will display details on
-# these arguments:
-#
-# Usage: new-branch.sh [-c <client>|-C] [-d <description>] [-i <initials>]
-#                      [-b <base-branch>] [-t <yyyymmdd>] [-s <ticket#>|-S]
-#                      [-P] [-N] [-h]
-# Options:
-#   -c <client>       Specify client name.
-#   -C                No client name (overrides -c).
-#   -d <description>  Specify branch description.
-#   -i <initials>     Specify developer initials.
-#   -b <base-branch>  Specify branch to use as base (default: master).
-#   -t <yyyymmdd>     Specify timestamp (default: current date).
-#   -s <ticket#>      Specify ticket number (will create commit template).
-#   -S                No commit message template (overrides -s).
-#   -P                Skip pulling changes to base branch.
-#   -N                Skip check for bad branch names.
-#   -h                Show this help message and exit.
-#
-# ==============================================================================
-
-# TODO: ========================================================================
-# - Add -B, which uses the current branch as the base
 # ==============================================================================
 
 # Imports ----------------------------------------------------------------------
@@ -152,8 +140,9 @@ create_branch() {
 }
 
 show_help() {
+    # TODO pull from configs for default vals?
     echo 'Usage: new-branch.sh [-c <client>|-C] [-d <description>] [-i <initials>]'
-    echo '                     [-b <base-branch>] [-t <yyyymmdd>] [-s <ticket#>|-S]'
+    echo '                     [-b <base-branch>|-B] [-t <yyyymmdd>] [-s <ticket#>|-S]'
     echo '                     [-P] [-N] [-h]'
     echo 'Options:'
     echo '  -c <client>       Specify client name.'
@@ -161,6 +150,7 @@ show_help() {
     echo '  -d <description>  Specify branch description.'
     echo '  -i <initials>     Specify developer initials.'
     echo '  -b <base-branch>  Specify branch to use as base (default: master).'
+    echo '  -B                Use current branch as base (default: master).'
     echo '  -t <yyyymmdd>     Specify timestamp (default: current date).'
     echo '  -s <ticket#>      Specify ticket number (will create commit template).'
     echo '  -S                No commit message template (overrides -s).'
@@ -184,18 +174,18 @@ show_help() {
 #   see show_help()
 main() {
     # Parse arguments:
-    # -c <client> OR -C (no client [overrides -c])
+    # -c <client> OR -C no client [overrides -c]
     # -d <description>
     # -i <initials> (OVERRIDE GLOBAL)
-    # -b <base-branch> (OVERRIDE GLOBAL)
+    # -b <base-branch> OR -B base off current branch (OVERRIDE GLOBAL)
     # -t <yyyymmdd>
-    # -P (don't pull base branch)
-    # -N (skip bad name check)
-    # -s <ticket#> OR -S (no commit template)
+    # -P don't pull base branch
+    # -N skip bad name check
+    # -s <ticket#> OR -S no commit template
     local arg_client arg_no_client arg_desc arg_timestamp arg_init \
           arg_base_branch arg_no_pull arg_skip_name_check \
           arg_ticket arg_no_ticket
-    while getopts 'c:d:i:b:t:PCNs:Sh' opt; do
+    while getopts 'c:Cd:i:b:Bt:PNs:Sh' opt; do
         case ${opt} in
             c)
                 arg_client="$(fmt_text "$OPTARG")"
@@ -211,6 +201,9 @@ main() {
                 ;;
             b)
                 arg_base_branch="$OPTARG"
+                ;;
+            B)
+                arg_base_branch="$(git_current_branch)"
                 ;;
             t)
                 arg_timestamp="$OPTARG"
