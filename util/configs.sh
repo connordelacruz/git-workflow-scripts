@@ -12,8 +12,7 @@
 git_config_default() {
     local config="$1"
     local default="$2"
-    local res="$(git config --get "$config")"
-    echo "${res:-$default}"
+    echo "$(git config --default "$default" --get "$config")"
 }
 
 # Globals ----------------------------------------------------------------------
