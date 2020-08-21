@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+set -o errexit
+# ==============================================================================
+# workflow-finish-branch
+# Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
+# ------------------------------------------------------------------------------
+# TODO DOC
+# ==============================================================================
+
+# Imports ----------------------------------------------------------------------
+readonly SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+readonly UTIL_DIR="$SCRIPT_DIR/util"
+source "$UTIL_DIR/ALL.sh"
+
+# Functions --------------------------------------------------------------------
+
+show_help() {
+    # TODO IMPLEMENT
+    echo "Usage: workflow-finish-branch "
+}
+
+# Main -------------------------------------------------------------------------
+
+# TODO DOC
+main() {
+    # TODO ARGS
+
+    # Check that this is a git repo before proceeding
+    verify_git_repo
+    # Commit template requires git 2.23+
+    local skip_commit_template
+    if [[ -n "$(verify_git_version)" ]]; then
+        skip_commit_template=1
+    fi
+
+    local branch_name="$(git_current_branch)"
+
+    local confirm_delete
+    while [[ -z "$config_delete" ]]; do
+        local yn
+        echo "Delete branch $branch_name?"
+        read -n 1 -p "$(prompt "Delete Branch (y/[n])")" yn
+        echo ""
+        yn="${yn:-n}"
+        case $yn in
+            [Yy]*)
+                confirm_delete=1
+                break
+                ;;
+            [Nn]*)
+                confirm_delete=0
+                break
+                ;;
+            *)
+                error "Please select: y/n."
+                ;;
+        esac
+    done
+    [[ "$confirm_delete" < 1 ]] && exit
+
+    echo "Removing configurations..."
+    "$SCRIPT_DIR/workflow-unset-commit-template" -b "$branch_name"
+    echo "Switching to $BASE_BRANCH..."
+    git checkout "$BASE_BRANCH"
+    if [[ -n "$(git_upstream)" ]]; then
+        echo "Pulling updates to $BASE_BRANCH..."
+        git pull
+    fi
+    echo "Attempting to delete $branch_name..."
+    git branch -d "$branch_name"
+    if [[ $? < 1 ]]; then
+        success "Deletion successful."
+    else
+        error "Error deleting $branch_name. You will need to delete it manually." 
+    fi
+}
+main "$@"
