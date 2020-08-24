@@ -4,7 +4,27 @@ set -o errexit
 # workflow-finish-branch
 # Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
 # ------------------------------------------------------------------------------
-# TODO DOC
+# Finish a project branch. 
+#
+# Will prompt for confirmation before executing (unless -f is specified), then
+# performs the following:
+#
+#   - Call workflow-unset-commit-template for the target branch
+#   - Checkout base branch (workflow.baseBranch or master if unconfigured) and
+#     pull latest updates
+#   - Attempt to delete target branch using git branch -d, which may fail if
+#     target branch has not been fully merged upstream or in HEAD
+#
+# ------------------------------------------------------------------------------
+# Usage
+# ------------------------------------------------------------------------------
+# Usage: workflow-finish-branch [-b <branch>] [-f] [-h]
+#
+# This script accepts optional arguments to override defaults. For details on
+# optional arguments, run:
+#
+#   workflow-finish-branch -h
+#
 # ==============================================================================
 
 # Imports ----------------------------------------------------------------------
@@ -15,15 +35,40 @@ source "$UTIL_DIR/ALL.sh"
 # Functions --------------------------------------------------------------------
 
 show_help() {
-    # TODO IMPLEMENT
-    echo "Usage: workflow-finish-branch "
+    echo "Usage: workflow-finish-branch [-b <branch>] [-f] [-h]"
+    echo "Options:"
+    echo "  -b <branch>  Specify branch to finish (default: current branch)."
+    echo "  -f           Skip confirmation prompt."
+    echo "  -h           Show this help message and exit."
 }
 
 # Main -------------------------------------------------------------------------
 
-# TODO DOC
+# Clean up per-branch configs and attempt to delete branch.
+#
+# Arguments:
+#   Takes all optional arguments for script. For details on these arguments,
+#   see show_help()
 main() {
-    # TODO ARGS
+    # Parse arguments:
+    # -f skip confirmation prompt
+    local arg_skip_confirmation arg_branch_name
+    while getopts 'fb:h' opt; do
+        case ${opt} in
+            f)
+                arg_skip_confirmation=1
+                ;;
+            b)
+                arg_branch_name="$OPTARG"
+                ;;
+            h|?)
+                show_help
+                [[ "$opt" = "?" ]] && local exit_code=1 || local exit_code=0
+                exit $exit_code
+                ;;
+        esac
+    done
+    shift $((OPTIND -1))
 
     # Check that this is a git repo before proceeding
     verify_git_repo
@@ -33,10 +78,10 @@ main() {
         skip_commit_template=1
     fi
 
-    local branch_name="$(git_current_branch)"
+    local branch_name="${arg_branch_name:-$(git_current_branch)}"
 
-    local confirm_delete
-    while [[ -z "$config_delete" ]]; do
+    local confirm_delete="$arg_skip_confirmation"
+    while [[ -z "$confirm_delete" ]]; do
         local yn
         echo "Delete branch $branch_name?"
         read -n 1 -p "$(prompt "Delete Branch (y/[n])")" yn
@@ -58,8 +103,10 @@ main() {
     done
     [[ "$confirm_delete" < 1 ]] && exit
 
-    echo "Removing configurations..."
-    "$SCRIPT_DIR/workflow-unset-commit-template" -b "$branch_name"
+    if [[ $skip_commit_template < 1 ]]; then
+        echo "Removing configurations..."
+        "$SCRIPT_DIR/workflow-unset-commit-template" -b "$branch_name"
+    fi
     echo "Switching to $BASE_BRANCH..."
     git checkout "$BASE_BRANCH"
     if [[ -n "$(git_upstream)" ]]; then
