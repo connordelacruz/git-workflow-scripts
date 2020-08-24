@@ -65,6 +65,8 @@ export PATH="$HOME/bin/git-workflow-scripts:$PATH"
             * [For all repos (RECOMMENDED):](#for-all-repos-recommended)
 * [`workflow-unset-commit-template`](#workflow-unset-commit-template)
     * [Usage](#usage-2)
+* [`workflow-finish-branch`](#workflow-finish-branch)
+    * [Usage](#usage-3)
 * [`workflow-init`](#workflow-init)
     * [Details](#details)
 
@@ -215,7 +217,7 @@ See the following articles for more information on `core.excludesfile`:
 
 ## `workflow-unset-commit-template`
 
-For use with [`workflow-commit-template`](#workflow-commit-template)
+For use with [`workflow-commit-template`](#workflow-commit-template).
 
 Unset branch's git config for `commit.template`. Template file will be deleted
 unless `-D` argument was specified.
@@ -231,6 +233,34 @@ optional arguments, run:
 
 ```
 workflow-unset-commit-template -h
+```
+
+
+## `workflow-finish-branch`
+
+Finish a project branch. 
+
+Will prompt for confirmation before executing (unless `-f` is specified), then
+performs the following:
+
+  - Call [`workflow-unset-commit-template`](#workflow-unset-commit-template) for
+    the target branch
+  - Checkout base branch (see [git configurations](#configurations) for details)
+    and pull latest updates
+  - Attempt to delete target branch using `git branch -d`, which may fail if
+    target branch has not been fully merged upstream or in `HEAD`
+
+### Usage
+
+```
+Usage: workflow-finish-branch [-b <branch>] [-f] [-h]
+```
+
+This script accepts optional arguments to override defaults. For details on
+optional arguments, run:
+
+```
+workflow-finish-branch -h
 ```
 
 
