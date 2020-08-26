@@ -101,16 +101,16 @@ bad_branch_name_check() {
     for pattern in "${bad_pattern_list[@]}"; do
         # Simple check for bad patterns in branch name
         if [[ "$branch_name" = *"$pattern"* ]]; then
-            error "Branch name contains invalid pattern:" \
-                  "Desired Branch Name: $branch_name" \
-                  "Contains Invalid Pattern: $pattern" \
-                  "" \
-                  "Branch names should not include the following patterns:" \
-                  "$( IFS=$'\n'; echo "${bad_pattern_list[@]}" )" \
-                  "" \
-                  "(From git config workflow.badBranchNamePatterns)" \
-                  "" \
-                  "Use the -N argument to skip this check."
+            echo_error "Branch name contains invalid pattern:" \
+                       "Desired Branch Name: $branch_name" \
+                       "Contains Invalid Pattern: $pattern" \
+                       "" \
+                       "Branch names should not include the following patterns:" \
+                       "$( IFS=$'\n'; echo "${bad_pattern_list[@]}" )" \
+                       "" \
+                       "(From git config workflow.badBranchNamePatterns)" \
+                       "" \
+                       "Use the -N argument to skip this check."
             exit 1
         fi
     done
@@ -266,7 +266,7 @@ main() {
         desc="$(fmt_text "$desc")"
         [[ -n "$desc" ]] && echo"" && break
         # Loop if improperly formatted
-        error "Description must not be blank."
+        echo_error "Description must not be blank."
     done
 
     local initials
@@ -285,7 +285,7 @@ main() {
         initials="$(fmt_text "$initials")"
         [[ -n "$initials" ]] && echo "" && break
         # Loop if improperly formatted
-        error "Must enter initials."
+        echo_error "Must enter initials."
     done
 
     local ticket
@@ -309,16 +309,16 @@ main() {
     if [[ -n "$BAD_BRANCH_NAME_PATTERNS" ]]; then
         # Skip if -N arg is provided
         if [[ -n "$arg_skip_name_check" ]]; then
-            warning "workflow.badBranchNamePatterns is configured but -N argument was specified." \
-                    "Skipping bad branch name check."
+            echo_warning "workflow.badBranchNamePatterns is configured but -N argument was specified." \
+                         "Skipping bad branch name check."
         else
             echo "Validating branch name..."
             bad_branch_name_check "$branch_name" "$BAD_BRANCH_NAME_PATTERNS"
-            success "Branch name OK."
+            echo_success "Branch name OK."
         fi
     fi
     create_branch "$branch_name" "${arg_base_branch:-$BASE_BRANCH}" "$arg_no_pull"
-    success "Branch created."
+    echo_success "Branch created."
     # If specified, call workflow-commit-template
     if [[ -n "$ticket" ]]; then
         "$SCRIPT_DIR/workflow-commit-template" "$ticket"

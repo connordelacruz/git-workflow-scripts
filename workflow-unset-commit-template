@@ -68,7 +68,7 @@ main() {
 
     # Check git version > 2.23 and that we're in a repo currently
     local version_check="$(verify_git_version)"
-    [[ -n "$version_check" ]] && error "$version_check" && exit 1
+    [[ -n "$version_check" ]] && echo_error "$version_check" && exit 1
     verify_git_repo
 
     # Get current branch and assiociated config
@@ -85,24 +85,24 @@ main() {
     # Unset branch config
     echo "Unsetting branch config include..."
     git config -f "$workflow_config_path" --unset includeIf.onbranch:${branch_name}.path
-    success "Local repo updated." \
-            "Will no longer include configs from .git/$branch_config_file" \
-            "when on branch $branch_name."
+    echo_success "Local repo updated." \
+                 "Will no longer include configs from .git/$branch_config_file" \
+                 "when on branch $branch_name."
     echo "Deleting branch config file .git/$branch_config_file..."
     rm "$branch_config_path"
-    success "Branch config file removed."
+    echo_success "Branch config file removed."
 
     # Delete commit template (unless -D was specified)
     if [[ -z "$commit_template_file" ]]; then
-        warning "Template file $commit_template_file not found."
+        echo_warning "Template file $commit_template_file not found."
         exit
     fi
     if [[ -n "$arg_no_delete" ]]; then
-        warning "-D was specified, leaving template file $commit_template_file."
+        echo_warning "-D was specified, leaving template file $commit_template_file."
     else
         echo "Removing commit template file $commit_template_file..."
         rm "$commit_template_path"
-        success "Removed $commit_template_path"
+        echo_success "Removed $commit_template_path"
     fi
 }
 main "$@"

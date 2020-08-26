@@ -29,7 +29,7 @@ source "$UTIL_DIR/ALL.sh"
 main() {
     # Check git version > 2.23 and that we're in a repo currently
     local version_check="$(verify_git_version)"
-    [[ -n "$version_check" ]] && error "$version_check" && exit 1
+    [[ -n "$version_check" ]] && echo_error "$version_check" && exit 1
     verify_git_repo
 
     [[ "$(is_workflow_configured)" > 0 ]] && echo "Repo already initialized." && exit
@@ -39,11 +39,11 @@ main() {
     echo "Creating workflow config file for this repo..."
     git config -f "$workflow_config_path" workflow.configpath "$workflow_config_path"
     if [[ "$(verify_workflow_config_file "$repo_root_dir")" > 0 ]]; then
-        success "Workflow config created:" \
-                "$workflow_config_path"
+        echo_success "Workflow config created:" \
+                     "$workflow_config_path"
     else
-        error "Unable to create workflow config at the following path:" \
-              "$workflow_config_path"
+        echo_error "Unable to create workflow config at the following path:" \
+                   "$workflow_config_path"
         exit 1
     fi
     # It may be possible that the config file was deleted but the include.path
@@ -56,9 +56,9 @@ main() {
     # Regardless of whether the config was updated above or not, we want to
     # check again here before displaying the success message
     if [[ "$(verify_workflow_config_include)" > 0 ]]; then
-        success "Repo configured. Initialization complete."
+        echo_success "Repo configured. Initialization complete."
     else
-        error "Something went wrong when adding include.path for workflow config to local repo."
+        echo_error "Something went wrong when adding include.path for workflow config to local repo."
         exit 1
     fi
 }

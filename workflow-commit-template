@@ -92,7 +92,7 @@ fmt_ticket_number() {
 main() {
     # Check git version > 2.23 and that we're in a repo currently
     local version_check="$(verify_git_version)"
-    [[ -n "$version_check" ]] && error "$version_check" && exit 1
+    [[ -n "$version_check" ]] && echo_error "$version_check" && exit 1
     verify_git_repo
 
     local ticket
@@ -107,7 +107,7 @@ main() {
         ticket="$(fmt_ticket_number "$ticket")"
         [[ -n "$ticket" ]] && echo "" && break
         # Loop if improperly formatted
-        error "Enter a valid ticket number."
+        echo_error "Enter a valid ticket number."
     done
 
     local repo_root_dir="$(git_repo_root)"
@@ -124,11 +124,11 @@ main() {
     echo "Creating commit template file..."
     echo "[#$ticket] " > "$commit_template_path"
     if [[ ! -f "$commit_template_path" ]]; then
-        error "Something went wrong when attempting to create commit template."
+        echo_error "Something went wrong when attempting to create commit template."
         exit 1
     else
-        success "Template file created:" \
-                "$commit_template_path"
+        echo_success "Template file created:" \
+                     "$commit_template_path"
     fi
 
     # Add 'config_' prefix and remove any slashes for filename
@@ -136,12 +136,12 @@ main() {
     local branch_config_path="$repo_root_dir/.git/$branch_config_file"
     echo "Creating git config for branch $branch_name..."
     git config -f "$branch_config_path" commit.template "$commit_template_file"
-    success "Config created:" \
-            "$branch_config_path"
+    echo_success "Config created:" \
+                 "$branch_config_path"
     echo "Configuring local repo..."
     git config -f "$workflow_config_path" includeIf.onbranch:${branch_name}.path "$branch_config_file"
-    success "Local repo configured." \
-            "Will include configs from .git/$branch_config_file" \
-            "when on branch $branch_name."
+    echo_success "Local repo configured." \
+                 "Will include configs from .git/$branch_config_file" \
+                 "when on branch $branch_name."
 }
 main "$@"

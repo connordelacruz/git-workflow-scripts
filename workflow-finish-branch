@@ -97,7 +97,7 @@ main() {
                 break
                 ;;
             *)
-                error "Please select: y/n."
+                echo_error "Please select: y/n."
                 ;;
         esac
     done
@@ -116,9 +116,9 @@ main() {
     echo "Attempting to delete $branch_name..."
     git branch -d "$branch_name"
     if [[ $? < 1 ]]; then
-        success "Deletion successful."
+        echo_success "Deletion successful."
     else
-        error "Error deleting $branch_name. You will need to delete it manually." 
+        echo_error "Error deleting $branch_name. You will need to delete it manually." 
     fi
 }
 main "$@"

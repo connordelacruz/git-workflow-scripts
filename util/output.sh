@@ -19,7 +19,7 @@ readonly INDENT="    "
 
 # Print Functions --------------------------------------------------------------
 
-error() {
+echo_error() {
     echo "${TXT_BOLD}${FG_RED}Error: ${1}${TXT_RESET}"
     if [[ $# > 1 ]]; then
         shift
@@ -29,7 +29,7 @@ error() {
     fi
 }
 
-warning() {
+echo_warning() {
     echo "${FG_YELLOW}Warning: ${1}${TXT_RESET}"
     if [[ $# > 1 ]]; then
         shift
@@ -39,7 +39,7 @@ warning() {
     fi
 }
 
-success() {
+echo_success() {
     echo "${FG_GREEN}${1}${TXT_RESET}"
     if [[ $# > 1 ]]; then
         shift
@@ -48,6 +48,8 @@ success() {
         done
     fi
 }
+
+# TODO UPDATE BELOW
 
 info() {
     echo "${FG_CYAN}Info: ${1}${TXT_RESET}"
