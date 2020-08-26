@@ -131,7 +131,7 @@ create_branch() {
     local no_pull="$3"
     git checkout "$base_branch"
     if [[ $no_pull > 0 ]]; then
-        info "-P argument was specified, not pulling updates to $base_branch."
+        echo_info "-P argument was specified, not pulling updates to $base_branch."
     elif [[ -n "$(git_upstream)" ]]; then
         echo "Pulling updates to $base_branch..."
         git pull
@@ -247,7 +247,7 @@ main() {
         # Otherwise prompt user
         else
             echo "(Optional) Enter the name of the affected client."
-            read -p "$(prompt "Client")" client
+            read -p "$(echo_prompt "Client")" client
             client="$(fmt_text "$client")"
             echo ""
         fi
@@ -262,7 +262,7 @@ main() {
     fi
     while [[ -z "$desc" ]]; do
         echo "Enter a brief description for the branch."
-        read -p "$(prompt "Description")" desc
+        read -p "$(echo_prompt "Description")" desc
         desc="$(fmt_text "$desc")"
         [[ -n "$desc" ]] && echo"" && break
         # Loop if improperly formatted
@@ -276,12 +276,12 @@ main() {
     # Else use config workflow.initials if set
     elif [[ -n "$INITIALS" ]]; then
         initials="$(fmt_text "$INITIALS")"
-        [[ -n "$initials" ]] && info "Initials configured in workflow.initials: $initials" && echo ""
+        [[ -n "$initials" ]] && echo_info "Initials configured in workflow.initials: $initials" && echo ""
     fi
     # If initials is empty by now, we need to prompt user for them
     while [[ -z "$initials" ]]; do
         echo "Enter your initials."
-        read -p "$(prompt "Initials")" initials
+        read -p "$(echo_prompt "Initials")" initials
         initials="$(fmt_text "$initials")"
         [[ -n "$initials" ]] && echo "" && break
         # Loop if improperly formatted
@@ -298,7 +298,7 @@ main() {
         elif [[  $COMMIT_TEMPLATE > 0 ]]; then
             echo "(Optional) Enter ticket number to use in commit messages."
             echo "Leave blank if you don't want to create a commit template."
-            read -p "$(prompt "Ticket Number")" ticket
+            read -p "$(echo_prompt "Ticket Number")" ticket
             echo ""
         fi
     fi

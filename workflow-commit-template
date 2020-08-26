@@ -103,7 +103,7 @@ main() {
     # If $ticket is empty, prompt for ticket number
     while [[ -z "$ticket" ]]; do
         echo "Enter ticket number to use in commit messages."
-        read -p "$(prompt "Ticket Number")" ticket
+        read -p "$(echo_prompt "Ticket Number")" ticket
         ticket="$(fmt_ticket_number "$ticket")"
         [[ -n "$ticket" ]] && echo "" && break
         # Loop if improperly formatted

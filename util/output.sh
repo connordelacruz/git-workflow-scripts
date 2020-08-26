@@ -49,13 +49,11 @@ echo_success() {
     fi
 }
 
-# TODO UPDATE BELOW
-
-info() {
+echo_info() {
     echo "${FG_CYAN}Info: ${1}${TXT_RESET}"
 }
 
-prompt() {
+echo_prompt() {
     echo "${FG_MAGENTA}> ${1}: ${TXT_RESET}"
 }
 

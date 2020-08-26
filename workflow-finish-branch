@@ -84,7 +84,7 @@ main() {
     while [[ -z "$confirm_delete" ]]; do
         local yn
         echo "Delete branch $branch_name?"
-        read -n 1 -p "$(prompt "Delete Branch (y/[n])")" yn
+        read -n 1 -p "$(echo_prompt "Delete Branch (y/[n])")" yn
         echo ""
         yn="${yn:-n}"
         case $yn in
