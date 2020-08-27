@@ -11,8 +11,10 @@
 
 # Configs
 source "$UTIL_DIR/configs.sh"
-# Output functions
+# Output formatting
 source "$UTIL_DIR/output.sh"
 # Git utilities
 source "$UTIL_DIR/git.sh"
+# Workflow script paths
+source "$UTIL_DIR/scripts.sh"
 

@@ -321,7 +321,7 @@ main() {
     echo_success "Branch created."
     # If specified, call workflow-commit-template
     if [[ -n "$ticket" ]]; then
-        "$SCRIPT_DIR/workflow-commit-template" "$ticket"
+        "$COMMIT_TEMPLATE_SCRIPT" "$ticket"
     fi
 }
 main "$@"
