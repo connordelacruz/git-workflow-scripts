@@ -1,0 +1,114 @@
+#!/usr/bin/env bash
+set -o errexit
+# ==============================================================================
+# workflow-tidy-up
+# Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
+# ------------------------------------------------------------------------------
+# TODO DOC
+#
+# ==============================================================================
+
+# Imports ----------------------------------------------------------------------
+readonly SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+readonly UTIL_DIR="$SCRIPT_DIR/util"
+source "$UTIL_DIR/ALL.sh"
+
+# Functions --------------------------------------------------------------------
+
+show_help() {
+    # TODO UPDATE
+    echo "Usage: workflow-tidy-up [-f] [-h]"
+    echo "Options:"
+    echo "  -f  Skip confirmation prompt."
+    echo "  -h  Show this help message and exit."
+}
+
+# Main -------------------------------------------------------------------------
+
+# TODO DOC
+#
+# Arguments:
+#   Takes all optional arguments for script. For details on these arguments,
+#   see show_help()
+main() {
+    # Parse arguments:
+    # -f skip confirmation prompt
+    local arg_skip_confirmation 
+    while getopts 'fh' opt; do
+        case ${opt} in
+            f)
+                arg_skip_confirmation=1
+                ;;
+            h|?)
+                show_help
+                [[ "$opt" = "?" ]] && local exit_code=1 || local exit_code=0
+                exit $exit_code
+                ;;
+        esac
+    done
+    shift $((OPTIND -1))
+
+    # Check git version > 2.23 and that we're in a repo currently
+    local version_check="$(verify_git_version)"
+    [[ -n "$version_check" ]] && echo_error "$version_check" && exit 1
+    verify_git_repo
+
+    local repo_root_dir="$(git_repo_root)"
+    if [[ "$(is_workflow_configured "$repo_root_dir")" < 1 ]]; then
+        echo "Repo hasn't been initialized, no tidying to be done."
+        exit
+    fi
+
+    # Search for includeif configs
+    local workflow_config_path="$(git config --local --includes --get workflow.configpath)"
+    readonly pat='includeif\.onbranch:(.*)\.path (.*)'
+    local matching_configs="$(git config -f "$workflow_config_path" --get-regexp $pat)"
+    [[ -z "$matching_configs" ]] && echo "Nothing to tidy up." && exit
+
+    # Parse results and get branch names
+    # TODO SKIP CURRENT BRANCH?
+    local branch_names
+    declare -a branch_names
+    while IFS= read -r line; do
+        [[ "$line" =~ $pat ]] && branch_names+=("${BASH_REMATCH[1]}")
+    done <<< "$matching_configs"
+
+
+    local confirm_delete="$arg_skip_confirmation"
+    if [[ -z "$confirm_delete" ]]; then
+        echo_warning "Commit templates and configs will be removed for the following branches:" \
+            "${branch_names[@]}"
+        echo ""
+    fi
+    while [[ -z "$confirm_delete" ]]; do
+        local yn
+        echo "Would you like to continue?"
+        read -n 1 -p "$(echo_prompt "Confirm (y/[n])")" yn
+        echo ""
+        yn="${yn:-n}"
+        case $yn in
+            [Yy]*)
+                confirm_delete=1
+                break
+                ;;
+            [Nn]*)
+                confirm_delete=0
+                break
+                ;;
+            *)
+                echo_error "Please select: y/n."
+                ;;
+        esac
+    done
+    [[ "$confirm_delete" < 1 ]] && exit
+
+    # TODO: optionally delete branches? if so call finish instead?
+    for branch_name in "${branch_names[@]}"; do
+        "$UNSET_COMMIT_TEMPLATE_SCRIPT" -b "$branch_name"
+        echo ""
+    done
+    # TODO: Look for orphaned .gitmessage_local* templates
+    # TODO: if orphans, warn and prompt 
+    # TODO: if confirmed, rm orphans
+}
+main "$@"
