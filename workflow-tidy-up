@@ -58,6 +58,7 @@ main() {
         echo "Repo hasn't been initialized, no tidying to be done."
         exit
     fi
+    local current_branch="$(git_current_branch)"
 
     # Search for includeif configs
     local workflow_config_path="$(git config --local --includes --get workflow.configpath)"
@@ -66,11 +67,18 @@ main() {
     [[ -z "$matching_configs" ]] && echo "Nothing to tidy up." && exit
 
     # Parse results and get branch names
-    # TODO SKIP CURRENT BRANCH?
     local branch_names
     declare -a branch_names
     while IFS= read -r line; do
-        [[ "$line" =~ $pat ]] && branch_names+=("${BASH_REMATCH[1]}")
+        if [[ "$line" =~ $pat ]]; then 
+            local branch_name="${BASH_REMATCH[1]}"
+            # TODO: add flag to include current branch (as long as !base branch)
+            # TODO: output stating current branch will be skipped?
+            # TODO: what if another branch uses same template as current branch?
+            if [[ "$branch_name" != "$current_branch" ]]; then
+                branch_names+=("$branch_name")
+            fi
+        fi
     done <<< "$matching_configs"
 
 
