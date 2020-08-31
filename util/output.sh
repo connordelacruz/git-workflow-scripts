@@ -51,6 +51,12 @@ echo_success() {
 
 echo_info() {
     echo "${FG_CYAN}Info: ${1}${TXT_RESET}"
+    if [[ $# > 1 ]]; then
+        shift
+        for line in "$@"; do
+            echo "${INDENT}${FG_CYAN}${line}${TXT_RESET}"
+        done
+    fi
 }
 
 echo_prompt() {

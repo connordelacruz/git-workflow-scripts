@@ -33,11 +33,15 @@ show_help() {
 main() {
     # Parse arguments:
     # -f skip confirmation prompt
-    local arg_skip_confirmation 
-    while getopts 'fh' opt; do
+    # -B include current branch
+    local arg_skip_confirmation arg_include_current_branch
+    while getopts 'fBh' opt; do
         case ${opt} in
             f)
                 arg_skip_confirmation=1
+                ;;
+            B)
+                arg_include_current_branch=1
                 ;;
             h|?)
                 show_help
@@ -58,7 +62,6 @@ main() {
         echo "Repo hasn't been initialized, no tidying to be done."
         exit
     fi
-    local current_branch="$(git_current_branch)"
 
     # Search for includeif configs
     local workflow_config_path="$(git config --local --includes --get workflow.configpath)"
@@ -66,27 +69,49 @@ main() {
     local matching_configs="$(git config -f "$workflow_config_path" --get-regexp $pat)"
     [[ -z "$matching_configs" ]] && echo "Nothing to tidy up." && exit
 
+    local current_branch="$(git_current_branch)"
+    local current_branch_has_configs=0
     # Parse results and get branch names
     local branch_names
     declare -a branch_names
     while IFS= read -r line; do
         if [[ "$line" =~ $pat ]]; then 
             local branch_name="${BASH_REMATCH[1]}"
-            # TODO: add flag to include current branch (as long as !base branch)
-            # TODO: output stating current branch will be skipped?
             # TODO: what if another branch uses same template as current branch?
-            if [[ "$branch_name" != "$current_branch" ]]; then
-                branch_names+=("$branch_name")
+            if [[ "$branch_name" == "$current_branch" ]]; then
+                current_branch_has_configs=1
+                # Omit current branch unless specified
+                [[ -z "$arg_include_current_branch" ]] && continue
             fi
+            branch_names+=("$branch_name")
         fi
     done <<< "$matching_configs"
 
+    if [[ -z "$branch_names" ]]; then
+        # Case where only current branch has configs/template and -B not specified
+        if [[ -n "$current_branch_has_configs" ]]; then
+            echo "Nothing to tidy up except current branch."
+        # The following case shouldn't happen, but including for completeness
+        else
+            echo "Nothing to tidy up."
+        fi
+        exit
+    fi
 
     local confirm_delete="$arg_skip_confirmation"
     if [[ -z "$confirm_delete" ]]; then
         echo_warning "Commit templates and configs will be removed for the following branches:" \
             "${branch_names[@]}"
         echo ""
+        if [[ -n "$current_branch_has_configs" ]]; then
+            if [[ -n "$arg_include_current_branch" ]]; then
+                echo_warning "This includes configs for the branch you are currently on!" 
+            else
+                echo_info "Commit template and configs for the current branch will not be removed:" \
+                          "$current_branch"
+            fi
+            echo ""
+        fi
     fi
     while [[ -z "$confirm_delete" ]]; do
         local yn
