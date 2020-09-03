@@ -17,10 +17,11 @@ source "$UTIL_DIR/ALL.sh"
 
 show_help() {
     # TODO UPDATE
-    echo "Usage: workflow-tidy-up [-f] [-B] [-h]"
+    echo "Usage: workflow-tidy-up [-f] [-B] [-o] [-h]"
     echo "Options:"
     echo "  -f  Skip confirmation prompt."
     echo "  -B  TODO."
+    echo "  -o  TODO."
     echo "  -h  Show this help message and exit."
 }
 
@@ -35,15 +36,18 @@ main() {
     # Parse arguments:
     # -f skip confirmation prompt
     # -B include current branch
-    # TODO: -o for just orphans?
-    local arg_skip_confirmation arg_include_current_branch
-    while getopts 'fBh' opt; do
+    # -o only clean up orphans
+    local arg_skip_confirmation arg_include_current_branch arg_orphans_only
+    while getopts 'fBoh' opt; do
         case ${opt} in
             f)
                 arg_skip_confirmation=1
                 ;;
             B)
                 arg_include_current_branch=1
+                ;;
+            o)
+                arg_orphans_only=1
                 ;;
             h|?)
                 show_help
@@ -101,27 +105,28 @@ main() {
     local orphan_commit_templates=($(echo ${configured_commit_templates[@]} ${configured_commit_templates[@]} ${all_commit_templates[@]} | tr ' ' '\n' | sort | uniq -u))
     IFS="$saved_IFS"
 
-    # Configured Templates
-    if [[ -n "$target_branch_names" ]]; then
-        echo "Commit templates and configs will be removed for the following branches:"
-        echo ""
-        echo_indented "${target_branch_names[@]}"
-        echo ""
-        # Additional info if current branch has configs
-        if [[ -n "$current_branch_template" ]] && [[ -n "$arg_include_current_branch" ]]; then
-            echo_warning "This includes configs for the branch you are currently on!"
+    # Output: Configured Templates
+    if [[ -z "$arg_orphans_only" ]]; then
+        # Case 1: We have branches to clean
+        if [[ -n "$target_branch_names" ]]; then
+            echo "Commit templates and configs will be removed for the following branches:"
+            echo ""
+            echo_indented "${target_branch_names[@]}"
+            echo ""
+            # Additional info if current branch has configs
+            if [[ -n "$current_branch_template" ]] && [[ -n "$arg_include_current_branch" ]]; then
+                echo_warning "This includes configs for the branch you are currently on!"
+                echo ""
+            fi
+        # Case 2: Nothing to clean but current branch has configs
+        elif [[ -n "$current_branch_template" ]]; then
+            echo "Only branch with a template configured is the current branch."
+            echo "To include current branch, run with -B argument."
             echo ""
         fi
-    elif [[ -n "$current_branch_template" ]]; then
-        echo "Only branch with a template configured is the current branch."
-        echo "To include current branch, run with -B argument."
-        echo ""
-    else
-        echo "No configured templates to tidy up."
-        echo ""
     fi
 
-    # Orphaned Templates
+    # Output: Orphan Templates
     if [[ -n "$orphan_commit_templates" ]]; then
         echo "The following commit templates do not have an associated branch and will be deleted:"
         echo ""
@@ -130,11 +135,12 @@ main() {
     fi
 
     # If there's nothing to clean up
-    if [[ -z "$target_branch_names" ]] && [[ -z "$orphan_commit_templates" ]]; then
+    if [[ -z "$target_branch_names" || -n "$arg_orphans_only" ]] && [[ -z "$orphan_commit_templates" ]]; then
         echo "Nothing to tidy up."
         exit
     fi
 
+    # Prompt for Confirmation
     local confirm_delete="$arg_skip_confirmation"
     while [[ -z "$confirm_delete" ]]; do
         local yn
@@ -158,13 +164,17 @@ main() {
     done
     [[ "$confirm_delete" < 1 ]] && exit
 
-    # TODO: optionally delete branches? if so call finish instead?
-    echo "Tidying up configs..."
-    for branch_name in "${target_branch_names[@]}"; do
-        "$UNSET_COMMIT_TEMPLATE_SCRIPT" -b "$branch_name"
-        echo ""
-    done
+    # Cleanup: Configured Templates
+    if [[ -n "$target_branch_names" && -z "$arg_orphans_only" ]]; then 
+        # TODO: optionally delete branches? if so call finish instead?
+        echo "Tidying up configs..."
+        for branch_name in "${target_branch_names[@]}"; do
+            "$UNSET_COMMIT_TEMPLATE_SCRIPT" -b "$branch_name"
+            echo ""
+        done
+    fi
 
+    # Cleanup: Orphan Templates
     if [[ -n "$orphan_commit_templates" ]]; then
         echo "Removing orphaned templates..."
         for orphan_commit_template in "${orphan_commit_templates[@]}"; do
