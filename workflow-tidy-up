@@ -4,7 +4,26 @@ set -o errexit
 # workflow-tidy-up
 # Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
 # ------------------------------------------------------------------------------
-# TODO DOC
+# Tidy up workflow-related files and configs.
+#
+# Will list affected branches and files and prompt for confirmation before
+# executing (unless -f is specified), then perform the following:
+#
+#   - Call workflow-unset-commit-template for each branch with a commit
+#     template configured
+#   - Remove each orphan commit template with no associated project branch
+#
+# By default, the current branch will be omitted from cleanup.
+#
+# ------------------------------------------------------------------------------
+# Usage
+# ------------------------------------------------------------------------------
+# Usage: workflow-tidy-up [-f] [-B] [-o] [-h]
+#
+# This script accepts optional arguments to override defaults. For details on
+# optional arguments, run:
+#
+#   workflow-tidy-up -h
 #
 # ==============================================================================
 
@@ -16,18 +35,17 @@ source "$UTIL_DIR/ALL.sh"
 # Functions --------------------------------------------------------------------
 
 show_help() {
-    # TODO UPDATE
     echo "Usage: workflow-tidy-up [-f] [-B] [-o] [-h]"
     echo "Options:"
     echo "  -f  Skip confirmation prompt."
-    echo "  -B  TODO."
-    echo "  -o  TODO."
+    echo "  -B  Tidy up current branch configs too."
+    echo "  -o  Only clean up orphan templates."
     echo "  -h  Show this help message and exit."
 }
 
 # Main -------------------------------------------------------------------------
 
-# TODO DOC
+# Tidy up commit templates and configs.
 #
 # Arguments:
 #   Takes all optional arguments for script. For details on these arguments,

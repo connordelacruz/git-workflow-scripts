@@ -67,6 +67,8 @@ export PATH="$HOME/bin/git-workflow-scripts:$PATH"
     * [Usage](#usage-2)
 * [`workflow-finish-branch`](#workflow-finish-branch)
     * [Usage](#usage-3)
+* [`workflow-tidy-up`](#workflow-tidy-up)
+    * [Usage](#usage-4)
 * [`workflow-init`](#workflow-init)
     * [Details](#details)
 
@@ -262,6 +264,33 @@ optional arguments, run:
 
 ```
 workflow-finish-branch -h
+```
+
+
+## `workflow-tidy-up`
+
+Tidy up workflow-related files and configs.
+
+Will list affected branches and files and prompt for confirmation before
+executing (unless `-f` is specified), then perform the following:
+
+  - Call [`workflow-unset-commit-template`](#workflow-unset-commit-template) for
+    each branch with a commit template configured
+  - Remove each orphan commit template with no associated project branch
+
+By default, the current branch will be omitted from cleanup.
+
+### Usage
+
+```
+Usage: workflow-tidy-up [-f] [-B] [-o] [-h]
+```
+
+This script accepts optional arguments to override defaults. For details on
+optional arguments, run:
+
+```
+workflow-tidy-up -h
 ```
 
 
