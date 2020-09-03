@@ -36,7 +36,7 @@
 
 # Overview
 
-**TODO: walk thru workflow**
+This repo contains some scripts to speed up common tasks in our git workflow.
 
 ## Create a New Branch with Commit Template
 
@@ -99,6 +99,8 @@ If you have a bunch of lingering commit templates, you can run
 ![workflow-tidy-up demo](../assets/demos/tidy-up.gif?raw=true)
 
 
+--------------------------------------------------------------------------------
+
 # Setup
 
 ## Prerequisites
@@ -116,6 +118,13 @@ Make sure `/usr/local/bin` is added to your `PATH` e.g.:
 export PATH="/usr/local/bin:$PATH"
 ```
 
+> **Note:** These scripts were developed using GNU bash 5.0.17 on macOS. While I
+> don't believe this uses any features that aren't supported by the builtin
+> version of bash on macOS, it's definitely not impossible. [Here's instructions
+> on upgrading bash on macOS using
+> Homebrew](https://itnext.io/upgrading-bash-on-macos-7138bd1066ba) just in
+> case.
+
 
 ## Installation
 
@@ -126,6 +135,8 @@ you cloned it into `~/bin/git-workflow-scripts`:
 export PATH="$HOME/bin/git-workflow-scripts:$PATH"
 ```
 
+
+--------------------------------------------------------------------------------
 
 # Scripts
 
