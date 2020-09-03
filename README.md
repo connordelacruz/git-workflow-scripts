@@ -1,29 +1,111 @@
 # Git Workflow Scripts
 
-## Overview
+## Contents
+
+<!-- vim-markdown-toc GFM -->
+
+* [Overview](#overview)
+    * [Create a New Branch with Commit Template](#create-a-new-branch-with-commit-template)
+        * [Demos](#demos)
+    * [Finish Up a Branch](#finish-up-a-branch)
+        * [Demo](#demo)
+    * [Remove a Branch's Commit Template](#remove-a-branchs-commit-template)
+        * [Demo](#demo-1)
+    * [Tidy Up Entire Local Repo](#tidy-up-entire-local-repo)
+        * [Demo](#demo-2)
+* [Setup](#setup)
+    * [Prerequisites](#prerequisites)
+    * [Installation](#installation)
+* [Scripts](#scripts)
+    * [`workflow-branch`](#workflow-branch)
+        * [Usage](#usage)
+        * [Configurations](#configurations)
+    * [`workflow-commit-template`](#workflow-commit-template)
+        * [Usage](#usage-1)
+            * [Remove and unconfigure local template](#remove-and-unconfigure-local-template)
+        * [Configuring Git](#configuring-git)
+            * [Configure git to ignore generated template files](#configure-git-to-ignore-generated-template-files)
+                * [For individal repo:](#for-individal-repo)
+                * [For all repos (RECOMMENDED):](#for-all-repos-recommended)
+    * [`workflow-unset-commit-template`](#workflow-unset-commit-template)
+        * [Usage](#usage-2)
+    * [`workflow-finish-branch`](#workflow-finish-branch)
+        * [Usage](#usage-3)
+    * [`workflow-tidy-up`](#workflow-tidy-up)
+        * [Usage](#usage-4)
+    * [`workflow-init`](#workflow-init)
+        * [Details](#details)
+
+<!-- vim-markdown-toc -->
+
+# Overview
 
 **TODO: walk thru workflow**
 
-### Create a New Branch with Commit Template
+## Create a New Branch with Commit Template
 
-![workflow-branch demo](../assets/0-new-branch.gif?raw=true)
+Run `workflow-branch` to create a new project branch with the name format:
 
-### Commits Will Include Ticket Number
+```
+[<client>-]<brief-description>-<yyyymmdd>-<initials>
+```
 
-![workflow-commit-template demo](../assets/1-commit-template.gif?raw=true)
+If you provide a ticket number, this will use `workflow-commit-template` to
+create a commit template for the branch, so all your commit messages will begin
+with:
 
-### Use `workflow-unset-commit-template` to Remove Commit Template
+```
+[#<ticket>]
+```
 
-![workflow-unset-commit-template demo](../assets/2-unset-template.gif?raw=true)
+### Demos
 
-### Commit Templates are Configured Separately for Each Branch
+Creating a project branch:
 
-![multiple branch demo](../assets/3-multi-branch.gif?raw=true)
+![workflow-branch demo](../assets/demos/branch.gif?raw=true)
+
+Commit messages will include ticket number:
+
+![commit message template demo](../assets/demos/commit-message.gif?raw=true)
+
+Different branches can use different commit templates:
+
+![per-branch commit templates demo](../assets/demos/per-branch-commit-templates.gif?raw=true)
+
+(:point_up: Also, workflow scripts have a variety of command line options)
+
+## Finish Up a Branch
+
+When you're finished with a project branch and have pushed up all your changes
+to a remote, run `workflow-finish-branch` to clean up configs, remove the commit
+template, and delete the branch.
+
+### Demo
+
+![workflow-finish-branch demo](../assets/demos/finish-branch.gif?raw=true)
+
+## Remove a Branch's Commit Template
+
+If you just want to remove the commit template from a branch, run
+`workflow-unset-commit-template`.
+
+### Demo
+
+![workflow-unset-commit-template demo](../assets/demos/unset-commit-template.gif?raw=true)
+
+## Tidy Up Entire Local Repo
+
+If you have a bunch of lingering commit templates, you can run
+`workflow-tidy-up` to clean up configs and commit template files.
+
+### Demo
+
+![workflow-tidy-up demo](../assets/demos/tidy-up.gif?raw=true)
 
 
-## Setup
+# Setup
 
-### Prerequisites
+## Prerequisites
 
 These scripts use features that require **git 2.23 or greater**. To install an
 updated version of `git` on macOS using [Homebrew](https://brew.sh/):
@@ -39,7 +121,7 @@ export PATH="/usr/local/bin:$PATH"
 ```
 
 
-### Installation
+## Installation
 
 Clone this repo and update your `.bashrc` to include it in your `PATH`. E.g. if
 you cloned it into `~/bin/git-workflow-scripts`:
