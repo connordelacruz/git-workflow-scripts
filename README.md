@@ -6,13 +6,9 @@
 
 * [Overview](#overview)
     * [Create a New Branch with Commit Template](#create-a-new-branch-with-commit-template)
-        * [Demos](#demos)
     * [Finish Up a Branch](#finish-up-a-branch)
-        * [Demo](#demo)
     * [Remove a Branch's Commit Template](#remove-a-branchs-commit-template)
-        * [Demo](#demo-1)
     * [Tidy Up Entire Local Repo](#tidy-up-entire-local-repo)
-        * [Demo](#demo-2)
 * [Setup](#setup)
     * [Prerequisites](#prerequisites)
     * [Installation](#installation)
@@ -58,7 +54,7 @@ with:
 [#<ticket>]
 ```
 
-### Demos
+**Demos:**
 
 Creating a project branch:
 
@@ -80,7 +76,7 @@ When you're finished with a project branch and have pushed up all your changes
 to a remote, run `workflow-finish-branch` to clean up configs, remove the commit
 template, and delete the branch.
 
-### Demo
+**Demo:**
 
 ![workflow-finish-branch demo](../assets/demos/finish-branch.gif?raw=true)
 
@@ -89,7 +85,7 @@ template, and delete the branch.
 If you just want to remove the commit template from a branch, run
 `workflow-unset-commit-template`.
 
-### Demo
+**Demo:**
 
 ![workflow-unset-commit-template demo](../assets/demos/unset-commit-template.gif?raw=true)
 
@@ -98,7 +94,7 @@ If you just want to remove the commit template from a branch, run
 If you have a bunch of lingering commit templates, you can run
 `workflow-tidy-up` to clean up configs and commit template files.
 
-### Demo
+**Demo:**
 
 ![workflow-tidy-up demo](../assets/demos/tidy-up.gif?raw=true)
 
