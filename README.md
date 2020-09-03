@@ -155,10 +155,11 @@ Templates generated with this script are created in the root of the git
 repository with this name format:
 
  ```
- .gitmessage_local_<ticket>
+ .gitmessage_local_<ticket>_<branch>
  ```
 
-Where `<ticket>` is the ticket number used in the template.
+Where `<ticket>` is the ticket number used in the template and `<branch>` is the
+branch that will use this template.
 
 ### Usage
 

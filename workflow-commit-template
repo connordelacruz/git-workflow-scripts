@@ -28,9 +28,10 @@ set -o errexit
 # Templates generated with this script are created in the root of the git
 # repository with this name format:
 #
-#   .gitmessage_local_<ticket>
+#   .gitmessage_local_<ticket>_<branch>
 #
-# Where <ticket> is the ticket number used in the template.
+# Where <ticket> is the ticket number used in the template and <branch> is the
+# branch that will use this template.
 #
 # ------------------------------------------------------------------------------
 # Configure git to ignore generated template files
@@ -116,10 +117,10 @@ main() {
         echo "Repo hasn't been initialized. Running workflow-init..."
         "$INIT_SCRIPT"
     fi
-    local workflow_config_path="$(git config --local --includes --get workflow.configpath)"
-    local commit_template_file=".gitmessage_local_${ticket}"
-    local commit_template_path="$repo_root_dir/$commit_template_file"
     local branch_name="$(git_current_branch)"
+    local workflow_config_path="$(git config --local --includes --get workflow.configpath)"
+    local commit_template_file=".gitmessage_local_${ticket}_${branch_name}"
+    local commit_template_path="$repo_root_dir/$commit_template_file"
 
     echo "Creating commit template file..."
     echo "[#$ticket] " > "$commit_template_path"

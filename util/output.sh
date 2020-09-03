@@ -19,6 +19,12 @@ readonly INDENT="    "
 
 # Print Functions --------------------------------------------------------------
 
+echo_indented() {
+    for line in "$@"; do
+        echo "${INDENT}${line}"
+    done
+}
+
 echo_error() {
     echo "${TXT_BOLD}${FG_RED}Error: ${1}${TXT_RESET}"
     if [[ $# > 1 ]]; then

@@ -17,9 +17,10 @@ source "$UTIL_DIR/ALL.sh"
 
 show_help() {
     # TODO UPDATE
-    echo "Usage: workflow-tidy-up [-f] [-h]"
+    echo "Usage: workflow-tidy-up [-f] [-B] [-h]"
     echo "Options:"
     echo "  -f  Skip confirmation prompt."
+    echo "  -B  TODO."
     echo "  -h  Show this help message and exit."
 }
 
@@ -34,6 +35,7 @@ main() {
     # Parse arguments:
     # -f skip confirmation prompt
     # -B include current branch
+    # TODO: -o for just orphans?
     local arg_skip_confirmation arg_include_current_branch
     while getopts 'fBh' opt; do
         case ${opt} in
@@ -67,52 +69,73 @@ main() {
     local workflow_config_path="$(git config --local --includes --get workflow.configpath)"
     readonly pat='includeif\.onbranch:(.*)\.path (.*)'
     local matching_configs="$(git config -f "$workflow_config_path" --get-regexp $pat)"
-    [[ -z "$matching_configs" ]] && echo "Nothing to tidy up." && exit
 
+    # Keep track of current branch configs
     local current_branch="$(git_current_branch)"
-    local current_branch_has_configs=0
-    # Parse results and get branch names
-    local branch_names
-    declare -a branch_names
+    local current_branch_template
+
+    # Parse results and get branch names, config files, and configured commit.templates
+    local -a target_branch_names branch_config_files configured_commit_templates
     while IFS= read -r line; do
         if [[ "$line" =~ $pat ]]; then 
             local branch_name="${BASH_REMATCH[1]}"
-            # TODO: what if another branch uses same template as current branch?
+            local branch_config_file="${BASH_REMATCH[2]}"
+            local configured_commit_template="$(git config -f $repo_root_dir/.git/$branch_config_file --get commit.template)"
             if [[ "$branch_name" == "$current_branch" ]]; then
-                current_branch_has_configs=1
+                current_branch_template="$configured_commit_template"
                 # Omit current branch unless specified
                 [[ -z "$arg_include_current_branch" ]] && continue
             fi
-            branch_names+=("$branch_name")
+            target_branch_names+=("$branch_name")
+            branch_config_files+=("$branch_config_file")
+            configured_commit_templates+=("$configured_commit_template")
         fi
     done <<< "$matching_configs"
 
-    if [[ -z "$branch_names" ]]; then
-        # Case where only current branch has configs/template and -B not specified
-        if [[ -n "$current_branch_has_configs" ]]; then
-            echo "Nothing to tidy up except current branch."
-        # The following case shouldn't happen, but including for completeness
-        else
-            echo "Nothing to tidy up."
+    # Get array of orphaned templates
+    local saved_IFS="$IFS"
+    local IFS=$'\n'
+    local all_commit_templates=($(find "$repo_root_dir" -maxdepth 1 -type f \( -name ".gitmessage_local*" ! -name "$current_branch_template" \) -exec basename {} \;))
+    # Filters out templates in all_commit_templates
+    # Based on: https://stackoverflow.com/questions/2312762/compare-difference-of-two-arrays-in-bash#comment78031743_28161520
+    local orphan_commit_templates=($(echo ${configured_commit_templates[@]} ${configured_commit_templates[@]} ${all_commit_templates[@]} | tr ' ' '\n' | sort | uniq -u))
+    IFS="$saved_IFS"
+
+    # Configured Templates
+    if [[ -n "$target_branch_names" ]]; then
+        echo "Commit templates and configs will be removed for the following branches:"
+        echo ""
+        echo_indented "${target_branch_names[@]}"
+        echo ""
+        # Additional info if current branch has configs
+        if [[ -n "$current_branch_template" ]] && [[ -n "$arg_include_current_branch" ]]; then
+            echo_warning "This includes configs for the branch you are currently on!"
+            echo ""
         fi
+    elif [[ -n "$current_branch_template" ]]; then
+        echo "Only branch with a template configured is the current branch."
+        echo "To include current branch, run with -B argument."
+        echo ""
+    else
+        echo "No configured templates to tidy up."
+        echo ""
+    fi
+
+    # Orphaned Templates
+    if [[ -n "$orphan_commit_templates" ]]; then
+        echo "The following commit templates do not have an associated branch and will be deleted:"
+        echo ""
+        echo_indented "${orphan_commit_templates[@]}"
+        echo ""
+    fi
+
+    # If there's nothing to clean up
+    if [[ -z "$target_branch_names" ]] && [[ -z "$orphan_commit_templates" ]]; then
+        echo "Nothing to tidy up."
         exit
     fi
 
     local confirm_delete="$arg_skip_confirmation"
-    if [[ -z "$confirm_delete" ]]; then
-        echo_warning "Commit templates and configs will be removed for the following branches:" \
-            "${branch_names[@]}"
-        echo ""
-        if [[ -n "$current_branch_has_configs" ]]; then
-            if [[ -n "$arg_include_current_branch" ]]; then
-                echo_warning "This includes configs for the branch you are currently on!" 
-            else
-                echo_info "Commit template and configs for the current branch will not be removed:" \
-                          "$current_branch"
-            fi
-            echo ""
-        fi
-    fi
     while [[ -z "$confirm_delete" ]]; do
         local yn
         echo "Would you like to continue?"
@@ -136,12 +159,21 @@ main() {
     [[ "$confirm_delete" < 1 ]] && exit
 
     # TODO: optionally delete branches? if so call finish instead?
-    for branch_name in "${branch_names[@]}"; do
+    echo "Tidying up configs..."
+    for branch_name in "${target_branch_names[@]}"; do
         "$UNSET_COMMIT_TEMPLATE_SCRIPT" -b "$branch_name"
         echo ""
     done
-    # TODO: Look for orphaned .gitmessage_local* templates
-    # TODO: if orphans, warn and prompt 
-    # TODO: if confirmed, rm orphans
+
+    if [[ -n "$orphan_commit_templates" ]]; then
+        echo "Removing orphaned templates..."
+        for orphan_commit_template in "${orphan_commit_templates[@]}"; do
+            local orphan_commit_template_path="$repo_root_dir/$orphan_commit_template"
+            if [[ -e "$orphan_commit_template_path" ]]; then
+                rm "$orphan_commit_template_path"
+                [[ ! -e "$orphan_commit_template_path" ]] && echo_success "Deleted $orphan_commit_template"
+            fi
+        done
+    fi
 }
 main "$@"
