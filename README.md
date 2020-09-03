@@ -4,14 +4,14 @@
 
 <!-- vim-markdown-toc GFM -->
 
+* [Setup](#setup)
+    * [Prerequisites](#prerequisites)
+    * [Installation](#installation)
 * [Overview](#overview)
     * [Create a New Branch with Commit Template](#create-a-new-branch-with-commit-template)
     * [Finish Up a Branch](#finish-up-a-branch)
     * [Remove a Branch's Commit Template](#remove-a-branchs-commit-template)
     * [Tidy Up Entire Local Repo](#tidy-up-entire-local-repo)
-* [Setup](#setup)
-    * [Prerequisites](#prerequisites)
-    * [Installation](#installation)
 * [Scripts](#scripts)
     * [`workflow-branch`](#workflow-branch)
         * [Usage](#usage)
@@ -33,6 +33,42 @@
         * [Details](#details)
 
 <!-- vim-markdown-toc -->
+
+# Setup
+
+## Prerequisites
+
+These scripts use features that require **git 2.23 or greater**. To install an
+updated version of `git` on macOS using [Homebrew](https://brew.sh/):
+
+```
+brew install git
+```
+
+Make sure `/usr/local/bin` is added to your `PATH` e.g.:
+
+```
+export PATH="/usr/local/bin:$PATH"
+```
+
+> **Note:** These scripts were developed using GNU bash 5.0.17 on macOS. While I
+> don't believe this uses any features that aren't supported by the builtin
+> version of bash on macOS, it's definitely not impossible. [Here's instructions
+> on upgrading bash on macOS using
+> Homebrew](https://itnext.io/upgrading-bash-on-macos-7138bd1066ba) just in
+> case.
+
+## Installation
+
+Clone this repo and update your `.bashrc` to include it in your `PATH`. E.g. if
+you cloned it into `~/bin/git-workflow-scripts`:
+
+```bash
+export PATH="$HOME/bin/git-workflow-scripts:$PATH"
+```
+
+
+--------------------------------------------------------------------------------
 
 # Overview
 
@@ -97,43 +133,6 @@ If you have a bunch of lingering commit templates, you can run
 **Demo:**
 
 ![workflow-tidy-up demo](../assets/demos/tidy-up.gif?raw=true)
-
-
---------------------------------------------------------------------------------
-
-# Setup
-
-## Prerequisites
-
-These scripts use features that require **git 2.23 or greater**. To install an
-updated version of `git` on macOS using [Homebrew](https://brew.sh/):
-
-```
-brew install git
-```
-
-Make sure `/usr/local/bin` is added to your `PATH` e.g.:
-
-```
-export PATH="/usr/local/bin:$PATH"
-```
-
-> **Note:** These scripts were developed using GNU bash 5.0.17 on macOS. While I
-> don't believe this uses any features that aren't supported by the builtin
-> version of bash on macOS, it's definitely not impossible. [Here's instructions
-> on upgrading bash on macOS using
-> Homebrew](https://itnext.io/upgrading-bash-on-macos-7138bd1066ba) just in
-> case.
-
-
-## Installation
-
-Clone this repo and update your `.bashrc` to include it in your `PATH`. E.g. if
-you cloned it into `~/bin/git-workflow-scripts`:
-
-```bash
-export PATH="$HOME/bin/git-workflow-scripts:$PATH"
-```
 
 
 --------------------------------------------------------------------------------
