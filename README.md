@@ -7,6 +7,9 @@
 * [Setup](#setup)
     * [Prerequisites](#prerequisites)
     * [Installation](#installation)
+    * [Configuring Git to Ignore Script-Related Files](#configuring-git-to-ignore-script-related-files)
+        * [Configure Global .gitignore (RECOMMENDED)](#configure-global-gitignore-recommended)
+        * [Ignore for Single Repo](#ignore-for-single-repo)
 * [Overview](#overview)
     * [Create a New Branch with Commit Template](#create-a-new-branch-with-commit-template)
     * [Finish Up a Branch](#finish-up-a-branch)
@@ -16,16 +19,12 @@
     * [`workflow-branch`](#workflow-branch)
         * [Usage](#usage)
         * [Configurations](#configurations)
-    * [`workflow-commit-template`](#workflow-commit-template)
-        * [Usage](#usage-1)
-            * [Remove and unconfigure local template](#remove-and-unconfigure-local-template)
-        * [Configuring Git](#configuring-git)
-            * [Configure git to ignore generated template files](#configure-git-to-ignore-generated-template-files)
-                * [For individal repo:](#for-individal-repo)
-                * [For all repos (RECOMMENDED):](#for-all-repos-recommended)
-    * [`workflow-unset-commit-template`](#workflow-unset-commit-template)
-        * [Usage](#usage-2)
     * [`workflow-finish-branch`](#workflow-finish-branch)
+        * [Usage](#usage-1)
+    * [`workflow-commit-template`](#workflow-commit-template)
+        * [Usage](#usage-2)
+            * [Remove and unconfigure local template](#remove-and-unconfigure-local-template)
+    * [`workflow-unset-commit-template`](#workflow-unset-commit-template)
         * [Usage](#usage-3)
     * [`workflow-tidy-up`](#workflow-tidy-up)
         * [Usage](#usage-4)
@@ -65,6 +64,45 @@ you cloned it into `~/bin/git-workflow-scripts`:
 
 ```bash
 export PATH="$HOME/bin/git-workflow-scripts:$PATH"
+```
+
+## Configuring Git to Ignore Script-Related Files
+
+These scripts generate files for commit templates, which you probably don't want
+to track in your repos.
+
+### Configure Global .gitignore (RECOMMENDED)
+
+To have git ignore generated template files in all repos:
+
+1. Create a global gitignore file, e.g. `~/.gitignore_global`
+2. Set the global git config for `core.excludesfile` to the path to the global
+   gitignore, e.g.:
+
+    ```
+    git config --global core.excludesfile ~/.gitignore_global
+    ```
+
+3. Add the following to your global gitignore:
+
+    ```
+    # Commit message templates
+    .gitmessage_local*
+    ```
+
+> For more information on `core.excludesfile`:
+> 
+> - [GitHub - Ignoring files](https://docs.github.com/en/github/using-git/ignoring-files#configuring-ignored-files-for-all-repositories-on-your-computer)
+> - [Git Configuration - core.excludesfile](https://git-scm.com/book/en/v2/Customizing-Git-Git-Configuration#_core_excludesfile)
+
+### Ignore for Single Repo
+
+To ignore generated template files in a single repo, add the following to the
+`.gitignore`:
+
+```
+# Commit message templates
+.gitmessage_local*
 ```
 
 
@@ -231,102 +269,6 @@ Script will use the following git configs if set:
   disable the ticket number prompt.
 
 
-## `workflow-commit-template`
-
-Creates and configures a git commit template for the current branch that
-includes a ticket number in brackets before the commit message. E.g. for ticket
-number `12345`:
-
- ```
- [#12345] <commit message text goes here>
- ```
-
-Templates generated with this script are created in the root of the git
-repository with this name format:
-
- ```
- .gitmessage_local_<ticket>_<branch>
- ```
-
-Where `<ticket>` is the ticket number used in the template and `<branch>` is the
-branch that will use this template.
-
-### Usage
-
-```
-workflow-commit-template [<ticket number>]
-```
-
-If not arguments are passed, user will be prompted for the ticket number.
-
-#### Remove and unconfigure local template
-
-Use `workflow-unset-commit-template` to quickly unset local `commit.template`
-config and remote the template file.
-
-(See [`workflow-unset-commit-template`](#workflow-unset-commit-template) for
-more information.)
-
-### Configuring Git
-
-#### Configure git to ignore generated template files
-
-##### For individal repo:
-
-To ignore generated templates in a single repository, add the following to the
-`.gitignore`:
-
-```
-# Commit message templates
-.gitmessage_local*
-```
-
-##### For all repos (RECOMMENDED):
-
-To have git always ignore generated templates:
-
-1. Create a global gitignore file, e.g. `~/.gitignore_global`
-2. Set the global git config for `core.excludesfile` to the path to the global
-   gitignore, e.g.:
-
-    ```
-    git config --global core.excludesfile ~/.gitignore_global
-    ```
-
-3. Add the following to your global gitignore:
-
-    ```
-    # Commit message templates
-    .gitmessage_local*
-    ```
-
-See the following articles for more information on `core.excludesfile`:
-
-- [GitHub - Ignoring files](https://docs.github.com/en/github/using-git/ignoring-files#configuring-ignored-files-for-all-repositories-on-your-computer)
-- [Git Configuration - core.excludesfile](https://git-scm.com/book/en/v2/Customizing-Git-Git-Configuration#_core_excludesfile)
-
-
-## `workflow-unset-commit-template`
-
-For use with [`workflow-commit-template`](#workflow-commit-template).
-
-Unset branch's git config for `commit.template`. Template file will be deleted
-unless `-D` argument was specified.
-
-### Usage
-
-```
-Usage: workflow-unset-commit-template [-b <branch>] [-D] [-h]
-```
-
-This script accepts optional arguments to override defaults. For details on
-optional arguments, run:
-
-```
-workflow-unset-commit-template -h
-```
-
-
 ## `workflow-finish-branch`
 
 Finish a project branch. 
@@ -352,6 +294,67 @@ optional arguments, run:
 
 ```
 workflow-finish-branch -h
+```
+
+
+## `workflow-commit-template`
+
+Creates and configures a git commit template for the current branch that
+includes a ticket number in brackets before the commit message. E.g. for ticket
+number `12345`:
+
+ ```
+ [#12345] <commit message text goes here>
+ ```
+
+Templates generated with this script are created in the root of the git
+repository with this name format:
+
+ ```
+ .gitmessage_local_<ticket>_<branch>
+ ```
+
+Where `<ticket>` is the ticket number used in the template and `<branch>` is the
+branch that will use this template.
+
+> To configure git to ignore these template files, see [Configuring Git to
+> Ignore Script-Related Files](#configuring-git-to-ignore-script-related-files)
+
+### Usage
+
+```
+workflow-commit-template [<ticket number>]
+```
+
+If not arguments are passed, user will be prompted for the ticket number.
+
+#### Remove and unconfigure local template
+
+Use `workflow-unset-commit-template` to quickly unset local `commit.template`
+config and remote the template file.
+
+(See [`workflow-unset-commit-template`](#workflow-unset-commit-template) for
+more information.)
+
+
+## `workflow-unset-commit-template`
+
+For use with [`workflow-commit-template`](#workflow-commit-template).
+
+Unset branch's git config for `commit.template`. Template file will be deleted
+unless `-D` argument was specified.
+
+### Usage
+
+```
+Usage: workflow-unset-commit-template [-b <branch>] [-D] [-h]
+```
+
+This script accepts optional arguments to override defaults. For details on
+optional arguments, run:
+
+```
+workflow-unset-commit-template -h
 ```
 
 
