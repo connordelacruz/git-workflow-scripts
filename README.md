@@ -15,10 +15,14 @@
     * [Finish Up a Branch](#finish-up-a-branch)
     * [Remove a Branch's Commit Template](#remove-a-branchs-commit-template)
     * [Tidy Up Entire Local Repo](#tidy-up-entire-local-repo)
+* [Configurations](#configurations)
+    * [`workflow.initials`](#workflowinitials)
+    * [`workflow.baseBranch`](#workflowbasebranch)
+    * [`workflow.badBranchNamePatterns`](#workflowbadbranchnamepatterns)
+    * [`workflow.enableCommitTemplate`](#workflowenablecommittemplate)
 * [Scripts](#scripts)
     * [`workflow-branch`](#workflow-branch)
         * [Usage](#usage)
-        * [Configurations](#configurations)
     * [`workflow-finish-branch`](#workflow-finish-branch)
         * [Usage](#usage-1)
     * [`workflow-commit-template`](#workflow-commit-template)
@@ -175,30 +179,67 @@ If you have a bunch of lingering commit templates, you can run
 
 --------------------------------------------------------------------------------
 
+# Configurations
+
+Scripts will use the following git configs if set:
+
+## `workflow.initials` 
+
+**Used in:** [`workflow-branch`](#workflow-branch)
+
+When running [`workflow-branch`](#workflow-branch), skip the prompt for user's
+initials and use the value of this.
+
+E.g. to automatically use "cd":
+
+```bash
+git config --global workflow.initials cd
+```
+
+## `workflow.baseBranch`
+
+**Used in:** [`workflow-branch`](#workflow-branch),
+[`workflow-finish-branch`](#workflow-finish-branch)
+
+**Default:** master
+
+Branch to use as a base when creating a new branch.
+
+E.g. to base branches off `develop`:
+
+```bash
+git config workflow.baseBranch develop
+```
+
+## `workflow.badBranchNamePatterns` 
+
+**Used in:** [`workflow-branch`](#workflow-branch)
+
+Set to a **space-separated** string of patterns that should not appear in a
+standard branch name. Script will check for these before attempting to create a
+branch. 
+
+E.g. if branch names shouldn't include the words `-web` or `-plugins`:
+
+```bash
+git config workflow.badBranchNamePatterns "-web -plugins"
+```
+
+## `workflow.enableCommitTemplate` 
+
+**Used in:** [`workflow-branch`](#workflow-branch)
+
+**Default:** 1
+
+By default, script will prompt for an optional ticket number and create a commit
+message template with it (see
+[`workflow-commit-template`](#workflow-commit-template)). Set this to `0` to
+disable the ticket number prompt.
+
+
+--------------------------------------------------------------------------------
+
 # Scripts
-
-<!-- vim-markdown-toc GFM -->
-
-* [`workflow-branch`](#workflow-branch)
-    * [Usage](#usage)
-    * [Configurations](#configurations)
-* [`workflow-commit-template`](#workflow-commit-template)
-    * [Usage](#usage-1)
-        * [Remove and unconfigure local template](#remove-and-unconfigure-local-template)
-    * [Configuring Git](#configuring-git)
-        * [Configure git to ignore generated template files](#configure-git-to-ignore-generated-template-files)
-            * [For individal repo:](#for-individal-repo)
-            * [For all repos (RECOMMENDED):](#for-all-repos-recommended)
-* [`workflow-unset-commit-template`](#workflow-unset-commit-template)
-    * [Usage](#usage-2)
-* [`workflow-finish-branch`](#workflow-finish-branch)
-    * [Usage](#usage-3)
-* [`workflow-tidy-up`](#workflow-tidy-up)
-    * [Usage](#usage-4)
-* [`workflow-init`](#workflow-init)
-    * [Details](#details)
-
-<!-- vim-markdown-toc -->
 
 ## `workflow-branch`
 
@@ -236,37 +277,6 @@ workflow-branch -h
 
 If no optional arguments are provided, you will be prompted for information used
 in the branch name (client, description, etc). 
-
-### Configurations
-
-Script will use the following git configs if set:
-
-- `workflow.initials`: Skip the prompt for user's initials and use the value
-  of this. E.g. to automatically use "cd":
-
-    ```bash
-    git config --global workflow.initials cd
-    ```
-
-- `workflow.baseBranch`: Use instead of `master` as the base git branch when
-  creating the new branch. E.g. to base branches off `develop`:
-
-    ```bash
-    git config workflow.baseBranch develop
-    ```
-- `workflow.badBranchNamePatterns`: Set to a **space-separated** string of
-  patterns that should not appear in a standard branch name. Script will
-  check for these before attempting to create a branch. E.g. if branch
-  names shouldn't include the words `-web` or `-plugins`:
-
-    ```bash
-    git config workflow.badBranchNamePatterns "-web -plugins"
-    ```
-
-- `workflow.enableCommitTemplate`: By default, script will prompt for an
-  optional ticket number and create a commit message template with it (see
-  [`workflow-commit-template`](#workflow-commit-template)). Set this to `0` to
-  disable the ticket number prompt.
 
 
 ## `workflow-finish-branch`
