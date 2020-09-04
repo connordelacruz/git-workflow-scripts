@@ -12,7 +12,7 @@ set -o errexit
 # ------------------------------------------------------------------------------
 # Usage
 # ------------------------------------------------------------------------------
-# Usage: workflow-unset-commit-template [-b <branch>] [-D] [-h]
+# Usage: workflow-unset-commit-template [-b <branch>] [-D] [-V] [-h]
 #
 # This script accepts optional arguments to override defaults. For details on
 # optional arguments, run:
@@ -29,10 +29,11 @@ source "$UTIL_DIR/ALL.sh"
 # Functions --------------------------------------------------------------------
 
 show_help() {
-    echo "Usage: workflow-unset-commit-template [-b <branch>] [-D] [-h]"
+    echo "Usage: workflow-unset-commit-template [-b <branch>] [-D] [-V] [-h]"
     echo "Options:"
     echo "  -b <branch>  Specify branch to unset template for (default: current branch)."
     echo "  -D           Don't delete commit template file."
+    echo '  -V           Print version number and exit.'
     echo "  -h           Show this help message and exit."
 }
 
@@ -49,13 +50,16 @@ main() {
     # -D don't delete template file
     # -b <branch> unset a different branch
     local arg_no_delete arg_branch_name
-    while getopts 'Db:h' opt; do
+    while getopts 'Db:hV' opt; do
         case ${opt} in
             D)
                 arg_no_delete=1
                 ;;
             b)
                 arg_branch_name="$OPTARG"
+                ;;
+            V)
+                show_version_and_exit
                 ;;
             h|?)
                 show_help

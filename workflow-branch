@@ -22,7 +22,7 @@ set -o errexit
 # ------------------------------------------------------------------------------
 # Usage: workflow-branch [-c <client>|-C] [-d <description>] [-i <initials>]
 #                        [-b <base-branch>|-B] [-t <yyyymmdd>] [-s <ticket#>|-S]
-#                        [-P] [-N] [-h]
+#                        [-P] [-N] [-V] [-h]
 #
 # This script accepts optional arguments to skip input prompts and override
 # defaults and git configurations. For details on optional arguments, run:
@@ -144,7 +144,7 @@ show_help() {
     # TODO pull from configs for default vals?
     echo 'Usage: workflow-branch [-c <client>|-C] [-d <description>] [-i <initials>]'
     echo '                       [-b <base-branch>|-B] [-t <yyyymmdd>] [-s <ticket#>|-S]'
-    echo '                       [-P] [-N] [-h]'
+    echo '                       [-P] [-N] [-V] [-h]'
     echo 'Options:'
     echo '  -c <client>       Specify client name.'
     echo '  -C                No client name (overrides -c).'
@@ -157,6 +157,7 @@ show_help() {
     echo '  -S                No commit message template (overrides -s).'
     echo '  -P                Skip pulling changes to base branch.'
     echo '  -N                Skip check for bad branch names.'
+    echo '  -V                Print version number and exit.'
     echo '  -h                Show this help message and exit.'
 }
 
@@ -186,7 +187,7 @@ main() {
     local arg_client arg_no_client arg_desc arg_timestamp arg_init \
           arg_base_branch arg_no_pull arg_skip_name_check \
           arg_ticket arg_no_ticket
-    while getopts 'c:Cd:i:b:Bt:PNs:Sh' opt; do
+    while getopts 'c:Cd:i:b:Bt:PNs:ShV' opt; do
         case ${opt} in
             c)
                 arg_client="$(fmt_text "$OPTARG")"
@@ -220,6 +221,9 @@ main() {
                 ;;
             S)
                 arg_no_ticket=1
+                ;;
+            V)
+                show_version_and_exit
                 ;;
             h|?)
                 show_help

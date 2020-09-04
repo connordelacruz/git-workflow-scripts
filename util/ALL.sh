@@ -17,4 +17,6 @@ source "$UTIL_DIR/output.sh"
 source "$UTIL_DIR/git.sh"
 # Workflow script paths
 source "$UTIL_DIR/scripts.sh"
+# Project info
+source "$UTIL_DIR/info.sh"
 

@@ -18,7 +18,7 @@ set -o errexit
 # ------------------------------------------------------------------------------
 # Usage
 # ------------------------------------------------------------------------------
-# Usage: workflow-finish-branch [-b <branch>] [-f] [-h]
+# Usage: workflow-finish-branch [-b <branch>] [-f] [-V] [-h]
 #
 # This script accepts optional arguments to override defaults. For details on
 # optional arguments, run:
@@ -35,10 +35,11 @@ source "$UTIL_DIR/ALL.sh"
 # Functions --------------------------------------------------------------------
 
 show_help() {
-    echo "Usage: workflow-finish-branch [-b <branch>] [-f] [-h]"
+    echo "Usage: workflow-finish-branch [-b <branch>] [-f] [-V] [-h]"
     echo "Options:"
     echo "  -b <branch>  Specify branch to finish (default: current branch)."
     echo "  -f           Skip confirmation prompt."
+    echo '  -V           Print version number and exit.'
     echo "  -h           Show this help message and exit."
 }
 
@@ -53,13 +54,16 @@ main() {
     # Parse arguments:
     # -f skip confirmation prompt
     local arg_skip_confirmation arg_branch_name
-    while getopts 'fb:h' opt; do
+    while getopts 'fb:hV' opt; do
         case ${opt} in
             f)
                 arg_skip_confirmation=1
                 ;;
             b)
                 arg_branch_name="$OPTARG"
+                ;;
+            V)
+                show_version_and_exit
                 ;;
             h|?)
                 show_help

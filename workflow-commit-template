@@ -82,6 +82,13 @@ fmt_ticket_number() {
     echo "$formatted"
 }
 
+show_help() {
+    echo 'Usage: workflow-commit-template [<ticket number>] [-V] [-h]'
+    echo 'Options:'
+    echo '  -V  Print version number and exit.'
+    echo '  -h  Show this help message and exit.'
+}
+
 # Main -------------------------------------------------------------------------
 
 # Prompts the user for a ticket number, validates and sanitizes input,
@@ -91,6 +98,14 @@ fmt_ticket_number() {
 # Arguments:
 #   (Optional) Ticket number, will be prompted if not provided or invalid
 main() {
+    # -h and -V parsing
+    if [[ "$1" == '-h' ]]; then
+        show_help
+        exit
+    elif [[ "$1" == '-V' ]]; then
+        show_version_and_exit
+    fi
+
     # Check git version > 2.23 and that we're in a repo currently
     local version_check="$(verify_git_version)"
     [[ -n "$version_check" ]] && echo_error "$version_check" && exit 1

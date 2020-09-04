@@ -264,7 +264,7 @@ spaces/underscores, all lowercase).
 ```
 Usage: workflow-branch [-c <client>|-C] [-d <description>] [-i <initials>]
                        [-b <base-branch>|-B] [-t <yyyymmdd>] [-s <ticket#>|-S]
-                       [-P] [-N] [-h]
+                       [-P] [-N] [-V] [-h]
 ```
 
 This script accepts optional arguments to skip input prompts and override
@@ -296,7 +296,7 @@ performs the following:
 ### Usage
 
 ```
-Usage: workflow-finish-branch [-b <branch>] [-f] [-h]
+Usage: workflow-finish-branch [-b <branch>] [-f] [-V] [-h]
 ```
 
 This script accepts optional arguments to override defaults. For details on
@@ -333,7 +333,7 @@ branch that will use this template.
 ### Usage
 
 ```
-workflow-commit-template [<ticket number>]
+workflow-commit-template [<ticket number>] [-V] [-h]
 ```
 
 If not arguments are passed, user will be prompted for the ticket number.
@@ -357,7 +357,7 @@ unless `-D` argument was specified.
 ### Usage
 
 ```
-Usage: workflow-unset-commit-template [-b <branch>] [-D] [-h]
+Usage: workflow-unset-commit-template [-b <branch>] [-D] [-V] [-h]
 ```
 
 This script accepts optional arguments to override defaults. For details on
@@ -384,7 +384,7 @@ By default, the current branch will be omitted from cleanup.
 ### Usage
 
 ```
-Usage: workflow-tidy-up [-f] [-B] [-o] [-h]
+Usage: workflow-tidy-up [-f] [-B] [-o] [-V] [-h]
 ```
 
 This script accepts optional arguments to override defaults. For details on
