@@ -9,14 +9,15 @@
 #
 # ==============================================================================
 
+# Project info
+source "$UTIL_DIR/info.sh"
+# Workflow script paths
+source "$UTIL_DIR/scripts.sh"
 # Configs
 source "$UTIL_DIR/configs.sh"
 # Output formatting
 source "$UTIL_DIR/output.sh"
 # Git utilities
 source "$UTIL_DIR/git.sh"
-# Workflow script paths
-source "$UTIL_DIR/scripts.sh"
-# Project info
-source "$UTIL_DIR/info.sh"
-
+# Initialize workflow
+source "$UTIL_DIR/init.sh"

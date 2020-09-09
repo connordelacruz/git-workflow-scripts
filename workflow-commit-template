@@ -130,7 +130,7 @@ main() {
     # Initialize repo if not already
     if [[ "$(is_workflow_configured "$repo_root_dir")" < 1 ]]; then
         echo "Repo hasn't been initialized. Running workflow-init..."
-        "$INIT_SCRIPT"
+        init_workflow
     fi
     local branch_name="$(git_current_branch)"
     local workflow_config_path="$(git config --local --includes --get workflow.configpath)"

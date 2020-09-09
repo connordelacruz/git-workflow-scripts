@@ -18,6 +18,7 @@ verify_git_repo() {
 #
 # If version is fine, then outputs nothing. If version is too low, echos error
 # message.
+# TODO move echo_error and exit 1 here
 verify_git_version() {
     local expr="git version ([0-9]+)\.([0-9]*)\.[0-9]*.*"
     local version="$(git --version)"
@@ -47,33 +48,5 @@ git_current_branch() {
 # Returns the name of branch's upstream remoet (may be empty)
 git_upstream() {
     git for-each-ref --format='%(upstream:short)' "$(git symbolic-ref -q HEAD)"
-}
-
-# Framework Checks -------------------------------------------------------------
-
-# Returns 1 if current repo is already configured, 0 otherwise
-#
-# Arguments:
-#   (Optional) Root of the git repo. Will determine using git_repo_root if
-#   unspecified
-is_workflow_configured() {
-    local repo_root_dir="${1:-$(git_repo_root)}"
-    local config_file_exists="$(verify_workflow_config_file "$repo_root_dir")"
-    local config_include_exists="$(verify_workflow_config_include)"
-    echo $(( $config_file_exists * $config_include_exists ))
-}
-
-# Returns 1 if repo has config file for workflow, 0 otherwise
-verify_workflow_config_file() {
-    local repo_root_dir="$1"
-    local workflow_config_path="$repo_root_dir/.git/config_workflow"
-    [[ -f "$workflow_config_path" ]] && echo 1 || echo 0
-}
-
-# Returns 1 if local config + includes has workflow.configpath set, 0
-# otherwise
-verify_workflow_config_include() {
-    [[ -n "$(git config --local --includes --get workflow.configpath)" ]] &&
-        echo 1 || echo 0
 }
 

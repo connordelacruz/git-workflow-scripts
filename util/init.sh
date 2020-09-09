@@ -19,23 +19,38 @@ set -o errexit
 #    any configurations from that file into the local repo.
 # ==============================================================================
 
-# Imports ----------------------------------------------------------------------
-readonly SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-readonly UTIL_DIR="$SCRIPT_DIR/util"
-source "$UTIL_DIR/ALL.sh"
+# Returns 1 if current repo is already configured, 0 otherwise
+#
+# Arguments:
+#   (Optional) Root of the git repo. Will determine using git_repo_root if
+#   unspecified
+is_workflow_configured() {
+    local repo_root_dir="${1:-$(git_repo_root)}"
+    local config_file_exists="$(verify_workflow_config_file "$repo_root_dir")"
+    local config_include_exists="$(verify_workflow_config_include)"
+    echo $(( $config_file_exists * $config_include_exists ))
+}
 
-# Main -------------------------------------------------------------------------
+# Returns 1 if repo has config file for workflow, 0 otherwise
+verify_workflow_config_file() {
+    local repo_root_dir="$1"
+    local workflow_config_path="$repo_root_dir/.git/config_workflow"
+    [[ -f "$workflow_config_path" ]] && echo 1 || echo 0
+}
 
-main() {
-    # Check git version > 2.23 and that we're in a repo currently
-    local version_check="$(verify_git_version)"
-    [[ -n "$version_check" ]] && echo_error "$version_check" && exit 1
-    verify_git_repo
+# Returns 1 if local config + includes has workflow.configpath set, 0
+# otherwise
+verify_workflow_config_include() {
+    [[ -n "$(git config --local --includes --get workflow.configpath)" ]] &&
+        echo 1 || echo 0
+}
 
+# TODO args?
+init_workflow() {
     [[ "$(is_workflow_configured)" > 0 ]] && echo "Repo already initialized." && exit
-
     local repo_root_dir="$(git_repo_root)"
     local workflow_config_path="$repo_root_dir/.git/config_workflow"
+
     echo "Creating workflow config file for this repo..."
     git config -f "$workflow_config_path" workflow.configpath "$workflow_config_path"
     if [[ "$(verify_workflow_config_file "$repo_root_dir")" > 0 ]]; then
@@ -62,4 +77,3 @@ main() {
         exit 1
     fi
 }
-main "$@"
