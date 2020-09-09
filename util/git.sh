@@ -18,7 +18,6 @@ verify_git_repo() {
 #
 # If version is fine, then outputs nothing. If version is too low, echos error
 # message.
-# TODO move echo_error and exit 1 here
 verify_git_version() {
     local expr="git version ([0-9]+)\.([0-9]*)\.[0-9]*.*"
     local version="$(git --version)"
