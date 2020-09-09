@@ -45,10 +45,13 @@ verify_workflow_config_include() {
         echo 1 || echo 0
 }
 
-# TODO args?
+# Initialize repo to use workflow scripts.
+#
+# Arguments:
+#   (Optional) Root of the git repo. Will determine using git_repo_root if
+#   unspecified
 init_workflow() {
-    [[ "$(is_workflow_configured)" > 0 ]] && echo "Repo already initialized." && exit
-    local repo_root_dir="$(git_repo_root)"
+    local repo_root_dir="${1:-$(git_repo_root)}"
     local workflow_config_path="$repo_root_dir/.git/config_workflow"
 
     echo "Creating workflow config file for this repo..."
