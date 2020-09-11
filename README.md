@@ -4,17 +4,17 @@
 
 <!-- vim-markdown-toc GFM -->
 
+* [Overview](#overview)
+    * [Create a New Branch with Commit Template](#create-a-new-branch-with-commit-template)
+    * [Finish Up a Branch](#finish-up-a-branch)
+    * [Remove a Branch's Commit Template](#remove-a-branchs-commit-template)
+    * [Tidy Up Entire Local Repo](#tidy-up-entire-local-repo)
 * [Setup](#setup)
     * [Prerequisites](#prerequisites)
     * [Installation](#installation)
     * [Configuring Git to Ignore Script-Related Files](#configuring-git-to-ignore-script-related-files)
         * [Configure Global .gitignore (RECOMMENDED)](#configure-global-gitignore-recommended)
         * [Ignore for Single Repo](#ignore-for-single-repo)
-* [Overview](#overview)
-    * [Create a New Branch with Commit Template](#create-a-new-branch-with-commit-template)
-    * [Finish Up a Branch](#finish-up-a-branch)
-    * [Remove a Branch's Commit Template](#remove-a-branchs-commit-template)
-    * [Tidy Up Entire Local Repo](#tidy-up-entire-local-repo)
 * [Configurations](#configurations)
     * [`workflow.initials`](#workflowinitials)
     * [`workflow.baseBranch`](#workflowbasebranch)
@@ -34,6 +34,73 @@
         * [Usage](#usage-4)
 
 <!-- vim-markdown-toc -->
+
+# Overview
+
+This repo contains some scripts to speed up common tasks in our git workflow.
+
+## Create a New Branch with Commit Template
+
+Run `workflow-branch` to create a new project branch with the name format:
+
+```
+[<client>-]<brief-description>-<yyyymmdd>-<initials>
+```
+
+If you provide a ticket number, this will use `workflow-commit-template` to
+create a commit template for the branch, so all your commit messages will begin
+with:
+
+```
+[#<ticket>]
+```
+
+**Demos:**
+
+Creating a project branch:
+
+![workflow-branch demo](../assets/demos/branch.gif?raw=true)
+
+Commit messages will include ticket number:
+
+![commit message template demo](../assets/demos/commit-message.gif?raw=true)
+
+Different branches can use different commit templates:
+
+![per-branch commit templates demo](../assets/demos/per-branch-commit-templates.gif?raw=true)
+
+(:point_up: Also, workflow scripts have a variety of command line options)
+
+## Finish Up a Branch
+
+When you're finished with a project branch and have pushed up all your changes
+to a remote, run `workflow-finish-branch` to clean up configs, remove the commit
+template, and delete the branch.
+
+**Demo:**
+
+![workflow-finish-branch demo](../assets/demos/finish-branch.gif?raw=true)
+
+## Remove a Branch's Commit Template
+
+If you just want to remove the commit template from a branch, run
+`workflow-unset-commit-template`.
+
+**Demo:**
+
+![workflow-unset-commit-template demo](../assets/demos/unset-commit-template.gif?raw=true)
+
+## Tidy Up Entire Local Repo
+
+If you have a bunch of lingering commit templates, you can run
+`workflow-tidy-up` to clean up configs and commit template files.
+
+**Demo:**
+
+![workflow-tidy-up demo](../assets/demos/tidy-up.gif?raw=true)
+
+--------------------------------------------------------------------------------
+
 
 # Setup
 
@@ -107,75 +174,8 @@ To ignore generated template files in a single repo, add the following to the
 .gitmessage_local*
 ```
 
-
 --------------------------------------------------------------------------------
 
-# Overview
-
-This repo contains some scripts to speed up common tasks in our git workflow.
-
-## Create a New Branch with Commit Template
-
-Run `workflow-branch` to create a new project branch with the name format:
-
-```
-[<client>-]<brief-description>-<yyyymmdd>-<initials>
-```
-
-If you provide a ticket number, this will use `workflow-commit-template` to
-create a commit template for the branch, so all your commit messages will begin
-with:
-
-```
-[#<ticket>]
-```
-
-**Demos:**
-
-Creating a project branch:
-
-![workflow-branch demo](../assets/demos/branch.gif?raw=true)
-
-Commit messages will include ticket number:
-
-![commit message template demo](../assets/demos/commit-message.gif?raw=true)
-
-Different branches can use different commit templates:
-
-![per-branch commit templates demo](../assets/demos/per-branch-commit-templates.gif?raw=true)
-
-(:point_up: Also, workflow scripts have a variety of command line options)
-
-## Finish Up a Branch
-
-When you're finished with a project branch and have pushed up all your changes
-to a remote, run `workflow-finish-branch` to clean up configs, remove the commit
-template, and delete the branch.
-
-**Demo:**
-
-![workflow-finish-branch demo](../assets/demos/finish-branch.gif?raw=true)
-
-## Remove a Branch's Commit Template
-
-If you just want to remove the commit template from a branch, run
-`workflow-unset-commit-template`.
-
-**Demo:**
-
-![workflow-unset-commit-template demo](../assets/demos/unset-commit-template.gif?raw=true)
-
-## Tidy Up Entire Local Repo
-
-If you have a bunch of lingering commit templates, you can run
-`workflow-tidy-up` to clean up configs and commit template files.
-
-**Demo:**
-
-![workflow-tidy-up demo](../assets/demos/tidy-up.gif?raw=true)
-
-
---------------------------------------------------------------------------------
 
 # Configurations
 
