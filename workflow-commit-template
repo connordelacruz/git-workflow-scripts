@@ -82,6 +82,19 @@ fmt_ticket_number() {
     echo "$formatted"
 }
 
+# Replace placeholders in configured commit template format string and echo
+# results
+#
+# Arguments:
+#   Ticket number
+render_commit_template_body() {
+    local ticket="$1"
+    local commit_template_body="$COMMIT_TEMPLATE_FORMAT"
+    # Replace placeholders
+    commit_template_body="${commit_template_body//%%ticket%%/$ticket}"
+    echo "$commit_template_body"
+}
+
 show_help() {
     echo 'Usage: workflow-commit-template [<ticket number>] [-V] [-h]'
     echo 'Options:'
@@ -138,7 +151,7 @@ main() {
     local commit_template_path="$repo_root_dir/$commit_template_file"
 
     echo "Creating commit template file..."
-    echo "[#$ticket] " > "$commit_template_path"
+    render_commit_template_body "$ticket" > "$commit_template_path"
     if [[ ! -f "$commit_template_path" ]]; then
         echo_error "Something went wrong when attempting to create commit template."
         exit 1

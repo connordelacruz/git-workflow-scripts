@@ -27,4 +27,7 @@ readonly BAD_BRANCH_NAME_PATTERNS="$(git_config_default workflow.badBranchNamePa
 # If > 0, enable workflow-commit-template integration with workflow-branch
 # (DEFAULT: 1)
 readonly COMMIT_TEMPLATE="$(git_config_default workflow.enableCommitTemplate 1)"
-
+# Format of commit template body. Placeholders:
+#   %%ticket%% - Replaced with ticket number
+# (Default: "[#%%ticket%%] ")
+readonly COMMIT_TEMPLATE_FORMAT="$(git_config_default workflow.commitTemplateFormat "[#%%ticket%%] ")"
