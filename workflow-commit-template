@@ -69,7 +69,7 @@ source "$UTIL_DIR/ALL.sh"
 
 # Functions --------------------------------------------------------------------
 
-# Attempts to match input using $TICKET_NUMBER_FORMAT_REGEX and returns a
+# Attempts to match input using $TICKET_INPUT_FORMAT_REGEX and returns a
 # matching string or an empty one if no match was found.
 #
 # Arguments:
@@ -79,7 +79,7 @@ source "$UTIL_DIR/ALL.sh"
 fmt_ticket_number() {
     local input="$1"
     local formatted=
-    if [[ "$input" =~ $TICKET_NUMBER_FORMAT_REGEX ]]; then
+    if [[ "$input" =~ $TICKET_INPUT_FORMAT_REGEX ]]; then
         formatted="${BASH_REMATCH[0]}"
     fi
     echo "$formatted"
@@ -139,9 +139,9 @@ main() {
         ticket="$(fmt_ticket_number "$ticket")"
         [[ -n "$ticket" ]] && echo "" && break
         # Loop if improperly formatted
-        # TODO: details on workflow.ticketNumberFormatRegex if configured?
+        # TODO: details on workflow.ticketInputFormatRegex if configured?
         echo_error "Invalid ticket number formatting." \
-            "Must match regex: $TICKET_NUMBER_FORMAT_REGEX"
+            "Must match regex: $TICKET_INPUT_FORMAT_REGEX"
     done
 
     local repo_root_dir="$(git_repo_root)"
