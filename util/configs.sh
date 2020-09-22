@@ -29,5 +29,8 @@ readonly BAD_BRANCH_NAME_PATTERNS="$(git_config_default workflow.badBranchNamePa
 readonly COMMIT_TEMPLATE="$(git_config_default workflow.enableCommitTemplate 1)"
 # Format of commit template body. Placeholders:
 #   %%ticket%% - Replaced with ticket number
-# (Default: "[#%%ticket%%] ")
-readonly COMMIT_TEMPLATE_FORMAT="$(git_config_default workflow.commitTemplateFormat "[#%%ticket%%] ")"
+# (Default: "[%%ticket%%] ")
+readonly COMMIT_TEMPLATE_FORMAT="$(git_config_default workflow.commitTemplateFormat "[%%ticket%%] ")"
+# Regex used to validate ticket number format.
+# (Default: '[a-zA-Z]+-[0-9]+')
+readonly TICKET_NUMBER_FORMAT_REGEX="$(git_config_default workflow.ticketNumberFormatRegex '[a-zA-Z]+-[0-9]+')"

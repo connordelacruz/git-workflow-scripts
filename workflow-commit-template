@@ -69,16 +69,19 @@ source "$UTIL_DIR/ALL.sh"
 
 # Functions --------------------------------------------------------------------
 
-# Sanitize and format input for ticket number.
-# Removes any non-numeric characters.
+# Attempts to match input using $TICKET_NUMBER_FORMAT_REGEX and returns a
+# matching string or an empty one if no match was found.
 #
 # Arguments:
 #   Text to sanitize and format
 # Outputs:
 #   Formatted text
 fmt_ticket_number() {
-    # Remove all non-numeric characters
-    local formatted="${1//[^0-9]}"
+    local input="$1"
+    local formatted=
+    if [[ "$input" =~ $TICKET_NUMBER_FORMAT_REGEX ]]; then
+        formatted="${BASH_REMATCH[0]}"
+    fi
     echo "$formatted"
 }
 
@@ -136,7 +139,9 @@ main() {
         ticket="$(fmt_ticket_number "$ticket")"
         [[ -n "$ticket" ]] && echo "" && break
         # Loop if improperly formatted
-        echo_error "Enter a valid ticket number."
+        # TODO: details on workflow.ticketNumberFormatRegex if configured?
+        echo_error "Invalid ticket number formatting." \
+            "Must match regex: $TICKET_NUMBER_FORMAT_REGEX"
     done
 
     local repo_root_dir="$(git_repo_root)"
@@ -147,6 +152,7 @@ main() {
     fi
     local branch_name="$(git_current_branch)"
     local workflow_config_path="$(git config --local --includes --get workflow.configpath)"
+    # TODO: remove invalid characters from template name
     local commit_template_file=".gitmessage_local_${ticket}_${branch_name}"
     local commit_template_path="$repo_root_dir/$commit_template_file"
 
