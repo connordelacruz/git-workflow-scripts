@@ -69,8 +69,9 @@ source "$UTIL_DIR/ALL.sh"
 
 # Functions --------------------------------------------------------------------
 
-# Attempts to match input using $TICKET_INPUT_FORMAT_REGEX and returns a
-# matching string or an empty one if no match was found.
+# Attempts to match input using $TICKET_INPUT_FORMAT_REGEX and apply formatting
+# based on configs. Returns the formatted matching string or an empty one if no
+# match was found.
 #
 # Arguments:
 #   Text to sanitize and format
@@ -81,6 +82,13 @@ fmt_ticket_number() {
     local formatted=
     if [[ "$input" =~ $TICKET_INPUT_FORMAT_REGEX ]]; then
         formatted="${BASH_REMATCH[0]}"
+    fi
+    if [[ -n "$formatted" ]]; then
+        # Apply formatting based on configs
+        if [[ $TICKET_FORMAT_CAPITALIZE > 0 ]]; then
+            # TODO doing this the bash 3 compatible way, but if we're already using new features then make this consistent
+            formatted="$(echo "$formatted" | tr [:lower:] [:upper:])"
+        fi
     fi
     echo "$formatted"
 }
@@ -136,6 +144,7 @@ main() {
     while [[ -z "$ticket" ]]; do
         echo "Enter ticket number to use in commit messages."
         read -p "$(echo_prompt "Ticket Number")" ticket
+        # TODO if formatted ticket number doesn't match input exactly, info output about changes
         ticket="$(fmt_ticket_number "$ticket")"
         [[ -n "$ticket" ]] && echo "" && break
         # Loop if improperly formatted

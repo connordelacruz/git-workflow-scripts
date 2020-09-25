@@ -37,3 +37,6 @@ readonly COMMIT_TEMPLATE_FORMAT="$(git_config_default workflow.commitTemplateFor
 # Regex used to validate ticket number format.
 # (DEFAULT: '[a-zA-Z]+-[0-9]+')
 readonly TICKET_INPUT_FORMAT_REGEX="$(git_config_default workflow.ticketInputFormatRegex '[a-zA-Z]+-[0-9]+')"
+# If > 0, lowercase letters in ticket will be capitalized in result.
+# (DEFAULT: 1)
+readonly TICKET_FORMAT_CAPITALIZE="$(git_config_default workflow.ticketFormatCapitalize 1)"
