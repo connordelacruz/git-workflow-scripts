@@ -20,6 +20,9 @@
     * [`workflow.baseBranch`](#workflowbasebranch)
     * [`workflow.badBranchNamePatterns`](#workflowbadbranchnamepatterns)
     * [`workflow.enableCommitTemplate`](#workflowenablecommittemplate)
+    * [`workflow.commitTemplateFormat`](#workflowcommittemplateformat)
+    * [`workflow.ticketInputFormatRegex`](#workflowticketinputformatregex)
+    * [`workflow.ticketFormatCapitalize`](#workflowticketformatcapitalize)
 * [Scripts](#scripts)
     * [`workflow-branch`](#workflow-branch)
         * [Usage](#usage)
@@ -199,7 +202,7 @@ git config --global workflow.initials cd
 **Used in:** [`workflow-branch`](#workflow-branch),
 [`workflow-finish-branch`](#workflow-finish-branch)
 
-**Default:** master
+**Default:** `master`
 
 Branch to use as a base when creating a new branch.
 
@@ -227,12 +230,57 @@ git config workflow.badBranchNamePatterns "-web -plugins"
 
 **Used in:** [`workflow-branch`](#workflow-branch)
 
-**Default:** 1
+**Default:** `1`
 
 By default, script will prompt for an optional ticket number and create a commit
 message template with it (see
 [`workflow-commit-template`](#workflow-commit-template)). Set this to `0` to
 disable the ticket number prompt.
+
+
+## `workflow.commitTemplateFormat`
+
+**Used in:** [`workflow-commit-template`](#workflow-commit-template)
+
+**Default:** `"[%%ticket%%] "`
+
+Format of the commit template body. The following placeholders are supported and
+will be replaced with their corresponding value:
+
+    - `%%ticket%%`: Replaced with ticket number
+
+
+## `workflow.ticketInputFormatRegex`
+
+**Used in:** [`workflow-commit-template`](#workflow-commit-template)
+
+**Default:** `'[a-zA-Z]+-[0-9]+'`
+
+Regex used to validate format of input for ticket number. By default, a valid
+ticket number is 1 or more letters, followed by a hyphen, followed by 1 or more
+numbers.
+
+
+## `workflow.ticketFormatCapitalize`
+
+**Used in:** [`workflow-commit-template`](#workflow-commit-template)
+
+**Default:** `1`
+
+By default, lowercase letters in ticket number will be capitalized in result.
+E.g. if the ticket number input is:
+
+```
+ht-12345
+```
+
+The ticket number in the resulting commit template will be:
+
+```
+HT-12345
+```
+
+Set this to `0` to disable automatic capitalization.
 
 
 --------------------------------------------------------------------------------
