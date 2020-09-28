@@ -4,6 +4,16 @@ set -o errexit
 # workflow-branch
 # Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
 # ------------------------------------------------------------------------------
+# Usage: workflow-branch [-c <client>|-C] [-d <description>] [-i <initials>]
+#                        [-b <base-branch>|-B] [-t <yyyymmdd>] [-s <ticket#>|-S]
+#                        [-P] [-N] [-V] [-h]
+# ------------------------------------------------------------------------------
+# Configs:
+#   - workflow.initials
+#   - workflow.baseBranch
+#   - workflow.badBranchNamePatterns
+#   - workflow.enableCommitTemplate
+# ------------------------------------------------------------------------------
 # Create a new git branch with the following name format:
 #
 #   [<client>-]<brief-description>-<yyyymmdd>-<initials>
@@ -16,49 +26,8 @@ set -o errexit
 #
 # Script will prompt for details and format appropriately (i.e. no
 # spaces/underscores, all lowercase).
-#
 # ------------------------------------------------------------------------------
-# Usage
-# ------------------------------------------------------------------------------
-# Usage: workflow-branch [-c <client>|-C] [-d <description>] [-i <initials>]
-#                        [-b <base-branch>|-B] [-t <yyyymmdd>] [-s <ticket#>|-S]
-#                        [-P] [-N] [-V] [-h]
-#
-# This script accepts optional arguments to skip input prompts and override
-# defaults and git configurations. For details on optional arguments, run:
-#
-#       workflow-branch -h
-#
-# If no optional arguments are provided, you will be prompted for information
-# used in the branch name (client, description, etc).
-#
-# ------------------------------------------------------------------------------
-# Configurations
-# ------------------------------------------------------------------------------
-# This script will use the following git configs if set:
-#
-#   - workflow.initials: Skip the prompt for user's initials and use the value
-#     of this. E.g. to automatically use "cd":
-#
-#       git config --global workflow.initials cd
-#
-#   - workflow.baseBranch: Use instead of master as the base git branch when
-#     creating the new branch. E.g. to base branches off develop:
-#
-#       git config workflow.baseBranch develop
-#
-#   - workflow.badBranchNamePatterns: Set to a space-separated string of
-#     patterns that should not appear in a standard branch name. Script will
-#     check for these before attempting to create a branch. E.g. if branch
-#     names shouldn't include the words "-web" or "-plugins":
-#
-#       git config workflow.badBranchNamePatterns "-web -plugins"
-#
-#   - workflow.enableCommitTemplate: By default, script will prompt for an
-#     optional ticket number and create a commit message template with it (see
-#     workflow-commit-template). Set this to 0 to disable the ticket number
-#     prompt.
-#
+# For more information, see README.md#workflow-branch
 # ==============================================================================
 
 # Imports ----------------------------------------------------------------------
