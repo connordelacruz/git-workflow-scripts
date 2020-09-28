@@ -247,7 +247,7 @@ disable the ticket number prompt.
 Format of the commit template body. The following placeholders are supported and
 will be replaced with their corresponding value:
 
-    - `%%ticket%%`: Replaced with ticket number
+- `%%ticket%%`: Replaced with ticket number
 
 
 ## `workflow.ticketInputFormatRegex`
