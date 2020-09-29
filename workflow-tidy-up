@@ -41,13 +41,8 @@ show_help() {
 
 # Main -------------------------------------------------------------------------
 
-# Tidy up commit templates and configs.
-#
-# Arguments:
-#   Takes all optional arguments for script. For details on these arguments,
-#   see show_help()
 main() {
-    # Parse arguments:
+    # Parse Arguments ----------------------------------------------------------
     # -f skip confirmation prompt
     # -B include current branch
     # -o only clean up orphans
@@ -74,27 +69,24 @@ main() {
         esac
     done
     shift $((OPTIND -1))
-
+    # Verify Git ---------------------------------------------------------------
     # Check git version > 2.23 and that we're in a repo currently
     local version_check="$(verify_git_version)"
     [[ -n "$version_check" ]] && echo_error "$version_check" && exit 1
     verify_git_repo
-
+    # Find Tidy Up Targets -----------------------------------------------------
     local repo_root_dir="$(git_repo_root)"
     if [[ "$(is_workflow_configured "$repo_root_dir")" < 1 ]]; then
         echo "Repo hasn't been initialized, no tidying to be done."
         exit
     fi
-
     # Search for includeif configs
     local workflow_config_path="$(git config --local --includes --get workflow.configpath)"
     readonly pat='includeif\.onbranch:(.*)\.path (.*)'
     local matching_configs="$(git config -f "$workflow_config_path" --get-regexp $pat)"
-
     # Keep track of current branch configs
     local current_branch="$(git_current_branch)"
     local current_branch_template
-
     # Parse results and get branch names, config files, and configured commit.templates
     local -a target_branch_names branch_config_files configured_commit_templates
     while IFS= read -r line; do
@@ -112,7 +104,6 @@ main() {
             configured_commit_templates+=("$configured_commit_template")
         fi
     done <<< "$matching_configs"
-
     # Get array of orphaned templates
     local saved_IFS="$IFS"
     local IFS=$'\n'
@@ -121,7 +112,7 @@ main() {
     # Based on: https://stackoverflow.com/questions/2312762/compare-difference-of-two-arrays-in-bash#comment78031743_28161520
     local orphan_commit_templates=($(echo ${configured_commit_templates[@]} ${configured_commit_templates[@]} ${all_commit_templates[@]} | tr ' ' '\n' | sort | uniq -u))
     IFS="$saved_IFS"
-
+    # Info and Prompt ----------------------------------------------------------
     # Output: Configured Templates
     if [[ -z "$arg_orphans_only" ]]; then
         # Case 1: We have branches to clean
@@ -142,7 +133,6 @@ main() {
             echo ""
         fi
     fi
-
     # Output: Orphan Templates
     if [[ -n "$orphan_commit_templates" ]]; then
         echo "The following commit templates do not have an associated branch and will be deleted:"
@@ -150,13 +140,11 @@ main() {
         echo_indented "${orphan_commit_templates[@]}"
         echo ""
     fi
-
     # If there's nothing to clean up
     if [[ -z "$target_branch_names" || -n "$arg_orphans_only" ]] && [[ -z "$orphan_commit_templates" ]]; then
         echo "Nothing to tidy up."
         exit
     fi
-
     # Prompt for Confirmation
     local confirm_delete="$arg_skip_confirmation"
     while [[ -z "$confirm_delete" ]]; do
@@ -180,8 +168,8 @@ main() {
         esac
     done
     [[ "$confirm_delete" < 1 ]] && exit
-
-    # Cleanup: Configured Templates
+    # Cleanup ------------------------------------------------------------------
+    # Configured Templates
     if [[ -n "$target_branch_names" && -z "$arg_orphans_only" ]]; then 
         # TODO: optionally delete branches? if so call finish instead?
         echo "Tidying up configs..."
@@ -190,8 +178,7 @@ main() {
             echo ""
         done
     fi
-
-    # Cleanup: Orphan Templates
+    # Orphan Templates
     if [[ -n "$orphan_commit_templates" ]]; then
         echo "Removing orphaned templates..."
         for orphan_commit_template in "${orphan_commit_templates[@]}"; do

@@ -43,13 +43,8 @@ show_help() {
 
 # Main -------------------------------------------------------------------------
 
-# Clean up per-branch configs and attempt to delete branch.
-#
-# Arguments:
-#   Takes all optional arguments for script. For details on these arguments,
-#   see show_help()
 main() {
-    # Parse arguments:
+    # Parse Arguments ----------------------------------------------------------
     # -f skip confirmation prompt
     local arg_skip_confirmation arg_branch_name
     while getopts 'fb:hV' opt; do
@@ -71,7 +66,7 @@ main() {
         esac
     done
     shift $((OPTIND -1))
-
+    # Verify Git ---------------------------------------------------------------
     # Check that this is a git repo before proceeding
     verify_git_repo
     # Commit template requires git 2.23+
@@ -79,9 +74,8 @@ main() {
     if [[ -n "$(verify_git_version)" ]]; then
         skip_commit_template=1
     fi
-
+    # Prompts ------------------------------------------------------------------
     local branch_name="${arg_branch_name:-$(git_current_branch)}"
-
     local confirm_delete="$arg_skip_confirmation"
     while [[ -z "$confirm_delete" ]]; do
         local yn
@@ -104,7 +98,7 @@ main() {
         esac
     done
     [[ "$confirm_delete" < 1 ]] && exit
-
+    # Finish Branch ------------------------------------------------------------
     if [[ $skip_commit_template < 1 ]]; then
         echo "Removing configurations..."
         "$UNSET_COMMIT_TEMPLATE_SCRIPT" -b "$branch_name"

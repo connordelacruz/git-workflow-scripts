@@ -34,14 +34,8 @@ show_help() {
 
 # Main -------------------------------------------------------------------------
 
-# Checks the local commit.template config for the current repo. If configured,
-# will unset and delete the template file it was set to.
-#
-# Arguments:
-#   Takes all optional arguments for script. For details on these arguments,
-#   see show_help()
 main() {
-    # Parse arguments:
+    # Parse Arguments ----------------------------------------------------------
     # -D don't delete template file
     # -b <branch> unset a different branch
     local arg_no_delete arg_branch_name
@@ -64,13 +58,12 @@ main() {
         esac
     done
     shift $((OPTIND -1))
-
+    # Verify Git ---------------------------------------------------------------
     # Check git version > 2.23 and that we're in a repo currently
     local version_check="$(verify_git_version)"
     [[ -n "$version_check" ]] && echo_error "$version_check" && exit 1
     verify_git_repo
-
-    # Get current branch and assiociated config
+    # Get Configs for Branch ---------------------------------------------------
     local branch_name="${arg_branch_name:-$(git_current_branch)}"
     local branch_config_file="$(git config --local --includes --get includeif.onbranch:${branch_name}.path)"
     [[ -z "$branch_config_file" ]] && echo "No config file specified for branch $branch_name." && exit
@@ -80,8 +73,7 @@ main() {
     local branch_config_path="$repo_root_dir/.git/$branch_config_file"
     local commit_template_file="$(git config -f "$branch_config_path" --get commit.template)"
     local commit_template_path="$repo_root_dir/$commit_template_file"
-
-    # Unset branch config
+    # Unset Config -------------------------------------------------------------
     echo "Unsetting branch config include..."
     git config -f "$workflow_config_path" --unset includeIf.onbranch:${branch_name}.path
     echo_success "Local repo updated." \
@@ -90,8 +82,8 @@ main() {
     echo "Deleting branch config file .git/$branch_config_file..."
     rm "$branch_config_path"
     echo_success "Branch config file removed."
-
-    # Delete commit template (unless -D was specified)
+    # Remove Commit Template ---------------------------------------------------
+    # (Unless -D was specified)
     if [[ -z "$commit_template_file" ]]; then
         echo_warning "Template file $commit_template_file not found."
         exit

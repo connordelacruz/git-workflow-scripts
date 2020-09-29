@@ -134,19 +134,8 @@ show_help() {
 
 # Main -------------------------------------------------------------------------
 
-# Prompts the user for info about the branch, validates and formats input, and
-# creates the new branch.
-#
-# Globals:
-#   INITIALS
-#   BASE_BRANCH
-#   BAD_BRANCH_NAME_PATTERNS
-#   NEW_BRANCH_COMMIT_TEMPLATE
-# Arguments:
-#   Takes all optional arguments for script. For details on these arguments,
-#   see show_help()
 main() {
-    # Parse arguments:
+    # Parse Arguments ----------------------------------------------------------
     # -c <client> OR -C no client [overrides -c]
     # -d <description>
     # -i <initials> (OVERRIDE GLOBAL)
@@ -204,7 +193,7 @@ main() {
         esac
     done
     shift $((OPTIND -1))
-
+    # Verify Git ---------------------------------------------------------------
     # Check that this is a git repo before proceeding
     verify_git_repo
     # Commit template requires git 2.23+
@@ -212,7 +201,7 @@ main() {
     if [[ -n "$(verify_git_version)" ]]; then
         skip_commit_template=1
     fi
-
+    # Prompts ------------------------------------------------------------------
     local client
     # Skip section if -C is passed
     if [[ $arg_no_client < 1 ]]; then
@@ -277,7 +266,7 @@ main() {
             echo ""
         fi
     fi
-
+    # Create Branch ------------------------------------------------------------
     local timestamp="${arg_timestamp:-$(date "+%Y%m%d")}"
     local branch_name="$client$desc-$timestamp-$initials"
     # Check for bad branch name
