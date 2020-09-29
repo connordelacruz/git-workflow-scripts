@@ -4,6 +4,13 @@ set -o errexit
 # workflow-finish-branch
 # Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
 # ------------------------------------------------------------------------------
+# Usage: workflow-finish-branch [-b <branch>] [-f] [-V] [-h]
+#
+# Run workflow-finish-branch -h for details.
+# ------------------------------------------------------------------------------
+# Configs:
+#   - workflow.baseBranch
+# ------------------------------------------------------------------------------
 # Finish a project branch. 
 #
 # Will prompt for confirmation before executing (unless -f is specified), then
@@ -16,15 +23,7 @@ set -o errexit
 #     target branch has not been fully merged upstream or in HEAD
 #
 # ------------------------------------------------------------------------------
-# Usage
-# ------------------------------------------------------------------------------
-# Usage: workflow-finish-branch [-b <branch>] [-f] [-V] [-h]
-#
-# This script accepts optional arguments to override defaults. For details on
-# optional arguments, run:
-#
-#   workflow-finish-branch -h
-#
+# For more information, see workflow-finish-branch section in README.md
 # ==============================================================================
 
 # Imports ----------------------------------------------------------------------

@@ -334,8 +334,8 @@ performs the following:
 
   - Call [`workflow-unset-commit-template`](#workflow-unset-commit-template) for
     the target branch
-  - Checkout base branch (see [git configurations](#configurations) for details)
-    and pull latest updates
+  - Checkout base branch (see [`workflow.baseBranch`](#workflowbasebranch)) and
+    pull latest updates
   - Attempt to delete target branch using `git branch -d`, which may fail if
     target branch has not been fully merged upstream or in `HEAD`
 
