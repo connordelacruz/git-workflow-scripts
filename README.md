@@ -55,7 +55,7 @@ create a commit template for the branch, so all your commit messages will begin
 with:
 
 ```
-[#<ticket>]
+[<ticket>]
 ```
 
 **Demos:**
@@ -356,12 +356,20 @@ workflow-finish-branch -h
 ## `workflow-commit-template`
 
 Creates and configures a git commit template for the current branch that
-includes a ticket number in brackets before the commit message. E.g. for ticket
-number `12345`:
+includes a ticket number before the commit message. E.g. for ticket number
+`HT-12345`:
 
  ```
- [#12345] <commit message text goes here>
+ [HT-12345] <commit message text goes here>
  ```
+
+The format of the template, accepted ticket numbers, and more can be customized
+with git configs. See the following sections for details on these
+configurations:
+
+* [`workflow.commitTemplateFormat`](#workflowcommittemplateformat)
+* [`workflow.ticketInputFormatRegex`](#workflowticketinputformatregex)
+* [`workflow.ticketFormatCapitalize`](#workflowticketformatcapitalize)
 
 Templates generated with this script are created in the root of the git
 repository with this name format:
@@ -379,7 +387,7 @@ branch that will use this template.
 ### Usage
 
 ```
-workflow-commit-template [<ticket number>] [-V] [-h]
+Usage: workflow-commit-template [<ticket number>] [-V] [-h]
 ```
 
 If not arguments are passed, user will be prompted for the ticket number.

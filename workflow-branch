@@ -7,6 +7,8 @@ set -o errexit
 # Usage: workflow-branch [-c <client>|-C] [-d <description>] [-i <initials>]
 #                        [-b <base-branch>|-B] [-t <yyyymmdd>] [-s <ticket#>|-S]
 #                        [-P] [-N] [-V] [-h]
+#
+# Run workflow-branch -h for details.
 # ------------------------------------------------------------------------------
 # Configs:
 #   - workflow.initials
@@ -27,7 +29,7 @@ set -o errexit
 # Script will prompt for details and format appropriately (i.e. no
 # spaces/underscores, all lowercase).
 # ------------------------------------------------------------------------------
-# For more information, see README.md#workflow-branch
+# For more information, see workflow-branch section in README.md
 # ==============================================================================
 
 # Imports ----------------------------------------------------------------------
