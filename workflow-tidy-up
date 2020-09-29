@@ -4,6 +4,10 @@ set -o errexit
 # workflow-tidy-up
 # Author: Connor de la Cruz (connor.c.delacruz@gmail.com)
 # ------------------------------------------------------------------------------
+# Usage: workflow-tidy-up [-f] [-B] [-o] [-V] [-h]
+#
+# Run workflow-tidy-up -h for details.
+# ------------------------------------------------------------------------------
 # Tidy up workflow-related files and configs.
 #
 # Will list affected branches and files and prompt for confirmation before
@@ -14,17 +18,8 @@ set -o errexit
 #   - Remove each orphan commit template with no associated project branch
 #
 # By default, the current branch will be omitted from cleanup.
-#
 # ------------------------------------------------------------------------------
-# Usage
-# ------------------------------------------------------------------------------
-# Usage: workflow-tidy-up [-f] [-B] [-o] [-V] [-h]
-#
-# This script accepts optional arguments to override defaults. For details on
-# optional arguments, run:
-#
-#   workflow-tidy-up -h
-#
+# For more information, see workflow-tidy-up section in README.md
 # ==============================================================================
 
 # Imports ----------------------------------------------------------------------

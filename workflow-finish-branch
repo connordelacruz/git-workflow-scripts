@@ -21,7 +21,6 @@ set -o errexit
 #     pull latest updates
 #   - Attempt to delete target branch using git branch -d, which may fail if
 #     target branch has not been fully merged upstream or in HEAD
-#
 # ------------------------------------------------------------------------------
 # For more information, see workflow-finish-branch section in README.md
 # ==============================================================================
