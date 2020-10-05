@@ -5,7 +5,7 @@
 # ==============================================================================
 
 readonly WORKFLOW_MAJOR=1
-readonly WORKFLOW_MINOR=0
+readonly WORKFLOW_MINOR=1
 readonly WORKFLOW_PATCH=0
 readonly WORKFLOW_VERSION="$WORKFLOW_MAJOR.$WORKFLOW_MINOR.$WORKFLOW_PATCH"
 
