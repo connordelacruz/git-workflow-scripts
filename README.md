@@ -11,6 +11,8 @@
     * [Tidy Up Entire Local Repo](#tidy-up-entire-local-repo)
 * [Setup](#setup)
     * [Prerequisites](#prerequisites)
+        * [Git 2.23+](#git-223)
+        * [Note About Bash Version](#note-about-bash-version)
     * [Installation](#installation)
     * [Configuring Git to Ignore Script-Related Files](#configuring-git-to-ignore-script-related-files)
         * [Configure Global .gitignore (RECOMMENDED)](#configure-global-gitignore-recommended)
@@ -109,6 +111,8 @@ If you have a bunch of lingering commit templates, you can run
 
 ## Prerequisites
 
+### Git 2.23+
+
 These scripts use features that require **git 2.23 or greater**. To install an
 updated version of `git` on macOS using [Homebrew](https://brew.sh/):
 
@@ -122,12 +126,16 @@ Make sure `/usr/local/bin` is added to your `PATH` e.g.:
 export PATH="/usr/local/bin:$PATH"
 ```
 
-> **Note:** These scripts were developed using GNU bash 5.0.17 on macOS. While I
-> don't believe this uses any features that aren't supported by the builtin
-> version of bash on macOS, it's definitely not impossible. [Here's instructions
-> on upgrading bash on macOS using
-> Homebrew](https://itnext.io/upgrading-bash-on-macos-7138bd1066ba) just in
-> case.
+### Note About Bash Version
+
+**Note:** These scripts were developed using GNU bash 5.0.17 on macOS. I have
+yet to determine if these scripts use features that aren't supported by the
+builtin version of bash on macOS (version 3.2). **If you are using an older
+version of bash and encounter issues, please let me know.**
+
+If you would like to update, [Here's instructions on upgrading bash on macOS
+using Homebrew](https://itnext.io/upgrading-bash-on-macos-7138bd1066ba).
+
 
 ## Installation
 
