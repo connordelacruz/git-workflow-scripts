@@ -45,7 +45,6 @@ fmt_ticket_number() {
     if [[ -n "$formatted" ]]; then
         # Apply formatting based on configs
         if [[ $TICKET_FORMAT_CAPITALIZE > 0 ]]; then
-            # TODO doing this the bash 3 compatible way, but if we're already using new features then make this consistent
             formatted="$(echo "$formatted" | tr [:lower:] [:upper:])"
         fi
     fi

@@ -49,7 +49,7 @@ source "$UTIL_DIR/ALL.sh"
 #   Formatted text
 fmt_text() {
     # to lower case
-    local formatted="${1,,}"
+    local formatted="$(echo "$1" | tr [:upper:] [:lower:])"
     # Trim leading and trailing spaces
     formatted="${formatted##*( )}"
     formatted="${formatted%%*( )}"
