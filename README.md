@@ -1,5 +1,13 @@
 # Git Workflow Scripts
 
+## DEPRECATED
+
+These scripts are deprecated and have been replaced with a Python command line tool, which can be found here:
+
+https://github.com/connordelacruz/git-workflow
+
+--------------------------------------------------------------------------------
+
 ## Contents
 
 <!-- vim-markdown-toc GFM -->
